@@ -1,0 +1,16 @@
+{
+  "model": "simple_quantum",
+  "horizon": 24,
+  "mae": 7.968529781811366,
+  "rmse": 15.244433975677117,
+  "r2": 0.9577039049294871,
+  "mape": 20.540997465853753,
+  "features": [
+    "aqi_lag_24h",
+    "temperature",
+    "aqi_roll_mean_168h",
+    "aqi_roll_mean_24h",
+    "aqi_lag_1h",
+    "humidity"
+  ]
+}

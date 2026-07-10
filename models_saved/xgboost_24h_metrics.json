@@ -1,0 +1,73 @@
+{
+  "model": "xgboost",
+  "horizon": 24,
+  "avg_mae": 82.31767753326874,
+  "avg_rmse": 89.75020206232905,
+  "avg_r2": -0.7535092789630257,
+  "avg_mape": 110.60386272149213,
+  "fold_results": [
+    {
+      "fold": 1,
+      "mae": 207.7973459252814,
+      "rmse": 221.99486882048578,
+      "r2": -2.8587250781413354,
+      "mape": 245.5060309793023
+    },
+    {
+      "fold": 2,
+      "mae": 20.920672057364225,
+      "rmse": 24.802902157127193,
+      "r2": 0.2516320886818292,
+      "mape": 36.880588238191706
+    },
+    {
+      "fold": 3,
+      "mae": 18.235014617160598,
+      "rmse": 22.452835209374218,
+      "r2": 0.34656515257042897,
+      "mape": 49.42496894698241
+    }
+  ],
+  "top_features": [
+    {
+      "feature": "pm10",
+      "importance": 0.22267049551010132
+    },
+    {
+      "feature": "aqi_roll_mean_24h",
+      "importance": 0.22065582871437073
+    },
+    {
+      "feature": "aqi_lag_1h",
+      "importance": 0.04575812444090843
+    },
+    {
+      "feature": "is_weekend",
+      "importance": 0.03869796544313431
+    },
+    {
+      "feature": "aqi_roll_max_168h",
+      "importance": 0.03290161117911339
+    },
+    {
+      "feature": "aqi_roll_max_24h",
+      "importance": 0.03187868744134903
+    },
+    {
+      "feature": "temp_lag_6h",
+      "importance": 0.027542399242520332
+    },
+    {
+      "feature": "humidity_lag_6h",
+      "importance": 0.023998839780688286
+    },
+    {
+      "feature": "wind_dir_sin",
+      "importance": 0.021054917946457863
+    },
+    {
+      "feature": "dow_sin",
+      "importance": 0.020394541323184967
+    }
+  ]
+}

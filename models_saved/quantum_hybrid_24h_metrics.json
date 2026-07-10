@@ -1,0 +1,65 @@
+{
+  "model": "quantum_hybrid",
+  "horizon": 24,
+  "avg_mae": 110.39118208550346,
+  "avg_rmse": 120.45694336475758,
+  "avg_r2": -6.102124516071038,
+  "avg_mape": 103.53001948587868,
+  "total_features": 62,
+  "selected_features": 12,
+  "selected_feature_names": [
+    "aqi_roll_max_12h",
+    "aqi_lag_2h",
+    "aqi_roll_mean_6h",
+    "aqi_roll_mean_12h",
+    "aqi_roll_max_6h",
+    "aqi_lag_1h",
+    "aqi_roll_mean_24h",
+    "aqi_lag_3h",
+    "day_of_year",
+    "aqi_roll_mean_48h",
+    "aqi_roll_max_24h",
+    "aqi_roll_mean_168h"
+  ],
+  "selection_method": "pennylane_quantum_prefilter",
+  "selection_time_sec": 51.09501075744629,
+  "qaoa_layers": 1,
+  "quantum_backend": "pennylane_statevector_simulator",
+  "fold_results": [
+    {
+      "fold": 1,
+      "mae": 369.11885036892363,
+      "rmse": 401.79003507366156,
+      "r2": -5.117902048348541,
+      "mape": 206.8560903333991
+    },
+    {
+      "fold": 2,
+      "mae": 123.01519443088108,
+      "rmse": 129.62407819948015,
+      "r2": -21.713867885497553,
+      "mape": 177.75606898314075
+    },
+    {
+      "fold": 3,
+      "mae": 27.406789167616104,
+      "rmse": 31.117953793706082,
+      "r2": -4.08711175160724,
+      "mape": 55.32006240313372
+    },
+    {
+      "fold": 4,
+      "mae": 14.543775516086155,
+      "rmse": 18.785499883169287,
+      "r2": 0.6472205549994378,
+      "mape": 18.515290560374854
+    },
+    {
+      "fold": 5,
+      "mae": 17.871300944010418,
+      "rmse": 20.967149873770758,
+      "r2": -0.2389614499012962,
+      "mape": 59.20258514934501
+    }
+  ]
+}

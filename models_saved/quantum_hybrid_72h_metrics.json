@@ -1,0 +1,65 @@
+{
+  "model": "quantum_hybrid",
+  "horizon": 72,
+  "avg_mae": 105.35500200737847,
+  "avg_rmse": 120.75405718028735,
+  "avg_r2": -12.15064518794776,
+  "avg_mape": 117.7117264587386,
+  "total_features": 62,
+  "selected_features": 12,
+  "selected_feature_names": [
+    "aqi_roll_max_24h",
+    "aqi_roll_mean_48h",
+    "aqi_roll_mean_24h",
+    "day_of_year",
+    "aqi_roll_max_168h",
+    "aqi_roll_std_168h",
+    "aqi_roll_max_48h",
+    "aqi_roll_max_12h",
+    "aqi_roll_mean_168h",
+    "aqi_roll_mean_6h",
+    "aqi_lag_1h",
+    "aqi_roll_max_6h"
+  ],
+  "selection_method": "pennylane_quantum_prefilter",
+  "selection_time_sec": 37.07325077056885,
+  "qaoa_layers": 1,
+  "quantum_backend": "pennylane_statevector_simulator",
+  "fold_results": [
+    {
+      "fold": 1,
+      "mae": 290.22015418836804,
+      "rmse": 328.3749560246913,
+      "r2": -3.3148246413257585,
+      "mape": 183.15035593380142
+    },
+    {
+      "fold": 2,
+      "mae": 166.62237818060981,
+      "rmse": 186.54831355159934,
+      "r2": -53.34270425270816,
+      "mape": 247.00079276044588
+    },
+    {
+      "fold": 3,
+      "mae": 23.15858603922526,
+      "rmse": 29.640658715162925,
+      "r2": -3.1238527645716276,
+      "mape": 44.742514385915186
+    },
+    {
+      "fold": 4,
+      "mae": 22.99621942138672,
+      "rmse": 30.052219196694814,
+      "r2": 0.09753819053509827,
+      "mape": 31.180767188459946
+    },
+    {
+      "fold": 5,
+      "mae": 23.77767220730252,
+      "rmse": 29.154138413288333,
+      "r2": -1.0693824716683489,
+      "mape": 82.48420202507057
+    }
+  ]
+}

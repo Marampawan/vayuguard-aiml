@@ -1,0 +1,10 @@
+{
+  "features": [
+    "aqi_lag_24h",
+    "temperature",
+    "aqi_roll_mean_168h",
+    "aqi_roll_mean_24h",
+    "aqi_lag_1h",
+    "humidity"
+  ]
+}
