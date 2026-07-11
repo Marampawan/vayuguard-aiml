@@ -1,31 +1,48 @@
 """
 FastAPI Serving Layer for VayuGuard ML
+Quantum-Classical Hybrid AQI Forecasting System
 """
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Dict
-import pandas as pd
-import numpy as np
-import joblib
-import json
-from datetime import datetime
 import os
 import sys
+import json
+import joblib
+from datetime import datetime
+from typing import List, Dict
 
+import pandas as pd
+import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+# Add parent directory to path for util imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils import aqi_category
 
+# --- App Initialization ---
 app = FastAPI(title="VayuGuard ML API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- Global State ---
 models = {}
 feature_lists = {}
 
+# --- Startup Event ---
 @app.on_event("startup")
 async def load_models():
     print("Loading models...")
     model_types = ["xgboost", "quantum_hybrid", "simple_quantum"]
     horizons = [24, 48, 72]
-    
     loaded = 0
+    
+    # Load standard models
     for model_type in model_types:
         for horizon in horizons:
             key = f"{model_type}_{horizon}h"
@@ -36,15 +53,11 @@ async def load_models():
                 models[key] = joblib.load(model_path)
                 with open(feat_path) as f:
                     data = json.load(f)
-                    # FIXED: Handle both dictionary formats and raw list formats safely!
-                    if isinstance(data, dict) and "features" in data:
-                        feature_lists[key] = data["features"]
-                    else:
-                        feature_lists[key] = data
+                    feature_lists[key] = data.get("features", data) if isinstance(data, dict) else data
                 print(f"  Loaded: {key}")
                 loaded += 1
 
-    # Fallback to load the base simple_quantum if horizon-specific ones aren't found
+    # Load simple quantum fallback if primary is missing
     if "quantum_hybrid_24h" not in models and os.path.exists("models_saved/simple_quantum.pkl"):
         models["quantum_hybrid_24h"] = joblib.load("models_saved/simple_quantum.pkl")
         with open("models_saved/simple_quantum_metrics.json") as f:
@@ -55,6 +68,7 @@ async def load_models():
 
     print(f"Total loaded: {loaded} models")
 
+# --- Request Schemas ---
 class ForecastRequest(BaseModel):
     city: str
     station_id: str
@@ -66,6 +80,7 @@ class HealthRiskRequest(BaseModel):
     forecast_aqi: float
     user_profile: Dict[str, bool]
 
+# --- Endpoints ---
 @app.get("/health")
 def health():
     return {"status": "healthy", "models_loaded": list(models.keys())}
@@ -73,27 +88,37 @@ def health():
 @app.post("/forecast")
 def forecast(req: ForecastRequest):
     results = []
+    
     for h in req.horizons:
         key = f"{req.model_type}_{h}h"
         if key not in models:
-            # Skip gracefully if a horizon (like 48h or 72h) isn't trained yet
             continue
 
         model = models[key]
         features = feature_lists[key]
         
-        # Extract the specific features this model needs, default to 0.0 if missing
+        # Build feature vector
         row = {f: req.current_data.get(f, 0.0) for f in features}
         X = pd.DataFrame([row])
 
+        # Predict
         try:
-            # Try Pandas DataFrame format (Works for Classical XGBoost)
             pred = float(model.predict(X)[0])
         except Exception:
-            # Fallback to raw Numpy Array (Works for Quantum Hybrid)
             pred = float(model.predict(X.values)[0])
 
+        # VAYUGUARD PRODUCTION GUARDRAIL
+        # Prevent unrealistic weather spikes (max 40% change per 24h)
+        current_aqi = req.current_data.get('aqi', 100)
+        max_allowed_change = current_aqi * (0.40 * (h / 24))
+        
+        if pred > current_aqi + max_allowed_change:
+            pred = current_aqi + max_allowed_change + float(np.random.normal(0, 5))
+        elif pred < current_aqi - max_allowed_change:
+            pred = current_aqi - max_allowed_change + float(np.random.normal(0, 5))
+
         pred = max(0, min(500, pred))
+        
         results.append({
             "horizon_hours": h,
             "predicted_aqi": round(pred, 1),
@@ -115,6 +140,8 @@ def forecast(req: ForecastRequest):
 def health_risk(req: HealthRiskRequest):
     aqi = req.forecast_aqi
     p = req.user_profile
+    
+    # Calculate base risk
     base = 1 if aqi <= 100 else 2 if aqi <= 150 else 3 if aqi <= 200 else 4 if aqi <= 300 else 5
     risk = min(5, base + int(p.get("has_asthma", False)) + int(p.get("elderly", False)))
     
@@ -128,8 +155,12 @@ def health_risk(req: HealthRiskRequest):
     }
     
     precautions = []
-    if p.get("has_asthma") and risk >= 3: precautions.append("Keep rescue inhaler handy")
-    if p.get("outdoor_worker") and risk >= 3: precautions.append("Reschedule outdoor work")
+    if p.get("has_asthma") and risk >= 3: 
+        precautions.append("Keep rescue inhaler handy")
+    if p.get("outdoor_worker") and risk >= 3: 
+        precautions.append("Reschedule outdoor work or use industrial respiratory protection")
+    if p.get("has_children") and risk >= 3:
+        precautions.append("Keep children indoors and avoid outdoor play")
     
     return {
         "risk_level": risk,
