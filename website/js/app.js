@@ -1,6 +1,6 @@
 // === VayuGuard Professional Application Logic ===
 
-// If you want to connect to your live Render backend, change this to 'https://vayuguard-ml.onrender.com'
+// Connects to the live Render cloud backend
 const API_BASE = 'https://vayuguard-aiml.onrender.com';
 
 let familyMembers = [
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initPeopleManager();
     initDoctors();
+    detectUserLocation();
     checkApiHealth();
 });
 
@@ -34,6 +35,40 @@ function initNavigation() {
             this.classList.add('active');
         });
     });
+}
+
+// --- Auto-Detect User Location ---
+function detectUserLocation() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            try {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                const data = await response.json();
+                
+                const cityStr = (data.address.city || data.address.state_district || data.address.state || "").toLowerCase();
+                const citySelect = document.getElementById('citySelect');
+
+                if (!citySelect) return;
+
+                if (cityStr.includes("delhi")) {
+                    citySelect.value = "Delhi";
+                    showToast("GPS Location detected: Delhi");
+                } else if (cityStr.includes("mumbai") || cityStr.includes("maharashtra")) {
+                    citySelect.value = "Mumbai";
+                    showToast("GPS Location detected: Mumbai");
+                } else if (cityStr.includes("bangalore") || cityStr.includes("bengaluru") || cityStr.includes("karnataka")) {
+                    citySelect.value = "Bangalore";
+                    showToast("GPS Location detected: Bangalore");
+                }
+            } catch (error) {
+                console.error("Geocoding failed:", error);
+            }
+        }, (error) => {
+            console.warn("User denied location permission.");
+        });
+    }
 }
 
 // --- People Manager ---
@@ -82,7 +117,7 @@ async function checkApiHealth() {
     try {
         await fetch(`${API_BASE}/health`);
     } catch (e) {
-        console.warn("API is not running. Start it with: python src/api/main.py");
+        console.warn("API is not running on Render.");
     }
 }
 
@@ -196,7 +231,7 @@ async function getForecast() {
     } catch (error) {
         console.error("Error fetching forecast:", error);
         if (loadingDiv) {
-            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Failed to connect to Python API. Ensure backend is running.</p>`;
+            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Failed to connect to Cloud Python API.</p>`;
         }
     }
 }
@@ -292,8 +327,72 @@ function startBoxBreathing() {
     doPhase();
 }
 
-function startRelaxBreathing() { showToast("4-7-8 Relaxation technique started."); }
-function startCleanseBreathing() { showToast("Lung Cleansing technique started."); }
+function startRelaxBreathing() {
+    clearInterval(breathingInterval);
+    const text = document.getElementById('relaxText');
+    const circle = document.getElementById('relaxCircle');
+    const steps = [document.getElementById('rstep1'), document.getElementById('rstep2'), document.getElementById('rstep3')];
+    if(!text || !circle) return;
+
+    let phase = 0;
+    circle.style.transition = "transform 4s linear, background 0.3s ease";
+
+    function doPhase() {
+        if (phase === 0) {
+            text.textContent = 'Inhale'; 
+            circle.style.transform = 'scale(1.5)';
+            circle.style.background = 'rgba(79, 70, 229, 0.2)';
+            steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
+            breathingInterval = setTimeout(() => { phase = 1; doPhase(); }, 4000);
+        } else if (phase === 1) {
+            text.textContent = 'Hold'; 
+            circle.style.background = 'rgba(168, 85, 247, 0.2)';
+            steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
+            breathingInterval = setTimeout(() => { phase = 2; doPhase(); }, 7000);
+        } else {
+            text.textContent = 'Exhale'; 
+            circle.style.transform = 'scale(1)';
+            circle.style.background = 'rgba(6, 182, 212, 0.2)';
+            steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
+            breathingInterval = setTimeout(() => { phase = 0; doPhase(); }, 8000);
+        }
+    }
+    doPhase();
+}
+
+function startCleanseBreathing() {
+    clearInterval(breathingInterval);
+    const text = document.getElementById('cleanseText');
+    const circle = document.getElementById('cleanseCircle');
+    const steps = [document.getElementById('cstep1'), document.getElementById('cstep2'), document.getElementById('cstep3')];
+    if(!text || !circle) return;
+
+    let phase = 0;
+    circle.style.transition = "transform 0.5s ease-out, background 0.3s ease";
+
+    function doPhase() {
+        if (phase === 0) {
+            text.textContent = 'Inhale'; 
+            circle.style.transform = 'scale(1.3)';
+            circle.style.background = 'rgba(34, 197, 94, 0.2)';
+            steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
+            breathingInterval = setTimeout(() => { phase = 1; doPhase(); }, 2000);
+        } else if (phase === 1) {
+            text.textContent = 'Exhale!'; 
+            circle.style.transform = 'scale(0.8)';
+            circle.style.background = 'rgba(239, 68, 68, 0.3)';
+            steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
+            breathingInterval = setTimeout(() => { phase = 2; doPhase(); }, 1000);
+        } else {
+            text.textContent = 'Rest'; 
+            circle.style.transform = 'scale(1)';
+            circle.style.background = 'rgba(255, 255, 255, 0.05)';
+            steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
+            breathingInterval = setTimeout(() => { phase = 0; doPhase(); }, 2000);
+        }
+    }
+    doPhase();
+}
 
 // --- UI Utilities ---
 function updateSlider(val) {
@@ -303,7 +402,7 @@ function updateSlider(val) {
 
 function showToast(message) {
     const toast = document.getElementById('toast');
-    const msgEl = document.getElementById('toastMsg');
+    const msgEl = document.getElementById('toastMsg') || document.getElementById('toastMessage');
     if (!toast || !msgEl) return;
     
     msgEl.textContent = message;
