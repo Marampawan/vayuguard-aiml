@@ -19,7 +19,6 @@ from pydantic import BaseModel
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils import aqi_category
 
-# --- App Initialization ---
 app = FastAPI(title="VayuGuard ML API", version="1.0.0")
 
 app.add_middleware(
@@ -30,11 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- Global State ---
 models = {}
 feature_lists = {}
 
-# --- Startup Event ---
 @app.on_event("startup")
 async def load_models():
     print("Loading models...")
@@ -42,7 +39,6 @@ async def load_models():
     horizons = [24, 48, 72]
     loaded = 0
     
-    # Load standard models
     for model_type in model_types:
         for horizon in horizons:
             key = f"{model_type}_{horizon}h"
@@ -57,18 +53,14 @@ async def load_models():
                 print(f"  Loaded: {key}")
                 loaded += 1
 
-    # Load simple quantum fallback if primary is missing
     if "quantum_hybrid_24h" not in models and os.path.exists("models_saved/simple_quantum.pkl"):
         models["quantum_hybrid_24h"] = joblib.load("models_saved/simple_quantum.pkl")
         with open("models_saved/simple_quantum_metrics.json") as f:
             m = json.load(f)
             feature_lists["quantum_hybrid_24h"] = m.get("features", [])
-        print("  Loaded: simple_quantum (as quantum_hybrid_24h fallback)")
+        print("  Loaded: simple_quantum fallback")
         loaded += 1
 
-    print(f"Total loaded: {loaded} models")
-
-# --- Request Schemas ---
 class ForecastRequest(BaseModel):
     city: str
     station_id: str
@@ -80,7 +72,6 @@ class HealthRiskRequest(BaseModel):
     forecast_aqi: float
     user_profile: Dict[str, bool]
 
-# --- Endpoints ---
 @app.get("/health")
 def health():
     return {"status": "healthy", "models_loaded": list(models.keys())}
@@ -97,27 +88,28 @@ def forecast(req: ForecastRequest):
         model = models[key]
         features = feature_lists[key]
         
-        # Build feature vector
         row = {f: req.current_data.get(f, 0.0) for f in features}
         X = pd.DataFrame([row])
 
-        # Predict
         try:
             pred = float(model.predict(X)[0])
         except Exception:
             pred = float(model.predict(X.values)[0])
 
-        # VAYUGUARD PRODUCTION GUARDRAIL
-        # Prevent unrealistic weather spikes (max 40% change per 24h)
+        # --- VAYUGUARD PRODUCTION GUARDRAILS ---
         current_aqi = req.current_data.get('aqi', 100)
-        max_allowed_change = current_aqi * (0.40 * (h / 24))
+        
+        # Limit shift to 20% per day (instead of 40%) to prevent runaway predictions
+        max_allowed_change = current_aqi * (0.20 * (h / 24))
         
         if pred > current_aqi + max_allowed_change:
-            pred = current_aqi + max_allowed_change + float(np.random.normal(0, 5))
+            pred = current_aqi + max_allowed_change + float(np.random.normal(0, 3))
         elif pred < current_aqi - max_allowed_change:
-            pred = current_aqi - max_allowed_change + float(np.random.normal(0, 5))
+            pred = current_aqi - max_allowed_change + float(np.random.normal(0, 3))
 
-        pred = max(0, min(500, pred))
+        # Absolute boundaries: Urban AQI almost never drops below 35
+        pred = max(35.0, min(500.0, pred))
+        # ---------------------------------------
         
         results.append({
             "horizon_hours": h,
@@ -126,7 +118,7 @@ def forecast(req: ForecastRequest):
         })
 
     if not results:
-        raise HTTPException(status_code=400, detail=f"No models found for type '{req.model_type}' at the requested horizons.")
+        raise HTTPException(status_code=400, detail="Models not found.")
 
     return {
         "city": req.city,
@@ -140,8 +132,6 @@ def forecast(req: ForecastRequest):
 def health_risk(req: HealthRiskRequest):
     aqi = req.forecast_aqi
     p = req.user_profile
-    
-    # Calculate base risk
     base = 1 if aqi <= 100 else 2 if aqi <= 150 else 3 if aqi <= 200 else 4 if aqi <= 300 else 5
     risk = min(5, base + int(p.get("has_asthma", False)) + int(p.get("elderly", False)))
     
@@ -155,12 +145,9 @@ def health_risk(req: HealthRiskRequest):
     }
     
     precautions = []
-    if p.get("has_asthma") and risk >= 3: 
-        precautions.append("Keep rescue inhaler handy")
-    if p.get("outdoor_worker") and risk >= 3: 
-        precautions.append("Reschedule outdoor work or use industrial respiratory protection")
-    if p.get("has_children") and risk >= 3:
-        precautions.append("Keep children indoors and avoid outdoor play")
+    if p.get("has_asthma") and risk >= 3: precautions.append("Keep rescue inhaler handy")
+    if p.get("outdoor_worker") and risk >= 3: precautions.append("Reschedule outdoor work")
+    if p.get("has_children") and risk >= 3: precautions.append("Keep children indoors")
     
     return {
         "risk_level": risk,
