@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-07-11T13:02:54.570858",
+  "drift_detected": true,
+  "metrics": {
+    "mape": 30.5,
+    "r2": 0.65,
+    "mae": 45.0
+  },
+  "thresholds": {
+    "mape_max": 25.0,
+    "r2_min": 0.75
+  },
+  "alerts": [
+    "\u26a0\ufe0f HIGH MAPE: 30.50% (threshold: 25.0%)",
+    "\u26a0\ufe0f LOW R\u00b2: 0.650 (threshold: 0.75)"
+  ],
+  "recommendation": "Retrain model"
+}

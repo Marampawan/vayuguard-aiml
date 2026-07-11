@@ -1,0 +1,17 @@
+{
+  "model": "quantum_real_hardware",
+  "mae": 25.29297288139988,
+  "rmse": 46.767710016511735,
+  "r2": 0.9172923297459319,
+  "mape": 16.88982077414971,
+  "features": [
+    "aqi_roll_mean_168h",
+    "aqi_lag_24h",
+    "aqi_roll_mean_24h",
+    "aqi_lag_1h",
+    "humidity",
+    "wind_speed"
+  ],
+  "quantum_backend": "local_simulator",
+  "api_used": true
+}

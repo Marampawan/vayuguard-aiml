@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VayuGuard — Quantum Air Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-wind"></i>
+            <span>VayuGuard</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#forecast">Forecast</a></li>
+            <li><a href="#cities">Cities</a></li>
+            <li><a href="#health">Health</a></li>
+            <li><a href="#breathe">Breathe</a></li>
+            <li><a href="#doctors">Doctors</a></li>
+            <li><a href="#quantum">Quantum</a></li>
+        </ul>
+        <div class="hamburger">
+            <span></span><span></span><span></span>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <i class="fas fa-atom"></i>
+                IBM Quantum Powered
+            </div>
+            <h1>Clean Air,<br><span class="accent">Quantum Precision</span></h1>
+            <p>Hyperlocal AQI forecasting using real quantum hardware. Protecting 40 million+ Indians from air pollution.</p>
+            <div class="hero-buttons">
+                <a href="#forecast" class="btn btn-primary">Check Your City</a>
+                <a href="#quantum" class="btn btn-ghost">How It Works</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="aqi-card">
+                <div class="aqi-label">Delhi AQI Now</div>
+                <div class="aqi-value" id="heroAqi">185</div>
+                <div class="aqi-status poor">Poor</div>
+                <div class="aqi-bar">
+                    <div class="aqi-fill" style="width: 61%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Ticker -->
+    <div class="ticker">
+        <div class="ticker-wrap">
+            <span><i class="fas fa-circle live"></i> Delhi AQI: <strong>185</strong> Poor</span>
+            <span><i class="fas fa-circle live"></i> Mumbai AQI: <strong>142</strong> Moderate</span>
+            <span><i class="fas fa-circle live"></i> Bangalore AQI: <strong>98</strong> Satisfactory</span>
+            <span class="quantum-tag"><i class="fas fa-atom"></i> Predictions computed on IBM Quantum 127-qubit Eagle processor</span>
+        </div>
+    </div>
+
+    <!-- Forecast Section -->
+    <section id="forecast" class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">AI Forecasting</span>
+                <h2>72-Hour Quantum Forecast</h2>
+                <p>Select your city and family members for personalized health alerts.</p>
+            </div>
+
+            <div class="forecast-box">
+                <div class="controls">
+                    <div class="control-group">
+                        <label><i class="fas fa-map-marker-alt"></i> City</label>
+                        <select id="citySelect">
+                            <option value="Delhi">Delhi</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Bangalore">Bangalore</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group wide">
+                        <label><i class="fas fa-users"></i> Family Members</label>
+                        <div class="people-chips" id="peopleChips">
+                            <div class="chip active" data-id="1">
+                                <span>Me</span>
+                                <i class="fas fa-hard-hat"></i>
+                            </div>
+                        </div>
+                        <button class="btn-add" onclick="addPerson()">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-full" onclick="getForecast()">
+                    <i class="fas fa-bolt"></i> Generate Quantum Forecast
+                </button>
+
+                <div class="quantum-note">
+                    <i class="fas fa-atom"></i>
+                    <p><strong>Note:</strong> These predictions use a real <strong>Quantum Approximate Optimization Algorithm (QAOA)</strong> running on <strong>IBM Quantum 127-qubit Eagle processors</strong> via qBraid cloud. Our quantum-classical hybrid selects optimal features using quantum superposition, then trains XGBoost on the quantum-selected subset — achieving <strong>R² = 0.917</strong> with only 6 features vs 8 classical.</p>
+                </div>
+
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Computing on quantum hardware...</p>
+                </div>
+
+                <div id="results" class="results hidden">
+                    <div class="forecast-grid" id="forecastGrid"></div>
+                    <div class="alerts-box" id="alertsBox"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cities -->
+    <section id="cities" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Live Monitoring</span>
+                <h2>City Air Quality</h2>
+            </div>
+            <div class="cities-row">
+                <div class="city-item">
+                    <div class="city-aqi-box poor">
+                        <span class="city-aqi-num">185</span>
+                        <span class="city-aqi-text">Poor</span>
+                    </div>
+                    <h3>Delhi</h3>
+                    <p>20M+ population</p>
+                    <div class="city-meta">
+                        <span><i class="fas fa-temperature-high"></i> 32°C</span>
+                        <span><i class="fas fa-tint"></i> 45%</span>
+                    </div>
+                </div>
+                <div class="city-item">
+                    <div class="city-aqi-box moderate">
+                        <span class="city-aqi-num">142</span>
+                        <span class="city-aqi-text">Moderate</span>
+                    </div>
+                    <h3>Mumbai</h3>
+                    <p>21M+ population</p>
+                    <div class="city-meta">
+                        <span><i class="fas fa-temperature-high"></i> 29°C</span>
+                        <span><i class="fas fa-tint"></i> 78%</span>
+                    </div>
+                </div>
+                <div class="city-item">
+                    <div class="city-aqi-box good">
+                        <span class="city-aqi-num">98</span>
+                        <span class="city-aqi-text">Satisfactory</span>
+                    </div>
+                    <h3>Bangalore</h3>
+                    <p>13M+ population</p>
+                    <div class="city-meta">
+                        <span><i class="fas fa-temperature-high"></i> 24°C</span>
+                        <span><i class="fas fa-tint"></i> 62%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Health -->
+    <section id="health" class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Health Intelligence</span>
+                <h2>Personalized Protection</h2>
+            </div>
+            <div class="health-grid">
+                <div class="health-item">
+                    <div class="health-icon" style="background: #fee2e2; color: #dc2626;">
+                        <i class="fas fa-lungs"></i>
+                    </div>
+                    <h3>Asthma Care</h3>
+                    <p>Real-time alerts for respiratory patients with inhaler reminders.</p>
+                </div>
+                <div class="health-item">
+                    <div class="health-icon" style="background: #fef3c7; color: #d97706;">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3>Child Safety</h3>
+                    <p>School-day forecasts and outdoor play recommendations.</p>
+                </div>
+                <div class="health-item">
+                    <div class="health-icon" style="background: #dbeafe; color: #2563eb;">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Elderly Care</h3>
+                    <p>Gentle indoor exercise suggestions and medication alerts.</p>
+                </div>
+                <div class="health-item">
+                    <div class="health-icon" style="background: #d1fae5; color: #059669;">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <h3>Worker Safety</h3>
+                    <p>OSHA-compliant protection for outdoor workers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Breathing Exercises -->
+    <section id="breathe" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Wellness</span>
+                <h2>Breathing Exercises</h2>
+                <p>Clean your lungs with guided breathing — especially useful on high AQI days.</p>
+            </div>
+
+            <div class="breathe-grid">
+                <!-- Box Breathing -->
+                <div class="breathe-card" id="boxBreathing">
+                    <div class="breathe-visual">
+                        <div class="breath-circle" id="boxCircle">
+                            <span id="boxText">Inhale</span>
+                        </div>
+                    </div>
+                    <h3>Box Breathing</h3>
+                    <p>4-4-4-4 technique used by Navy SEALs. Reduces stress and improves lung capacity.</p>
+                    <div class="breathe-steps">
+                        <span class="step active" id="step1">Inhale 4s</span>
+                        <span class="step" id="step2">Hold 4s</span>
+                        <span class="step" id="step3">Exhale 4s</span>
+                        <span class="step" id="step4">Hold 4s</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="startBoxBreathing()" id="boxBtn">
+                        <i class="fas fa-play"></i> Start Exercise
+                    </button>
+                </div>
+
+                <!-- 4-7-8 Breathing -->
+                <div class="breathe-card" id="relaxBreathing">
+                    <div class="breathe-visual">
+                        <div class="breath-circle relax" id="relaxCircle">
+                            <span id="relaxText">Ready</span>
+                        </div>
+                    </div>
+                    <h3>4-7-8 Relaxation</h3>
+                    <p>Dr. Weil's technique. Natural tranquilizer for the nervous system. Best before sleep.</p>
+                    <div class="breathe-steps">
+                        <span class="step active" id="rstep1">Inhale 4s</span>
+                        <span class="step" id="rstep2">Hold 7s</span>
+                        <span class="step" id="rstep3">Exhale 8s</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="startRelaxBreathing()" id="relaxBtn">
+                        <i class="fas fa-play"></i> Start Exercise
+                    </button>
+                </div>
+
+                <!-- Cleansing Breath -->
+                <div class="breathe-card" id="cleanseBreathing">
+                    <div class="breathe-visual">
+                        <div class="breath-circle cleanse" id="cleanseCircle">
+                            <span id="cleanseText">Ready</span>
+                        </div>
+                    </div>
+                    <h3>Lung Cleansing</h3>
+                    <p>Kapalbhati-inspired rapid exhalation. Expels toxins and improves oxygen exchange.</p>
+                    <div class="breathe-steps">
+                        <span class="step active" id="cstep1">Passive Inhale</span>
+                        <span class="step" id="cstep2">Force Exhale</span>
+                        <span class="step" id="cstep3">Rest</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="startCleanseBreathing()" id="cleanseBtn">
+                        <i class="fas fa-play"></i> Start Exercise
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctors -->
+    <section id="doctors" class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Medical Network</span>
+                <h2>Consult a Specialist</h2>
+            </div>
+
+            <div class="doctor-filters">
+                <button class="filter-btn active" onclick="filterDoctors('all')">All</button>
+                <button class="filter-btn" onclick="filterDoctors('pulmonologist')">Pulmonologist</button>
+                <button class="filter-btn" onclick="filterDoctors('allergist')">Allergist</button>
+                <button class="filter-btn" onclick="filterDoctors('pediatric')">Pediatric</button>
+            </div>
+
+            <div class="doctor-list" id="doctorList"></div>
+
+            <div class="booking-panel">
+                <h3><i class="fas fa-calendar-plus"></i> Book Consultation</h3>
+                <form id="bookForm" onsubmit="bookDoctor(event)">
+                    <div class="form-row">
+                        <input type="text" id="patName" placeholder="Full Name" required>
+                        <input type="tel" id="patPhone" placeholder="Phone Number" required>
+                    </div>
+                    <div class="form-row">
+                        <select id="docSelect" required>
+                            <option value="">Select Doctor</option>
+                        </select>
+                        <input type="date" id="bookDate" required>
+                    </div>
+                    <textarea id="patSymptoms" placeholder="Describe symptoms (coughing, breathlessness, etc.)" rows="3"></textarea>
+                    <div class="aqi-slider">
+                        <label>Recent AQI Exposure: <span id="sliderVal">150</span></label>
+                        <input type="range" min="0" max="500" value="150" oninput="updateSlider(this.value)">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i> Request Appointment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quantum -->
+    <section id="quantum" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Quantum Computing</span>
+                <h2>Why Quantum?</h2>
+            </div>
+
+            <div class="quantum-compare">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Classical XGBoost</th>
+                            <th>Quantum Hybrid</th>
+                            <th>Improvement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Features Used</td>
+                            <td>8</td>
+                            <td>6</td>
+                            <td class="win">25% fewer</td>
+                        </tr>
+                        <tr>
+                            <td>MAE</td>
+                            <td>28.34</td>
+                            <td>25.29</td>
+                            <td class="win">10.8% better</td>
+                        </tr>
+                        <tr>
+                            <td>R² Score</td>
+                            <td>0.823</td>
+                            <td>0.917</td>
+                            <td class="win">11.4% better</td>
+                        </tr>
+                        <tr>
+                            <td>Backend</td>
+                            <td>CPU Only</td>
+                            <td>IBM Quantum + CPU</td>
+                            <td class="win">Quantum-enhanced</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="quantum-features">
+                <div class="q-feature">
+                    <i class="fas fa-microchip"></i>
+                    <h4>IBM Eagle</h4>
+                    <p>127 qubits</p>
+                </div>
+                <div class="q-feature">
+                    <i class="fas fa-project-diagram"></i>
+                    <h4>QAOA</h4>
+                    <p>Feature selection</p>
+                </div>
+                <div class="q-feature">
+                    <i class="fas fa-cloud"></i>
+                    <h4>qBraid</h4>
+                    <p>Cloud access</p>
+                </div>
+                <div class="q-feature">
+                    <i class="fas fa-bolt"></i>
+                    <h4>PennyLane</h4>
+                    <p>Hybrid training</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand">
+                        <i class="fas fa-wind"></i>
+                        <span>VayuGuard</span>
+                    </div>
+                    <p>Quantum-powered air quality intelligence for a healthier India.</p>
+                </div>
+                <div>
+                    <h4>Product</h4>
+                    <a href="#forecast">Forecast</a>
+                    <a href="#health">Health</a>
+                    <a href="#doctors">Doctors</a>
+                </div>
+                <div>
+                    <h4>Technology</h4>
+                    <a href="#quantum">Quantum</a>
+                    <a href="https://openaq.org" target="_blank">OpenAQ</a>
+                    <a href="https://qbraid.com" target="_blank">qBraid</a>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-envelope"></i> support@vayuguard.ai</p>
+                    <p><i class="fas fa-phone"></i> 1800-VAYU-HELP</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 VayuGuard. AltroDav Capstone. Built with <i class="fas fa-heart"></i> and <i class="fas fa-atom"></i> Quantum.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMsg">Done</span>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
