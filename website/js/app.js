@@ -293,48 +293,66 @@ async function getForecast() {
             }).join('');
         }
 
-        // 5. Generate Personalized Health Advice Based on the Family Array
+        // 5. Generate Personalized Health Advice FOR EACH INDIVIDUAL
         if (data.forecasts && data.forecasts.length > 0) {
             const worstAqi = Math.max(...data.forecasts.map(f => f.predicted_aqi));
+            const healthSection = document.getElementById('healthAdviceSection'); 
             
-            // Scan the entire family array to check if ANY member has these conditions
-            const userProfile = {
-                elderly: familyMembers.some(m => m.conditions.includes('elderly')),
-                has_asthma: familyMembers.some(m => m.conditions.includes('asthma')),
-                has_children: familyMembers.some(m => m.conditions.includes('child')),
-                outdoor_worker: familyMembers.some(m => m.conditions.includes('worker'))
-            };
-
-            try {
-                const healthResponse = await fetch(`${API_BASE}/health-risk`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        forecast_aqi: worstAqi,
-                        user_profile: userProfile
-                    })
-                });
+            if (healthSection) {
+                // Start with a clean title
+                let adviceHTML = `<h3 style="color: var(--white); margin-bottom: 1.5rem;"><i class="fas fa-users-medical"></i> Individual Member Alerts</h3>`;
                 
-                if (healthResponse.ok) {
-                    const healthData = await healthResponse.json();
-                    const healthSection = document.getElementById('healthAdviceSection'); 
-                    
-                    if (healthSection) {
-                        healthSection.innerHTML = `
-                            <div style="background: var(--dark-2); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--danger); margin-bottom: 2rem;">
-                                <h3 style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-shield-alt"></i> Family Risk Level: ${healthData.risk_category} (${healthData.risk_level}/5)</h3>
-                                <p style="color: var(--gray-light); font-size: 1.1rem; margin-bottom: 1rem;">${healthData.advisory}</p>
-                                ${healthData.precautions.length > 0 ? `
-                                    <ul style="color: var(--warning); padding-left: 1.5rem; font-weight: 600;">
-                                        ${healthData.precautions.map(p => `<li style="margin-bottom: 0.3rem;">${p}</li>`).join('')}
-                                    </ul>
-                                ` : '<p style="color: var(--success); font-weight: 600;">No special precautions needed based on your current family profile.</p>'}
-                            </div>
-                        `;
+                // Loop through EVERY family member one by one
+                for (const member of familyMembers) {
+                    // Check ONLY this specific member's conditions
+                    const singleProfile = {
+                        elderly: member.conditions.includes('elderly'),
+                        has_asthma: member.conditions.includes('asthma'),
+                        has_children: member.conditions.includes('child'),
+                        outdoor_worker: member.conditions.includes('worker')
+                    };
+
+                    try {
+                        // Ask the AI about this specific person
+                        const healthResponse = await fetch(`${API_BASE}/health-risk`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                forecast_aqi: worstAqi,
+                                user_profile: singleProfile
+                            })
+                        });
+                        
+                        if (healthResponse.ok) {
+                            const healthData = await healthResponse.json();
+                            
+                            // Change the border color based on their specific risk
+                            let bColor = 'var(--success)';
+                            if (healthData.risk_level === 3) bColor = 'var(--warning)';
+                            if (healthData.risk_level >= 4) bColor = 'var(--danger)';
+
+                            // Build a custom card just for them
+                            adviceHTML += `
+                                <div style="background: var(--dark-2); padding: 1.2rem; border-radius: 8px; border-left: 4px solid ${bColor}; margin-bottom: 1rem;">
+                                    <h4 style="color: var(--white); margin-bottom: 0.5rem; text-transform: capitalize;">
+                                        <i class="fas fa-user"></i> ${member.name} — Risk: ${healthData.risk_category}
+                                    </h4>
+                                    <p style="color: var(--gray-light); font-size: 0.95rem; margin-bottom: 0.5rem;">${healthData.advisory}</p>
+                                    ${healthData.precautions.length > 0 ? `
+                                        <ul style="color: ${bColor}; padding-left: 1.5rem; font-weight: 600; font-size: 0.9rem; margin-bottom: 0;">
+                                            ${healthData.precautions.map(p => `<li>${p}</li>`).join('')}
+                                        </ul>
+                                    ` : `<span style="color: var(--success); font-weight: 600; font-size: 0.9rem;">No special precautions needed today.</span>`}
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        console.error("Health API Error for", member.name, error);
                     }
                 }
-            } catch (error) {
-                console.error("Health API Error:", error);
+                
+                // Inject all the individual cards into the website
+                healthSection.innerHTML = adviceHTML;
             }
         }
         
