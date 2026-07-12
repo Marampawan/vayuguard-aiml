@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initPeopleManager();
     initDoctors();
     detectUserLocation();
+    
+    // --- ADDED THIS: Triggers the live bottom cards update on page load! ---
+    updateBottomCityCards(); 
 
     // Listen for manual dropdown changes
     document.getElementById('citySelect')?.addEventListener('change', (event) => {
@@ -521,4 +524,57 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.add('hidden');
     }, 3000);
+}
+
+// --- ADDED THIS ENTIRE SECTION: Live Bottom City Cards Updater ---
+async function updateBottomCityCards() {
+    const cityItems = document.querySelectorAll('.city-item');
+    if (!cityItems.length) return;
+
+    const cityCoords = {
+        'Delhi': { lat: 28.6139, lon: 77.2090 },
+        'Mumbai': { lat: 19.0760, lon: 72.8777 },
+        'Bangalore': { lat: 12.9716, lon: 77.5946 }
+    };
+
+    for (const item of cityItems) {
+        const cityName = item.querySelector('h3').textContent;
+        const coords = cityCoords[cityName];
+        if (!coords) continue;
+
+        try {
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m`;
+            const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${coords.lat}&longitude=${coords.lon}&current=us_aqi`;
+            
+            const [weatherRes, aqiRes] = await Promise.all([fetch(weatherUrl), fetch(aqiUrl)]);
+            const weatherData = await weatherRes.json();
+            const aqiData = await aqiRes.json();
+            
+            const aqi = aqiData.current.us_aqi;
+            const temp = weatherData.current.temperature_2m;
+            const hum = weatherData.current.relative_humidity_2m;
+            
+            // Update Number
+            item.querySelector('.city-aqi-num').textContent = aqi;
+            
+            // Update Status & Color
+            let status = 'Good'; let statusClass = 'good';
+            if (aqi > 50) { status = 'Satisfactory'; statusClass = 'good'; }
+            if (aqi > 100) { status = 'Moderate'; statusClass = 'moderate'; }
+            if (aqi > 150) { status = 'Poor'; statusClass = 'poor'; }
+            if (aqi > 200) { status = 'Severe'; statusClass = 'poor'; }
+            
+            item.querySelector('.city-aqi-text').textContent = status;
+            item.querySelector('.city-aqi-box').className = `city-aqi-box ${statusClass}`;
+            
+            // Update Temp & Humidity
+            const metaSpans = item.querySelectorAll('.city-meta span');
+            if (metaSpans.length >= 2) {
+                metaSpans[0].innerHTML = `<i class="fas fa-temperature-high"></i> ${temp}°C`;
+                metaSpans[1].innerHTML = `<i class="fas fa-tint"></i> ${hum}%`;
+            }
+        } catch (e) { 
+            console.error("Failed to update bottom card for", cityName); 
+        }
+    }
 }
