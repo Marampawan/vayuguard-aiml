@@ -426,7 +426,7 @@ function bookDoctor(event) {
 // --- Breathing Exercises ---
 let breathingInterval;
 
-// NEW: Helper function to reset all circles if the user switches exercises
+// Upgraded reset function that also resets the text back to "Ready"
 function resetBreathingUI() {
     clearInterval(breathingInterval);
     document.querySelectorAll('.breath-circle').forEach(c => {
@@ -434,6 +434,20 @@ function resetBreathingUI() {
         c.style.background = ''; // Resets to default CSS
     });
     document.querySelectorAll('.breathe-steps .step').forEach(s => s.classList.remove('active'));
+    
+    // Reset the text inside all circles
+    const box = document.getElementById('boxText');
+    const relax = document.getElementById('relaxText');
+    const cleanse = document.getElementById('cleanseText');
+    if(box) box.innerHTML = 'Ready';
+    if(relax) relax.innerHTML = 'Ready';
+    if(cleanse) cleanse.innerHTML = 'Ready';
+}
+
+// NEW: The Stop Button Command
+function stopExercise() {
+    resetBreathingUI();
+    showToast("Exercise stopped.");
 }
 
 function startBoxBreathing() {
