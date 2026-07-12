@@ -426,31 +426,47 @@ function bookDoctor(event) {
 // --- Breathing Exercises ---
 let breathingInterval;
 
-function startBoxBreathing() {
+// NEW: Helper function to reset all circles if the user switches exercises
+function resetBreathingUI() {
     clearInterval(breathingInterval);
+    document.querySelectorAll('.breath-circle').forEach(c => {
+        c.style.transform = 'scale(1)';
+        c.style.background = ''; // Resets to default CSS
+    });
+    document.querySelectorAll('.breathe-steps .step').forEach(s => s.classList.remove('active'));
+}
+
+function startBoxBreathing() {
+    resetBreathingUI();
     const text = document.getElementById('boxText');
     const circle = document.getElementById('boxCircle');
     const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4')];
     if(!text || !circle) return;
 
     let phase = 0;
-    circle.style.transition = "transform 4s linear";
+    circle.style.transition = "transform 4s linear, background 0.5s ease";
 
     function doPhase() {
         if (phase === 0) {
-            text.textContent = 'Inhale'; circle.style.transform = 'scale(1.5)';
+            text.innerHTML = '<i class="fas fa-arrow-up" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Inhale'; 
+            circle.style.transform = 'scale(1.5)';
+            circle.style.background = 'rgba(59, 130, 246, 0.95)'; // Bright Blue
             steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
             breathingInterval = setTimeout(() => { phase=1; doPhase(); }, 4000);
         } else if (phase === 1) {
-            text.textContent = 'Hold';
+            text.innerHTML = '<i class="fas fa-hand-paper" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Hold';
+            circle.style.background = 'rgba(139, 92, 246, 0.95)'; // Deep Purple
             steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
             breathingInterval = setTimeout(() => { phase=2; doPhase(); }, 4000);
         } else if (phase === 2) {
-            text.textContent = 'Exhale'; circle.style.transform = 'scale(1)';
+            text.innerHTML = '<i class="fas fa-arrow-down" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Exhale'; 
+            circle.style.transform = 'scale(1)';
+            circle.style.background = 'rgba(16, 185, 129, 0.95)'; // Calm Green
             steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
             breathingInterval = setTimeout(() => { phase=3; doPhase(); }, 4000);
         } else {
-            text.textContent = 'Hold';
+            text.innerHTML = '<i class="fas fa-stop-circle" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Hold';
+            circle.style.background = 'rgba(139, 92, 246, 0.95)'; // Deep Purple
             steps.forEach((s, i) => s?.classList.toggle('active', i === 3));
             breathingInterval = setTimeout(() => { phase=0; doPhase(); }, 4000);
         }
@@ -459,40 +475,40 @@ function startBoxBreathing() {
 }
 
 function startRelaxBreathing() {
-    clearInterval(breathingInterval);
+    resetBreathingUI();
     const text = document.getElementById('relaxText');
     const circle = document.getElementById('relaxCircle');
     const steps = [document.getElementById('rstep1'), document.getElementById('rstep2'), document.getElementById('rstep3')];
     if(!text || !circle) return;
 
     let phase = 0;
-    circle.style.transition = "transform 4s linear, background 0.3s ease";
+    circle.style.transition = "transform 4s linear, background 0.5s ease";
 
     function doPhase() {
         if (phase === 0) {
-            text.textContent = 'Inhale'; 
+            text.innerHTML = '<i class="fas fa-wind" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Inhale'; 
             circle.style.transform = 'scale(1.5)';
-            circle.style.background = 'rgba(79, 70, 229, 0.2)';
+            circle.style.background = 'rgba(79, 70, 229, 0.95)'; // Indigo
             steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
-            breathingInterval = setTimeout(() => { phase = 1; doPhase(); }, 4000);
+            breathingInterval = setTimeout(() => { phase = 1; circle.style.transition = "transform 7s linear, background 0.5s ease"; doPhase(); }, 4000);
         } else if (phase === 1) {
-            text.textContent = 'Hold'; 
-            circle.style.background = 'rgba(168, 85, 247, 0.2)';
+            text.innerHTML = '<i class="fas fa-pause" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Hold'; 
+            circle.style.background = 'rgba(217, 70, 239, 0.95)'; // Fuchsia
             steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
-            breathingInterval = setTimeout(() => { phase = 2; doPhase(); }, 7000);
+            breathingInterval = setTimeout(() => { phase = 2; circle.style.transition = "transform 8s linear, background 0.5s ease"; doPhase(); }, 7000);
         } else {
-            text.textContent = 'Exhale'; 
+            text.innerHTML = '<i class="fas fa-leaf" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Exhale'; 
             circle.style.transform = 'scale(1)';
-            circle.style.background = 'rgba(6, 182, 212, 0.2)';
+            circle.style.background = 'rgba(6, 182, 212, 0.95)'; // Cyan
             steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
-            breathingInterval = setTimeout(() => { phase = 0; doPhase(); }, 8000);
+            breathingInterval = setTimeout(() => { phase = 0; circle.style.transition = "transform 4s linear, background 0.5s ease"; doPhase(); }, 8000);
         }
     }
     doPhase();
 }
 
 function startCleanseBreathing() {
-    clearInterval(breathingInterval);
+    resetBreathingUI();
     const text = document.getElementById('cleanseText');
     const circle = document.getElementById('cleanseCircle');
     const steps = [document.getElementById('cstep1'), document.getElementById('cstep2'), document.getElementById('cstep3')];
@@ -503,21 +519,21 @@ function startCleanseBreathing() {
 
     function doPhase() {
         if (phase === 0) {
-            text.textContent = 'Inhale'; 
+            text.innerHTML = '<i class="fas fa-lungs" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Inhale'; 
             circle.style.transform = 'scale(1.3)';
-            circle.style.background = 'rgba(34, 197, 94, 0.2)';
+            circle.style.background = 'rgba(34, 197, 94, 0.95)'; // Green
             steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
             breathingInterval = setTimeout(() => { phase = 1; doPhase(); }, 2000);
         } else if (phase === 1) {
-            text.textContent = 'Exhale!'; 
+            text.innerHTML = '<i class="fas fa-sign-out-alt" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Exhale!'; 
             circle.style.transform = 'scale(0.8)';
-            circle.style.background = 'rgba(239, 68, 68, 0.3)';
+            circle.style.background = 'rgba(239, 68, 68, 0.95)'; // Red
             steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
             breathingInterval = setTimeout(() => { phase = 2; doPhase(); }, 1000);
         } else {
-            text.textContent = 'Rest'; 
+            text.innerHTML = '<i class="fas fa-bed" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Rest'; 
             circle.style.transform = 'scale(1)';
-            circle.style.background = 'rgba(255, 255, 255, 0.05)';
+            circle.style.background = 'rgba(107, 114, 128, 0.95)'; // Gray
             steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
             breathingInterval = setTimeout(() => { phase = 0; doPhase(); }, 2000);
         }
