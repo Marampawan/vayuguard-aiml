@@ -22,6 +22,7 @@ from utils import aqi_category
 
 app = FastAPI(title="VayuGuard ML API", version="1.0.0")
 
+# --- CORS MIDDLEWARE: This allows your frontend to connect! ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,6 +30,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# --------------------------------------------------------------
 
 models = {}
 feature_lists = {}
@@ -80,7 +82,7 @@ class HealthRiskRequest(BaseModel):
 def health():
     return {"status": "healthy", "models_loaded": list(models.keys())}
 
-# --- NEW: Live Quantum Hardware Status Check ---
+# --- Live Quantum Hardware Status Check ---
 @app.get("/quantum-status")
 def quantum_status():
     if not QBRAID_API_KEY:
