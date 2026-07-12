@@ -1,7 +1,7 @@
 // === VayuGuard Professional Application Logic ===
 
 // Connects to the live Render cloud backend
-const API_BASE = 'https://vayuguard-aiml.onrender.com';
+const API_BASE = 'https://vayuguard-api.onrender.com';
 
 // Load saved family from memory, otherwise default to "Me"
 let familyMembers = JSON.parse(localStorage.getItem('vayuFamily')) || [
@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initPeopleManager();
     initDoctors();
     detectUserLocation();
-    checkApiHealth();
 
     // Listen for manual dropdown changes
     document.getElementById('citySelect')?.addEventListener('change', (event) => {
@@ -175,19 +174,20 @@ function saveNewPerson() {
         conditions: conditions.length ? conditions : ['none']
     });
     
-    saveFamilyData(); // <-- Saves to permanent memory
-    renderPeople(); // Update the UI chips
-    closeAddModal(); // Hide the menu
+    saveFamilyData(); 
+    renderPeople(); 
+    closeAddModal(); 
     showToast(`${nameInput} added to profile.`);
     
-    // Auto-update the predictions to include the new family member!
+    // Auto-update the predictions to include the new family member
     getForecast(); 
 }
 
 function removePerson(id) {
     familyMembers = familyMembers.filter(p => p.id !== id);
-    saveFamilyData(); // <-- Saves the deletion to permanent memory
+    saveFamilyData(); 
     renderPeople();
+    getForecast(); // Refresh advice after removing someone
 }
 
 // --- Forecast & ML API Logic ---
@@ -225,10 +225,10 @@ async function getForecast() {
         const liveWind = weatherData.current.wind_speed_10m;
         const currentHour = new Date().getHours();
         
-        // Format live timestamp (e.g., "12-Jul-2026, 04:45 PM")
+        // Format live timestamp
         const timeString = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
-        // Update the big UI Display with Live Data instantly!
+        // Update the big UI Display with Live Data instantly
         document.getElementById('heroAqiNumber').textContent = liveAqi;
         let status = 'Good'; let statusClass = 'good';
         if (liveAqi > 50) { status = 'Satisfactory'; statusClass = 'good'; }
@@ -240,7 +240,6 @@ async function getForecast() {
         heroStatus.textContent = status;
         heroStatus.className = `aqi-status ${statusClass}`;
         
-        // Show timestamp on UI (Optional: Add a small span in your HTML to show this)
         showToast(`Live data updated at ${timeString}`);
 
         // 4. Send this LIVE data to your Python Backend
@@ -249,7 +248,7 @@ async function getForecast() {
             station_id: `station_${city.toLowerCase()}`,
             current_data: { 
                 aqi: liveAqi, 
-                aqi_lag_1h: liveAqi - 2, // simulated lag
+                aqi_lag_1h: liveAqi - 2, 
                 aqi_lag_24h: liveAqi + 5, 
                 aqi_roll_mean_24h: liveAqi, 
                 aqi_roll_mean_168h: liveAqi - 5, 
@@ -271,7 +270,7 @@ async function getForecast() {
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
 
-        // --- Rest of your exact code for Forecast Grid and Health Alerts stays here! ---
+        // Render Forecast Grid
         const grid = document.getElementById('forecastGrid');
         if (grid) {
             grid.innerHTML = data.forecasts.map(f => {
@@ -291,8 +290,50 @@ async function getForecast() {
             }).join('');
         }
 
-        // --- (Keep your Health Alerts loop here just as it was) ---
-        // ...
+        // 5. Generate Personalized Health Advice Based on the Family Array
+        if (data.forecasts && data.forecasts.length > 0) {
+            const worstAqi = Math.max(...data.forecasts.map(f => f.predicted_aqi));
+            
+            // Scan the entire family array to check if ANY member has these conditions
+            const userProfile = {
+                elderly: familyMembers.some(m => m.conditions.includes('elderly')),
+                has_asthma: familyMembers.some(m => m.conditions.includes('asthma')),
+                has_children: familyMembers.some(m => m.conditions.includes('child')),
+                outdoor_worker: familyMembers.some(m => m.conditions.includes('worker'))
+            };
+
+            try {
+                const healthResponse = await fetch(`${API_BASE}/health-risk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        forecast_aqi: worstAqi,
+                        user_profile: userProfile
+                    })
+                });
+                
+                if (healthResponse.ok) {
+                    const healthData = await healthResponse.json();
+                    const healthSection = document.getElementById('healthAdviceSection'); 
+                    
+                    if (healthSection) {
+                        healthSection.innerHTML = `
+                            <div style="background: var(--dark-2); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--danger); margin-bottom: 2rem;">
+                                <h3 style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-shield-alt"></i> Family Risk Level: ${healthData.risk_category} (${healthData.risk_level}/5)</h3>
+                                <p style="color: var(--gray-light); font-size: 1.1rem; margin-bottom: 1rem;">${healthData.advisory}</p>
+                                ${healthData.precautions.length > 0 ? `
+                                    <ul style="color: var(--warning); padding-left: 1.5rem; font-weight: 600;">
+                                        ${healthData.precautions.map(p => `<li style="margin-bottom: 0.3rem;">${p}</li>`).join('')}
+                                    </ul>
+                                ` : '<p style="color: var(--success); font-weight: 600;">No special precautions needed based on your current family profile.</p>'}
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error("Health API Error:", error);
+            }
+        }
         
         loadingDiv.classList.add('hidden');
         resultsDiv.classList.remove('hidden');
@@ -300,7 +341,7 @@ async function getForecast() {
     } catch (error) {
         console.error("Error fetching forecast:", error);
         if (loadingDiv) {
-            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Render Server Error. Wait 50 seconds and try again.</p>`;
+            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Render Server Error. Ensure your Python backend is Live.</p>`;
         }
     }
 }
