@@ -1,7 +1,7 @@
 // === VayuGuard Professional Application Logic ===
 
 // Connects to the live Render cloud backend
-const API_BASE = 'https://vayuguard-api.onrender.com';
+const API_BASE = 'https://vayuguard-api-liveee.onrender.com';
 
 // Load saved family from memory, otherwise default to "Me"
 let familyMembers = JSON.parse(localStorage.getItem('vayuFamily')) || [
