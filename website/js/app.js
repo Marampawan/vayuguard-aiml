@@ -3,9 +3,15 @@
 // Connects to the live Render cloud backend
 const API_BASE = 'https://vayuguard-aiml.onrender.com';
 
-let familyMembers = [
+// Load saved family from memory, otherwise default to "Me"
+let familyMembers = JSON.parse(localStorage.getItem('vayuFamily')) || [
     { id: 1, name: 'Me', conditions: ['worker'] }
 ];
+
+// Helper to save changes permanently
+function saveFamilyData() {
+    localStorage.setItem('vayuFamily', JSON.stringify(familyMembers));
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
@@ -13,7 +19,43 @@ document.addEventListener('DOMContentLoaded', () => {
     initDoctors();
     detectUserLocation();
     checkApiHealth();
+
+    // Listen for manual dropdown changes
+    document.getElementById('citySelect')?.addEventListener('change', (event) => {
+        updateCityInterface(event.target.value);
+    });
 });
+
+// --- Dynamic UI Updater ---
+function updateCityInterface(cityName) {
+    const heroCity = document.getElementById('heroCityName');
+    const heroNum = document.getElementById('heroAqiNumber');
+    const heroStatus = document.getElementById('heroAqiStatus');
+    const citySelect = document.getElementById('citySelect');
+    
+    // Ensure dropdown matches
+    if (citySelect && citySelect.value !== cityName) {
+        citySelect.value = cityName;
+    }
+    
+    // Update the massive text at the top based on the city
+    if (cityName === 'Delhi') {
+        if(heroCity) heroCity.textContent = 'Delhi AQI Now';
+        if(heroNum) heroNum.textContent = '185';
+        if(heroStatus) { heroStatus.textContent = 'Poor'; heroStatus.className = 'aqi-status poor'; }
+    } else if (cityName === 'Mumbai') {
+        if(heroCity) heroCity.textContent = 'Mumbai AQI Now';
+        if(heroNum) heroNum.textContent = '142';
+        if(heroStatus) { heroStatus.textContent = 'Moderate'; heroStatus.className = 'aqi-status moderate'; }
+    } else if (cityName === 'Bangalore') {
+        if(heroCity) heroCity.textContent = 'Bangalore AQI Now';
+        if(heroNum) heroNum.textContent = '98';
+        if(heroStatus) { heroStatus.textContent = 'Satisfactory'; heroStatus.className = 'aqi-status good'; }
+    }
+    
+    // Automatically fetch the quantum forecast for the new city
+    getForecast();
+}
 
 // --- Navigation & UI ---
 function initNavigation() {
@@ -25,7 +67,6 @@ function initNavigation() {
         });
     }
 
-    // Smooth scroll
     document.querySelectorAll('.nav-menu a').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -48,26 +89,27 @@ function detectUserLocation() {
                 const data = await response.json();
                 
                 const cityStr = (data.address.city || data.address.state_district || data.address.state || "").toLowerCase();
-                const citySelect = document.getElementById('citySelect');
+                let detectedCity = "Delhi"; // Default
 
-                if (!citySelect) return;
-
-                if (cityStr.includes("delhi")) {
-                    citySelect.value = "Delhi";
-                    showToast("GPS Location detected: Delhi");
-                } else if (cityStr.includes("mumbai") || cityStr.includes("maharashtra")) {
-                    citySelect.value = "Mumbai";
-                    showToast("GPS Location detected: Mumbai");
+                if (cityStr.includes("mumbai") || cityStr.includes("maharashtra")) {
+                    detectedCity = "Mumbai";
                 } else if (cityStr.includes("bangalore") || cityStr.includes("bengaluru") || cityStr.includes("karnataka")) {
-                    citySelect.value = "Bangalore";
-                    showToast("GPS Location detected: Bangalore");
+                    detectedCity = "Bangalore";
                 }
+
+                showToast(`GPS Location detected: ${detectedCity}`);
+                updateCityInterface(detectedCity);
+
             } catch (error) {
                 console.error("Geocoding failed:", error);
+                updateCityInterface("Delhi"); // Fallback
             }
         }, (error) => {
             console.warn("User denied location permission.");
+            updateCityInterface("Delhi"); // Fallback
         });
+    } else {
+        updateCityInterface("Delhi");
     }
 }
 
@@ -79,6 +121,13 @@ function initPeopleManager() {
 function renderPeople() {
     const container = document.getElementById('peopleChips');
     if (!container) return;
+    
+    // The "Empty State" UI
+    if (familyMembers.length === 0) {
+        container.innerHTML = `<span style="color: var(--gray-light); font-size: 0.9rem; font-style: italic; padding: 0.4rem 0;">No members added. Click + to add.</span>`;
+        return;
+    }
+
     container.innerHTML = familyMembers.map(p => `
         <div class="chip active" onclick="removePerson(${p.id})" title="Click to remove">
             <span>${p.name}</span>
@@ -87,28 +136,57 @@ function renderPeople() {
     `).join('');
 }
 
+// --- Custom Family Member Modal Logic ---
 function addPerson() {
-    const name = prompt('Enter family member name:');
-    if (!name) return;
+    // 1. Clear out the form so it's fresh every time
+    document.getElementById('newPersonName').value = '';
+    document.getElementById('chkAsthma').checked = false;
+    document.getElementById('chkElderly').checked = false;
+    document.getElementById('chkChild').checked = false;
+    document.getElementById('chkWorker').checked = false;
     
+    // 2. Show the custom modal with animation
+    document.getElementById('addPersonModal').classList.remove('hidden');
+}
+
+function closeAddModal() {
+    document.getElementById('addPersonModal').classList.add('hidden');
+}
+
+function saveNewPerson() {
+    const nameInput = document.getElementById('newPersonName').value.trim();
+    
+    if (!nameInput) {
+        showToast('Please enter a name first.');
+        return;
+    }
+    
+    // Gather all checked conditions
     const conditions = [];
-    if (confirm('Does this person have asthma?')) conditions.push('asthma');
-    if (confirm('Is this person elderly (60+)?')) conditions.push('elderly');
-    if (confirm('Is this person a child?')) conditions.push('child');
-    if (confirm('Does this person work outdoors?')) conditions.push('worker');
+    if (document.getElementById('chkAsthma').checked) conditions.push('asthma');
+    if (document.getElementById('chkElderly').checked) conditions.push('elderly');
+    if (document.getElementById('chkChild').checked) conditions.push('child');
+    if (document.getElementById('chkWorker').checked) conditions.push('worker');
     
+    // Save to your array
     familyMembers.push({
         id: Date.now(),
-        name: name,
+        name: nameInput,
         conditions: conditions.length ? conditions : ['none']
     });
     
-    renderPeople();
-    showToast(`${name} added to profile.`);
+    saveFamilyData(); // <-- Saves to permanent memory
+    renderPeople(); // Update the UI chips
+    closeAddModal(); // Hide the menu
+    showToast(`${nameInput} added to profile.`);
+    
+    // Auto-update the predictions to include the new family member!
+    getForecast(); 
 }
 
 function removePerson(id) {
     familyMembers = familyMembers.filter(p => p.id !== id);
+    saveFamilyData(); // <-- Saves the deletion to permanent memory
     renderPeople();
 }
 
@@ -117,7 +195,7 @@ async function checkApiHealth() {
     try {
         await fetch(`${API_BASE}/health`);
     } catch (e) {
-        console.warn("API is not running on Render.");
+        console.warn("API is waking up or not running on Render.");
     }
 }
 
@@ -132,7 +210,6 @@ async function getForecast() {
     loadingDiv.classList.remove('hidden');
 
     try {
-        // Dynamic city data
         let currentData = {};
         const currentHour = new Date().getHours();
         
@@ -161,7 +238,6 @@ async function getForecast() {
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
 
-        // Render Forecast Cards
         const grid = document.getElementById('forecastGrid');
         if (grid) {
             grid.innerHTML = data.forecasts.map(f => {
@@ -181,7 +257,6 @@ async function getForecast() {
             }).join('');
         }
 
-        // Render Health Alerts
         const alertsBox = document.getElementById('alertsBox');
         if (alertsBox) {
             let alertsHTML = '<h3 style="color: var(--white); margin-bottom: 1.5rem; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Personalized Health Risk</h3>';
@@ -226,12 +301,11 @@ async function getForecast() {
         
         loadingDiv.classList.add('hidden');
         resultsDiv.classList.remove('hidden');
-        showToast(`Quantum Forecast Successfully Generated for ${city}!`);
 
     } catch (error) {
         console.error("Error fetching forecast:", error);
         if (loadingDiv) {
-            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Failed to connect to Cloud Python API.</p>`;
+            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Render Server is waking up. Please wait 50 seconds and click Generate again.</p>`;
         }
     }
 }

@@ -30,27 +30,22 @@
         </div>
     </nav>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
-            <div class="badge">
-                <i class="fas fa-atom"></i>
-                IBM Quantum Powered
-            </div>
-            <h1>Clean Air,<br><span class="accent">Quantum Precision</span></h1>
-            <p>Hyperlocal AQI forecasting using real quantum hardware. Protecting 40 million+ Indians from air pollution.</p>
-            <div class="hero-buttons">
-                <a href="#forecast" class="btn btn-primary">Check Your City</a>
-                <a href="#quantum" class="btn btn-ghost">How It Works</a>
-            </div>
+            <h1>Breathe Smarter with <span class="quantum-text">Quantum Intelligence</span></h1>
+            <p>AI-powered air quality forecasting personalized for your family's health.</p>
+            <a href="#forecast" class="btn btn-primary btn-lg">
+                <i class="fas fa-bolt"></i> Get Forecast
+            </a>
         </div>
         <div class="hero-visual">
             <div class="aqi-card">
-                <div class="aqi-label">Delhi AQI Now</div>
-                <div class="aqi-value" id="heroAqi">185</div>
-                <div class="aqi-status poor">Poor</div>
+                <div class="aqi-label" id="heroCityName">Delhi AQI Now</div>
+                <div class="aqi-value" id="heroAqiNumber">185</div>
+                <div class="aqi-status poor" id="heroAqiStatus">Poor</div>
                 <div class="aqi-bar">
-                    <div class="aqi-fill" style="width: 61%"></div>
+                    <div class="aqi-fill" id="heroAqiFill" style="width: 61%"></div>
                 </div>
             </div>
         </div>
@@ -430,6 +425,35 @@
             </div>
         </div>
     </footer>
+
+    <!-- Add Person Modal -->
+    <div id="addPersonModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Add Family Member</h3>
+                <button class="close-btn" onclick="closeAddModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Name or Relationship</label>
+                    <input type="text" id="newPersonName" placeholder="E.g., Mom, Aryan, etc.">
+                </div>
+                <div class="form-group">
+                    <label>Health Conditions & Vulnerabilities</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="chkAsthma" value="asthma"> Asthma / Respiratory Issue</label>
+                        <label><input type="checkbox" id="chkElderly" value="elderly"> Elderly (60+ years)</label>
+                        <label><input type="checkbox" id="chkChild" value="child"> Child (Under 12 years)</label>
+                        <label><input type="checkbox" id="chkWorker" value="worker"> Works Outdoors</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveNewPerson()">Save Member</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast -->
     <div id="toast" class="toast hidden">
