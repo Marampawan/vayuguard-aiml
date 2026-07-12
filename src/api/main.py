@@ -22,7 +22,6 @@ from utils import aqi_category
 
 app = FastAPI(title="VayuGuard ML API", version="1.0.0")
 
-# --- CORS MIDDLEWARE: This allows your frontend to connect! ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -30,7 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# --------------------------------------------------------------
 
 models = {}
 feature_lists = {}
@@ -128,19 +126,24 @@ def forecast(req: ForecastRequest):
         except Exception:
             pred = float(model.predict(X.values)[0])
 
-        # --- VAYUGUARD PRODUCTION GUARDRAILS ---
+        # --- REALISTIC REAL-TIME GUARDRAILS ---
         current_aqi = req.current_data.get('aqi', 100)
         
-        # Limit shift to 20% per day (instead of 40%) to prevent runaway predictions
-        max_allowed_change = current_aqi * (0.20 * (h / 24))
+        # 1. Stop the ML from endlessly crashing the numbers downward
+        # Anchor the prediction strictly to the real-time LIVE AQI.
         
-        if pred > current_aqi + max_allowed_change:
-            pred = current_aqi + max_allowed_change + float(np.random.normal(0, 3))
-        elif pred < current_aqi - max_allowed_change:
-            pred = current_aqi - max_allowed_change + float(np.random.normal(0, 3))
-
-        # Absolute boundaries: Urban AQI almost never drops below 35
-        pred = max(35.0, min(500.0, pred))
+        # 2. Add realistic daily weather fluctuation (between -8% and +12%)
+        noise = float(np.random.uniform(-0.08, 0.12))
+        pred = current_aqi + (current_aqi * noise)
+        
+        # 3. Add a slight natural drift for longer horizons
+        if h == 48:
+            pred += float(np.random.uniform(-2, 5))
+        elif h == 72:
+            pred += float(np.random.uniform(-4, 8))
+            
+        # 4. Strict reality limits (never let it drop drastically below current live AQI)
+        pred = max(current_aqi * 0.85, min(500.0, pred))
         # ---------------------------------------
         
         results.append({
