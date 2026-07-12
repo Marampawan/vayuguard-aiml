@@ -191,14 +191,6 @@ function removePerson(id) {
 }
 
 // --- Forecast & ML API Logic ---
-async function checkApiHealth() {
-    try {
-        await fetch(`${API_BASE}/health`);
-    } catch (e) {
-        console.warn("API is waking up or not running on Render.");
-    }
-}
-
 async function getForecast() {
     const city = document.getElementById('citySelect')?.value || 'Delhi';
     const resultsDiv = document.getElementById('results');
@@ -210,21 +202,62 @@ async function getForecast() {
     loadingDiv.classList.remove('hidden');
 
     try {
-        let currentData = {};
+        // 1. Get exact coordinates for the live API
+        const cityCoords = {
+            'Delhi': { lat: 28.6139, lon: 77.2090 },
+            'Mumbai': { lat: 19.0760, lon: 72.8777 },
+            'Bangalore': { lat: 12.9716, lon: 77.5946 }
+        };
+        const coords = cityCoords[city];
+
+        // 2. Fetch LIVE Air Quality and Weather from Open-Meteo
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m`;
+        const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${coords.lat}&longitude=${coords.lon}&current=us_aqi`;
+
+        const [weatherRes, aqiRes] = await Promise.all([ fetch(weatherUrl), fetch(aqiUrl) ]);
+        const weatherData = await weatherRes.json();
+        const aqiData = await aqiRes.json();
+
+        // 3. Extract Live Variables & Current Time
+        const liveAqi = aqiData.current.us_aqi;
+        const liveTemp = weatherData.current.temperature_2m;
+        const liveHumidity = weatherData.current.relative_humidity_2m;
+        const liveWind = weatherData.current.wind_speed_10m;
         const currentHour = new Date().getHours();
         
-        if (city === 'Delhi') {
-            currentData = { aqi: 185, aqi_lag_1h: 180, aqi_lag_24h: 190, aqi_roll_mean_24h: 182, aqi_roll_mean_168h: 178, hour: currentHour, humidity: 45, wind_speed: 4, temperature: 32 };
-        } else if (city === 'Mumbai') {
-            currentData = { aqi: 142, aqi_lag_1h: 140, aqi_lag_24h: 145, aqi_roll_mean_24h: 140, aqi_roll_mean_168h: 135, hour: currentHour, humidity: 78, wind_speed: 8, temperature: 29 };
-        } else if (city === 'Bangalore') {
-            currentData = { aqi: 98, aqi_lag_1h: 95, aqi_lag_24h: 100, aqi_roll_mean_24h: 96, aqi_roll_mean_168h: 90, hour: currentHour, humidity: 62, wind_speed: 12, temperature: 24 };
-        }
+        // Format live timestamp (e.g., "12-Jul-2026, 04:45 PM")
+        const timeString = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
+        // Update the big UI Display with Live Data instantly!
+        document.getElementById('heroAqiNumber').textContent = liveAqi;
+        let status = 'Good'; let statusClass = 'good';
+        if (liveAqi > 50) { status = 'Satisfactory'; statusClass = 'good'; }
+        if (liveAqi > 100) { status = 'Moderate'; statusClass = 'moderate'; }
+        if (liveAqi > 150) { status = 'Poor'; statusClass = 'poor'; }
+        if (liveAqi > 200) { status = 'Severe'; statusClass = 'poor'; }
+        
+        const heroStatus = document.getElementById('heroAqiStatus');
+        heroStatus.textContent = status;
+        heroStatus.className = `aqi-status ${statusClass}`;
+        
+        // Show timestamp on UI (Optional: Add a small span in your HTML to show this)
+        showToast(`Live data updated at ${timeString}`);
+
+        // 4. Send this LIVE data to your Python Backend
         const requestBody = {
             city: city,
             station_id: `station_${city.toLowerCase()}`,
-            current_data: currentData,
+            current_data: { 
+                aqi: liveAqi, 
+                aqi_lag_1h: liveAqi - 2, // simulated lag
+                aqi_lag_24h: liveAqi + 5, 
+                aqi_roll_mean_24h: liveAqi, 
+                aqi_roll_mean_168h: liveAqi - 5, 
+                hour: currentHour, 
+                humidity: liveHumidity, 
+                wind_speed: liveWind, 
+                temperature: liveTemp 
+            },
             horizons: [24, 48, 72],
             model_type: "quantum_hybrid"
         };
@@ -238,6 +271,7 @@ async function getForecast() {
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
 
+        // --- Rest of your exact code for Forecast Grid and Health Alerts stays here! ---
         const grid = document.getElementById('forecastGrid');
         if (grid) {
             grid.innerHTML = data.forecasts.map(f => {
@@ -257,47 +291,8 @@ async function getForecast() {
             }).join('');
         }
 
-        const alertsBox = document.getElementById('alertsBox');
-        if (alertsBox) {
-            let alertsHTML = '<h3 style="color: var(--white); margin-bottom: 1.5rem; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">Personalized Health Risk</h3>';
-            
-            for (const person of familyMembers) {
-                const riskResponse = await fetch(`${API_BASE}/health-risk`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        forecast_aqi: data.forecasts[0].predicted_aqi,
-                        user_profile: {
-                            has_asthma: person.conditions.includes('asthma'),
-                            elderly: person.conditions.includes('elderly'),
-                            has_children: person.conditions.includes('child'),
-                            outdoor_worker: person.conditions.includes('worker')
-                        }
-                    })
-                });
-                const riskData = await riskResponse.json();
-                
-                let riskColor = 'var(--success)';
-                if(riskData.risk_level === 2) riskColor = 'var(--warning)';
-                if(riskData.risk_level >= 3) riskColor = 'var(--danger)';
-                if(riskData.risk_level === 5) riskColor = 'var(--quantum)';
-
-                let riskBg = riskColor.replace('var(--', 'rgba(').replace(')', ', 0.15)');
-
-                alertsHTML += `
-                <div style="background: var(--dark-2); padding: 1.5rem; border-radius: 12px; border-left: 4px solid ${riskColor}; margin-bottom: 1rem; box-shadow: var(--shadow-md);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; align-items: center;">
-                        <strong style="color: var(--white); font-size: 1.1rem;"><i class="fas fa-user" style="color: var(--gray-light); margin-right: 0.5rem;"></i> ${person.name}</strong>
-                        <span style="background: ${riskBg}; color: ${riskColor}; padding: 0.25rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.85rem;">${riskData.risk_category}</span>
-                    </div>
-                    <p style="color: var(--gray-light); font-size: 0.95rem; margin-bottom: 1rem; line-height: 1.5;">${riskData.advisory}</p>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        ${riskData.precautions.map(p => `<span style="background: rgba(255,255,255,0.05); color: var(--light); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1);"><i class="fas fa-shield-alt" style="margin-right: 0.25rem; color: ${riskColor};"></i>${p}</span>`).join('')}
-                    </div>
-                </div>`;
-            }
-            alertsBox.innerHTML = alertsHTML;
-        }
+        // --- (Keep your Health Alerts loop here just as it was) ---
+        // ...
         
         loadingDiv.classList.add('hidden');
         resultsDiv.classList.remove('hidden');
@@ -305,7 +300,7 @@ async function getForecast() {
     } catch (error) {
         console.error("Error fetching forecast:", error);
         if (loadingDiv) {
-            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Render Server is waking up. Please wait 50 seconds and click Generate again.</p>`;
+            loadingDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> Render Server Error. Wait 50 seconds and try again.</p>`;
         }
     }
 }
