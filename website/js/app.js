@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthState(); // --- FIX: Keeps top buttons updated with login status ---
     initNavigation();
     initPeopleManager();
+    initFamilyChipManager();
     initDoctors();
     detectUserLocation();
     
@@ -160,6 +161,95 @@ function detectUserLocation() {
 // --- People Manager ---
 function initPeopleManager() {
     renderPeople();
+}
+
+function initFamilyChipManager() {
+    const modal = document.getElementById('addPersonModal');
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    const saveMemberBtn = document.getElementById('saveMemberBtn');
+    const newMemberNameInput = document.getElementById('newMemberName');
+    const chipsContainer = document.getElementById('familyChipsContainer');
+    const detailsBox = document.getElementById('familyDetailsBox');
+
+    if (!modal || !openModalBtn || !closeModalBtn || !cancelModalBtn || !saveMemberBtn || !newMemberNameInput || !chipsContainer || !detailsBox) {
+        return;
+    }
+
+    openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    cancelModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+    let familyData = JSON.parse(localStorage.getItem('vayuFamilyData')) || {
+        'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
+        'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
+        'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> Shift in AQI may cause mild discomfort. Keep air purifiers running.'
+    };
+
+    let familyChips = JSON.parse(localStorage.getItem('vayuFamilyChips')) || [];
+
+    familyChips.forEach(chipInfo => {
+        const newChip = document.createElement('div');
+        newChip.className = 'chip';
+        newChip.setAttribute('data-profile', chipInfo.id);
+        newChip.innerHTML = chipInfo.html;
+        chipsContainer.insertBefore(newChip, openModalBtn);
+    });
+
+    function attachChipListeners() {
+        document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
+            const newChip = chip.cloneNode(true);
+            chip.replaceWith(newChip);
+            newChip.addEventListener('click', function() {
+                document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                detailsBox.innerHTML = familyData[this.getAttribute('data-profile')];
+            });
+        });
+    }
+
+    attachChipListeners();
+
+    saveMemberBtn.addEventListener('click', () => {
+        const name = newMemberNameInput.value.trim();
+        if (!name) {
+            alert('Please enter a name.');
+            return;
+        }
+
+        const checkboxes = document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]:checked');
+        const conditions = [];
+        checkboxes.forEach(cb => conditions.push(cb.parentElement.textContent.trim()));
+
+        const profileId = 'profile-' + Date.now();
+        const newChip = document.createElement('div');
+        newChip.className = 'chip';
+        newChip.setAttribute('data-profile', profileId);
+
+        let icon = '<i class="fas fa-user"></i>';
+        if (conditions.includes('Young Children')) icon = '<i class="fas fa-child"></i>';
+        else if (conditions.includes('Works Outside')) icon = '<i class="fas fa-hard-hat"></i>';
+        else if (conditions.length > 0) icon = '<i class="fas fa-notes-medical"></i>';
+
+        const tagText = conditions.length > 0 ? ` (${conditions[0]})` : '';
+        newChip.innerHTML = `${icon} ${name}${tagText}`;
+
+        const conditionString = conditions.length > 0 ? conditions.join(', ') : 'No specific conditions';
+        familyData[profileId] = `<strong>${name}:</strong> Tracked Conditions: <span style="color:var(--primary); font-weight:600;">${conditionString}</span>. Quantum forecast is monitoring local AQI carefully based on this profile.`;
+
+        familyChips.push({ id: profileId, html: newChip.innerHTML });
+        localStorage.setItem('vayuFamilyData', JSON.stringify(familyData));
+        localStorage.setItem('vayuFamilyChips', JSON.stringify(familyChips));
+
+        chipsContainer.insertBefore(newChip, openModalBtn);
+        attachChipListeners();
+        document.querySelector(`.chip[data-profile="${profileId}"]`)?.click();
+
+        newMemberNameInput.value = '';
+        document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
+        modal.classList.add('hidden');
+    });
 }
 
 function renderPeople() {
