@@ -1,448 +1,229 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>VayuGuard — Quantum Air Intelligence</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="css/style.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VayuGuard — Quantum Air Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* === General Fixes === */
+        .modal-overlay { padding: 1rem; }
+        .modal-content { max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-body { overflow-y: auto; padding-right: 10px; }
+        .forecast-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .chip { transition: all 0.2s; user-select: none; cursor: pointer; }
+        .chip:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .family-details-box { margin-top: 1.5rem; padding: 1.2rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.95rem; color: #334155; transition: all 0.3s ease; }
+        .city-selector-dropdown { width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; border-radius: 50px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); background-color: var(--light); cursor: pointer; outline: none; transition: border-color 0.2s; }
+        .city-selector-dropdown:focus { border-color: var(--primary); }
+
+        /* === 🩺 ULTRA-MODERN DOCTOR CARDS === */
+        .ultra-doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
+        .ultra-doc-card {
+            background: #ffffff; border-radius: 24px; padding: 2rem;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); border: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex; flex-direction: column; gap: 1.5rem; position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .ultra-doc-card:hover { transform: translateY(-12px); box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25); border-color: rgba(217, 70, 239, 0.3); }
+        .ultra-doc-header { display: flex; align-items: center; gap: 1.2rem; }
+        .ultra-avatar {
+            width: 75px; height: 75px; background: linear-gradient(135deg, #fdf4ff, #e0e7ff);
+            color: #8b5cf6; font-size: 1.6rem; font-weight: 800; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px rgba(139, 92, 246, 0.2);
+        }
+        .ultra-doc-info h4 { margin: 0 0 0.4rem 0; font-size: 1.3rem; color: #1e293b; letter-spacing: -0.5px; }
+        .ultra-doc-info p { margin: 0; font-size: 0.9rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .ultra-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .ultra-badge { background: #f8fafc; color: #334155; font-size: 0.8rem; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .ultra-badge.primary { background: linear-gradient(90deg, rgba(217, 70, 239, 0.1), rgba(139, 92, 246, 0.1)); color: #a21caf; border: 1px solid rgba(217, 70, 239, 0.2); }
+        .ultra-footer { display: flex; flex-direction: column; gap: 1.2rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9; }
+        .ultra-stats { display: flex; justify-content: space-between; align-items: center; }
+        .ultra-rating { display: flex; align-items: center; gap: 6px; font-weight: 700; color: #0f172a; font-size: 1.1rem; }
+        .ultra-rating i { color: #f59e0b; }
+        .ultra-reviews { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+        .ultra-btn {
+            width: 100%; padding: 1.1rem; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, #c026d3, #8b5cf6); color: white;
+            font-weight: 600; font-size: 1.05rem; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        .ultra-btn:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5); filter: brightness(1.1); transform: translateY(-2px); }
+
+        /* === 🧘 IMMERSIVE DARK BREATHING ZONE === */
+        .breathing-zone {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            padding: 5rem 0;
+        }
+        .breathing-zone .section-head h2 { color: #ffffff; }
+        .breathing-zone .section-head p { color: #94a3b8; }
         
-        <style>
-            /* === General Fixes === */
-            .modal-overlay { padding: 1rem; }
-            .modal-content { max-height: 90vh; display: flex; flex-direction: column; }
-            .modal-body { overflow-y: auto; padding-right: 10px; }
-            .forecast-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-            .chip { transition: all 0.2s; user-select: none; cursor: pointer; }
-            .chip:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-            .family-details-box { margin-top: 1.5rem; padding: 1.2rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.95rem; color: #334155; transition: all 0.3s ease; }
-            .city-selector-dropdown { width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; border-radius: 50px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); background-color: var(--light); cursor: pointer; outline: none; transition: border-color 0.2s; }
-            .city-selector-dropdown:focus { border-color: var(--primary); }
+        .modern-breathe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
+        
+        .dark-breathe-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border-radius: 24px; padding: 2.5rem 2rem;
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease; display: flex; flex-direction: column; align-items: center; gap: 1rem;
+        }
+        .dark-breathe-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.06); border-color: rgba(56, 189, 248, 0.4); }
+        
+        .breathe-circle-modern {
+            width: 140px; height: 140px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            margin: 2.5rem 0; position: relative; letter-spacing: 1px; text-transform: uppercase;
+        }
+        
+        .bg-relax { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+        .bg-cleanse { background: linear-gradient(135deg, #10b981, #0ea5e9); }
+        .bg-active { background: linear-gradient(135deg, #f59e0b, #ef4444); }
 
-            /* === 🩺 ULTRA-MODERN DOCTOR CARDS === */
-            .ultra-doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
-            .ultra-doc-card {
-                background: #ffffff; border-radius: 24px; padding: 2rem;
-                box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); border: 1px solid rgba(226, 232, 240, 0.8);
-                display: flex; flex-direction: column; gap: 1.5rem; position: relative;
-                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            }
-            .ultra-doc-card:hover { transform: translateY(-12px); box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25); border-color: rgba(217, 70, 239, 0.3); }
-            .ultra-doc-header { display: flex; align-items: center; gap: 1.2rem; }
-            .ultra-avatar {
-                width: 75px; height: 75px; background: linear-gradient(135deg, #fdf4ff, #e0e7ff);
-                color: #8b5cf6; font-size: 1.6rem; font-weight: 800; border-radius: 50%;
-                display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px rgba(139, 92, 246, 0.2);
-            }
-            .ultra-doc-info h4 { margin: 0 0 0.4rem 0; font-size: 1.3rem; color: #1e293b; letter-spacing: -0.5px; }
-            .ultra-doc-info p { margin: 0; font-size: 0.9rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 5px; }
-            .ultra-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-            .ultra-badge { background: #f8fafc; color: #334155; font-size: 0.8rem; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 600; border: 1px solid #e2e8f0; }
-            .ultra-badge.primary { background: linear-gradient(90deg, rgba(217, 70, 239, 0.1), rgba(139, 92, 246, 0.1)); color: #a21caf; border: 1px solid rgba(217, 70, 239, 0.2); }
-            .ultra-footer { display: flex; flex-direction: column; gap: 1.2rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9; }
-            .ultra-stats { display: flex; justify-content: space-between; align-items: center; }
-            .ultra-rating { display: flex; align-items: center; gap: 6px; font-weight: 700; color: #0f172a; font-size: 1.1rem; }
-            .ultra-rating i { color: #f59e0b; }
-            .ultra-reviews { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
-            .ultra-btn {
-                width: 100%; padding: 1.1rem; border-radius: 12px; border: none;
-                background: linear-gradient(90deg, #c026d3, #8b5cf6); color: white;
-                font-weight: 600; font-size: 1.05rem; cursor: pointer; display: flex;
-                align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-            }
-            .ultra-btn:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5); filter: brightness(1.1); transform: translateY(-2px); }
+        /* Glowing Pulse Keyframes - Synced with Inhale/Exhale */
+        @keyframes anim-478 { 
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(139, 92, 246, 0); } 
+            21% { transform: scale(1.6); box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
+            58% { transform: scale(1.6); box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(139, 92, 246, 0); } 
+        }
+        @keyframes anim-box { 
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
+            25% { transform: scale(1.5); box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); } 
+            50% { transform: scale(1.5); box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); } 
+            75% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
+        }
+        @keyframes anim-power { 
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); } 
+            50% { transform: scale(1.3); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); } 
+        }
 
-            /* === 🧘 IMMERSIVE DARK BREATHING ZONE === */
-            .breathing-zone {
-                background: linear-gradient(135deg, #0f172a, #1e293b);
-                color: white;
-                padding: 5rem 0;
-            }
-            .breathing-zone .section-head h2 { color: #ffffff; }
-            .breathing-zone .section-head p { color: #94a3b8; }
-            
-            .modern-breathe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
-            
-            .dark-breathe-card {
-                background: rgba(255, 255, 255, 0.03);
-                backdrop-filter: blur(16px);
-                border-radius: 24px; padding: 2.5rem 2rem;
-                text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
-                transition: all 0.4s ease; display: flex; flex-direction: column; align-items: center; gap: 1rem;
-            }
-            .dark-breathe-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.06); border-color: rgba(56, 189, 248, 0.4); }
-            
-            .breathe-circle-modern {
-                width: 140px; height: 140px; border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-                color: white; font-weight: 800; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-                transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-                margin: 2.5rem 0; position: relative; letter-spacing: 1px; text-transform: uppercase;
-            }
-            
-            .bg-relax { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
-            .bg-cleanse { background: linear-gradient(135deg, #10b981, #0ea5e9); }
-            .bg-active { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .run-478 { animation: anim-478 19s infinite linear; }
+        .run-box { animation: anim-box 16s infinite linear; }
+        .run-power { animation: anim-power 2s infinite ease-in-out; }
 
-            /* Glowing Pulse Keyframes - Synced with Inhale/Exhale */
-            @keyframes anim-478 { 
-                0% { transform: scale(1); box-shadow: 0 0 0 rgba(139, 92, 246, 0); } 
-                21% { transform: scale(1.6); box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
-                58% { transform: scale(1.6); box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
-                100% { transform: scale(1); box-shadow: 0 0 0 rgba(139, 92, 246, 0); } 
-            }
-            @keyframes anim-box { 
-                0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
-                25% { transform: scale(1.5); box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); } 
-                50% { transform: scale(1.5); box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); } 
-                75% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
-                100% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
-            }
-            @keyframes anim-power { 
-                0% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); } 
-                50% { transform: scale(1.3); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); } 
-                100% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); } 
-            }
+        .breathe-btn {
+            padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); 
+            background: rgba(255,255,255,0.05); color: white;
+            font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 1.05rem;
+        }
+        .breathe-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.02); }
+        .breathe-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4); }
+    </style>
+</head>
+<body>
 
-            .run-478 { animation: anim-478 19s infinite linear; }
-            .run-box { animation: anim-box 16s infinite linear; }
-            .run-power { animation: anim-power 2s infinite ease-in-out; }
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand" style="text-decoration: none;">
+            <i class="fas fa-shield-virus"></i> VayuGuard
+        </a>
+        <ul class="nav-menu">
+            <li><a href="#forecast">Forecast</a></li>
+            <li><a href="#cities">Locations</a></li>
+            <li><a href="#health">Health</a></li>
+            <li><a href="helpdesk.html">Help Desk</a></li>
+            <li><a href="login.html" class="btn btn-primary" id="navLoginBtn" style="color: white; padding: 0.5rem 1.2rem; margin-left: 1rem;">Log In</a></li>
+        </ul>
+    </nav>
 
-            .breathe-btn {
-                padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); 
-                background: rgba(255,255,255,0.05); color: white;
-                font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%;
-                display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 1.05rem;
-            }
-            .breathe-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.02); }
-            .breathe-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4); }
-        </style>
-    </head>
-    <body>
-
-        <nav class="navbar">
-            <a href="index.html" class="nav-brand" style="text-decoration: none;">
-                <i class="fas fa-shield-virus"></i> VayuGuard
-            </a>
-            <ul class="nav-menu">
-                <li><a href="#forecast">Forecast</a></li>
-                <li><a href="#cities">Locations</a></li>
-                <li><a href="#health">Health</a></li>
-                <li><a href="helpdesk.html">Help Desk</a></li>
-                <li><a href="login.html" class="btn btn-primary" id="navLoginBtn" style="color: white; padding: 0.5rem 1.2rem; margin-left: 1rem;">Log In</a></li>
-            </ul>
-        </nav>
-
-        <section class="hero">
-            <div class="hero-content">
-                <div class="badge"><i class="fas fa-atom"></i> Powered by Quantum AI</div>
-                <h1>Breathe Smarter with <br><span class="accent">Quantum Intelligence</span></h1>
-                <p>VayuGuard leverages quantum-hybrid forecasting to provide ultra-accurate, real-time Air Quality Index (AQI) predictions and personalized health recommendations tailored to your family's needs.</p>
-                <div class="hero-buttons">
-                    <a href="#forecast" class="btn btn-primary">Check AQI Forecast</a>
-                    <a href="helpdesk.html" class="btn btn-ghost">Contact Support</a>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="aqi-card">
-                    <div class="aqi-label">Current AQI - Bengaluru, IN</div>
-                    <div class="aqi-value">42</div>
-                    <div class="aqi-status good">Good</div>
-                    <div class="aqi-bar"><div class="aqi-fill" style="width: 25%;"></div></div>
-                </div>
-            </div>
-        </section>
-
-        <div class="ticker">
-            <div class="ticker-wrap">
-                <span><span class="live">●</span> <strong>LIVE:</strong> Real-time quantum hybrid AQI model successfully deployed.</span>
-                <span><i class="fas fa-check-circle quantum-tag"></i> <strong>SYSTEM OPTIMAL:</strong> All quantum sensors reporting normally.</span>
-                <span><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> <strong>ALERT:</strong> Moderate AQI expected in Sector 4 later today.</span>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge"><i class="fas fa-atom"></i> Powered by Quantum AI</div>
+            <h1>Breathe Smarter with <br><span class="accent">Quantum Intelligence</span></h1>
+            <p>VayuGuard leverages quantum-hybrid forecasting to provide ultra-accurate, real-time Air Quality Index (AQI) predictions and personalized health recommendations tailored to your family's needs.</p>
+            <div class="hero-buttons">
+                <a href="#forecast" class="btn btn-primary">Check AQI Forecast</a>
+                <a href="helpdesk.html" class="btn btn-ghost">Contact Support</a>
             </div>
         </div>
+        <div class="hero-visual">
+            <div class="aqi-card">
+                <div class="aqi-label">Current Live AQI - Bengaluru, IN</div>
+                <div class="aqi-value" style="color: #10b981;">42</div>
+                <div class="aqi-status good">Good</div>
+                <div class="aqi-bar"><div class="aqi-fill" style="width: 25%;"></div></div>
+            </div>
+        </div>
+    </section>
 
-        <section id="forecast" class="section section-alt">
-            <div class="container">
-                <div class="section-head">
-                    <span class="tag">Predictive Engine</span>
-                    <h2>Quantum AQI Forecast</h2>
-                    <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
+    <div class="ticker">
+        <div class="ticker-wrap">
+            <span><span class="live">●</span> <strong>LIVE:</strong> Real-time quantum hybrid AQI model successfully deployed.</span>
+            <span><i class="fas fa-check-circle quantum-tag"></i> <strong>SYSTEM OPTIMAL:</strong> All quantum sensors reporting normally.</span>
+            <span><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> <strong>ALERT:</strong> Moderate AQI expected in Sector 4 later today.</span>
+        </div>
+    </div>
+
+    <section id="forecast" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Predictive Engine</span>
+                <h2>Quantum AQI Forecast</h2>
+                <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
+            </div>
+            <div class="forecast-box">
+                <div class="controls" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="control-group" style="flex: 1; min-width: 200px;">
+                        <label><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> Forecast Location</label>
+                        <select id="cityForecastSelect" class="city-selector-dropdown">
+                            <option value="bengaluru">Bengaluru, IN (Current)</option>
+                            <option value="delhi">Delhi, IN</option>
+                            <option value="newyork">New York, US</option>
+                        </select>
+                    </div>
+                    <div class="control-group" style="flex: 2; min-width: 300px;">
+                        <label>Active Health Profiles</label>
+                        <div class="people-chips" id="familyChipsContainer">
+                            <div class="chip active" data-profile="my-profile"><i class="fas fa-user"></i> My Profile</div>
+                            <div class="chip" data-profile="sarah"><i class="fas fa-child"></i> Sarah (Asthma)</div>
+                            <div class="chip" data-profile="grandpa"><i class="fas fa-wheelchair"></i> Grandpa (COPD)</div>
+                            <div class="chip" id="openModalBtn" style="background: var(--light); border: 1px dashed var(--gray-light);"><i class="fas fa-plus"></i> Add Person</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="forecast-box">
-                    <div class="controls" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                        <div class="control-group" style="flex: 1; min-width: 200px;">
-                            <label><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> Forecast Location</label>
-                            <select id="cityForecastSelect" class="city-selector-dropdown">
-                                <option value="bengaluru">Bengaluru, IN (Current)</option>
-                                <option value="delhi">Delhi, IN</option>
-                                <option value="newyork">New York, US</option>
-                            </select>
-                        </div>
-                        <div class="control-group" style="flex: 2; min-width: 300px;">
-                            <label>Active Health Profiles</label>
-                            <div class="people-chips" id="familyChipsContainer">
-                                <div class="chip active" data-profile="my-profile"><i class="fas fa-user"></i> My Profile</div>
-                                <div class="chip" data-profile="sarah"><i class="fas fa-child"></i> Sarah (Asthma)</div>
-                                <div class="chip" data-profile="grandpa"><i class="fas fa-wheelchair"></i> Grandpa (COPD)</div>
-                                <div class="chip" id="openModalBtn" style="background: var(--light); border: 1px dashed var(--gray-light);"><i class="fas fa-plus"></i> Add Person</div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="family-details-box" id="familyDetailsBox">
-                        <strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.
-                    </div>
+                <div class="family-details-box" id="familyDetailsBox">
+                    <strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.
+                </div>
 
-                    <div class="quantum-note">
-                        <i class="fas fa-microchip"></i>
-                        <div><strong>Quantum Advantage Active:</strong> Processing 10,000+ atmospheric variables to forecast localized air quality with 94% accuracy.</div>
-                    </div>
+                <div class="quantum-note">
+                    <i class="fas fa-microchip"></i>
+                    <div><strong>Quantum Advantage Active:</strong> Processing 10,000+ atmospheric variables to forecast localized air quality with 94% accuracy.</div>
+                </div>
 
-                    <div class="forecast-grid" id="dynamicForecastGrid">
-                        <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
-                        <div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div>
-                        <div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>
-                    </div>
+                <div class="forecast-grid" id="dynamicForecastGrid">
+                    <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
+                    <div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div>
+                    <div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="cities" class="section">
-            <div class="container">
-                <div class="section-head">
-                    <span class="tag">Global Network</span>
-                    <h2>Saved Locations</h2>
-                    <p>Monitor the air quality for your loved ones around the world.</p>
-                </div>
-                <div class="cities-row">
-                    <div class="city-item"><div class="city-aqi-box good"><span class="city-aqi-num">32</span><span class="city-aqi-text">AQI</span></div><h3>Bengaluru, IN</h3><p>Current Location</p><div class="city-meta"><span><i class="fas fa-wind"></i> 12 km/h</span><span><i class="fas fa-tint"></i> 45%</span></div></div>
-                    <div class="city-item"><div class="city-aqi-box poor"><span class="city-aqi-num">156</span><span class="city-aqi-text">AQI</span></div><h3>Delhi, IN</h3><p>Grandparents' Home</p><div class="city-meta"><span><i class="fas fa-wind"></i> 4 km/h</span><span><i class="fas fa-tint"></i> 60%</span></div></div>
-                    <div class="city-item"><div class="city-aqi-box moderate"><span class="city-aqi-num">88</span><span class="city-aqi-text">AQI</span></div><h3>New York, US</h3><p>Office HQ</p><div class="city-meta"><span><i class="fas fa-wind"></i> 18 km/h</span><span><i class="fas fa-tint"></i> 30%</span></div></div>
-                </div>
+    <section id="cities" class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Global Network</span>
+                <h2>Saved Locations</h2>
+                <p>Monitor the air quality for your loved ones around the world.</p>
             </div>
-        </section>
-
-        <section id="health" class="section section-alt">
-            <div class="container">
-                <div class="section-head">
-                    <span class="tag">Health Data</span>
-                    <h2>Activity Safety Recommendations</h2>
-                    <p>Personalized advice based on current local air quality.</p>
-                </div>
-                
-                <div class="health-grid">
-                    <div class="health-item"><div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div><h3>Outdoor Exercise</h3><p>Safe for all groups. Great time for a run.</p></div>
-                    <div class="health-item"><div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div><h3>Kids & Elderly</h3><p>Monitor closely. Limit extreme exertion.</p></div>
-                    <div class="health-item"><div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div><h3>Asthma Risk</h3><p>Elevated pollen levels detected.</p></div>
-                    <div class="health-item"><div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div><h3>Ventilation</h3><p>Safe to open windows and circulate air.</p></div>
-                </div>
+            <div class="cities-row">
+                <div class="city-item"><div class="city-aqi-box good"><span class="city-aqi-num">32</span><span class="city-aqi-text">AQI</span></div><h3>Bengaluru, IN</h3><p>Current Location</p><div class="city-meta"><span><i class="fas fa-wind"></i> 12 km/h</span><span><i class="fas fa-tint"></i> 45%</span></div></div>
+                <div class="city-item"><div class="city-aqi-box poor"><span class="city-aqi-num">156</span><span class="city-aqi-text">AQI</span></div><h3>Delhi, IN</h3><p>Grandparents' Home</p><div class="city-meta"><span><i class="fas fa-wind"></i> 4 km/h</span><span><i class="fas fa-tint"></i> 60%</span></div></div>
+                <div class="city-item"><div class="city-aqi-box moderate"><span class="city-aqi-num">88</span><span class="city-aqi-text">AQI</span></div><h3>New York, US</h3><p>Office HQ</p><div class="city-meta"><span><i class="fas fa-wind"></i> 18 km/h</span><span><i class="fas fa-tint"></i> 30%</span></div></div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="section">
-            <div class="container">
-                <div class="section-head">
-                    <span class="tag">Technology</span>
-                    <h2>Why Quantum?</h2>
-                    <p>See how our qBraid-powered hybrid engine compares to standard AQI apps.</p>
-                </div>
-                
-                <div class="quantum-compare" style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                        <thead style="background: #f8fafc; text-align: left;">
-                            <tr>
-                                <th style="padding: 1.2rem; border-bottom: 2px solid #e2e8f0; color: #1e293b;">Feature</th>
-                                <th style="padding: 1.2rem; border-bottom: 2px solid #e2e8f0; color: #1e293b;">Standard AQI Apps</th>
-                                <th style="padding: 1.2rem; border-bottom: 2px solid #e2e8f0; color: var(--primary);">VayuGuard (Quantum)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">Prediction Accuracy</td>
-                                <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #64748b;">~70% (Classical ML)</td>
-                                <td class="win" style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: 700;">94%+ (Quantum Hybrid)</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">Variables Processed</td>
-                                <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #64748b;">~50 variables</td>
-                                <td class="win" style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: 700;">10,000+ simultaneous</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">Update Frequency</td>
-                                <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #64748b;">Hourly</td>
-                                <td class="win" style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: 700;">Real-time (Sub-second)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="quantum-features" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-                    <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <i class="fas fa-network-wired" style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1rem;"></i>
-                        <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Hybrid Architecture</h4>
-                        <p style="margin:0; font-size: 0.9rem; color: #64748b;">Seamlessly blending classical ML with quantum processing.</p>
-                    </div>
-                    <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <i class="fas fa-bolt" style="color: #f59e0b; font-size: 1.8rem; margin-bottom: 1rem;"></i>
-                        <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Real-Time Sync</h4>
-                        <p style="margin:0; font-size: 0.9rem; color: #64748b;">Instantaneous data updates from IoT sensors globally.</p>
-                    </div>
-                    <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <i class="fas fa-shield-alt" style="color: #10b981; font-size: 1.8rem; margin-bottom: 1rem;"></i>
-                        <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Quantum Security</h4>
-                        <p style="margin:0; font-size: 0.9rem; color: #64748b;">Your health data is protected by quantum-safe encryption.</p>
-                    </div>
-                    <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <i class="fas fa-globe" style="color: #0ea5e9; font-size: 1.8rem; margin-bottom: 1rem;"></i>
-                        <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Global Scale</h4>
-                        <p style="margin:0; font-size: 0.9rem; color: #64748b;">Powered by qBraid's distributed quantum cloud network.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section section-alt">
-            <div class="container">
-                <div class="section-head">
-                    <span class="tag">Specialists</span>
-                    <h2>Consult Top Pulmonologists</h2>
-                    <p>Connect with verified respiratory experts in your area.</p>
-                </div>
-                
-                <div class="ultra-doc-list">
-                    <div class="ultra-doc-card">
-                        <div class="ultra-doc-header">
-                            <div class="ultra-avatar">SC</div>
-                            <div class="ultra-doc-info">
-                                <h4>Dr. Sarah Chen</h4>
-                                <p><i class="fas fa-stethoscope"></i> 15 Years Experience</p>
-                            </div>
-                        </div>
-                        <div class="ultra-badges">
-                            <span class="ultra-badge primary">Asthma Specialist</span>
-                            <span class="ultra-badge">Pediatrics</span>
-                        </div>
-                        <div class="ultra-footer">
-                            <div class="ultra-stats">
-                                <div class="ultra-rating"><i class="fas fa-star"></i> 4.9 <span class="ultra-reviews">(120+)</span></div>
-                                <div style="color: #10b981; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                    <i class="fas fa-video"></i> Available Today
-                                </div>
-                            </div>
-                            <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Sarah Chen.')">
-                                <i class="fas fa-calendar-check"></i> Book Appointment
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="ultra-doc-card">
-                        <div class="ultra-doc-header">
-                            <div class="ultra-avatar">MR</div>
-                            <div class="ultra-doc-info">
-                                <h4>Dr. Marcus Rao</h4>
-                                <p><i class="fas fa-stethoscope"></i> 12 Years Experience</p>
-                            </div>
-                        </div>
-                        <div class="ultra-badges">
-                            <span class="ultra-badge primary">Pulmonology</span>
-                            <span class="ultra-badge">COPD</span>
-                        </div>
-                        <div class="ultra-footer">
-                            <div class="ultra-stats">
-                                <div class="ultra-rating"><i class="fas fa-star"></i> 4.8 <span class="ultra-reviews">(85+)</span></div>
-                                <div style="color: #10b981; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                    <i class="fas fa-video"></i> Available Today
-                                </div>
-                            </div>
-                            <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Marcus Rao.')">
-                                <i class="fas fa-calendar-check"></i> Book Appointment
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="ultra-doc-card">
-                        <div class="ultra-doc-header">
-                            <div class="ultra-avatar">EP</div>
-                            <div class="ultra-doc-info">
-                                <h4>Dr. Elena Patel</h4>
-                                <p><i class="fas fa-stethoscope"></i> 20 Years Experience</p>
-                            </div>
-                        </div>
-                        <div class="ultra-badges">
-                            <span class="ultra-badge primary">Allergy & Immunology</span>
-                            <span class="ultra-badge">Adults</span>
-                        </div>
-                        <div class="ultra-footer">
-                            <div class="ultra-stats">
-                                <div class="ultra-rating"><i class="fas fa-star"></i> 5.0 <span class="ultra-reviews">(200+)</span></div>
-                                <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                    <i class="fas fa-calendar-alt"></i> Next Avail: Tomorrow
-                                </div>
-                            </div>
-                            <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Elena Patel.')">
-                                <i class="fas fa-calendar-check"></i> Book Appointment
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="breathing-zone">
-            <div class="container">
-                <div class="section-head">
-                    <span class="tag" style="background: rgba(255,255,255,0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Interactive</span>
-                    <h2>Breathing Games</h2>
-                    <p>Sync your breathing with the animated guide to improve lung capacity and reduce stress.</p>
-                </div>
-
-                <div class="modern-breathe-grid">
-                    <div class="dark-breathe-card">
-                        <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">4-7-8 Relaxation</h3>
-                        <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Reduces anxiety and stress.</p>
-                        
-                        <div class="breathe-circle-modern bg-relax" id="circle-478">
-                            <span id="text-478">Ready</span>
-                        </div>
-                        
-                        <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (7s) - Exhale (8s)</p>
-                        <button class="breathe-btn" id="btn-478" onclick="toggleBreathingGame('478')">
-                            <i class="fas fa-play"></i> Start Game
-                        </button>
-                    </div>
-                    
-                    <div class="dark-breathe-card">
-                        <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">Box Breathing</h3>
-                        <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Clears lungs and sharpens focus.</p>
-                        
-                        <div class="breathe-circle-modern bg-cleanse" id="circle-box">
-                            <span id="text-box">Ready</span>
-                        </div>
-                        
-                        <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (4s) - Exhale (4s)</p>
-                        <button class="breathe-btn" id="btn-box" onclick="toggleBreathingGame('box')">
-                            <i class="fas fa-play"></i> Start Game
-                        </button>
-                    </div>
-                    
-                    <div class="dark-breathe-card">
-                        <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">Power Breathing</h3>
-                        <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Rapid boost of oxygen.</p>
-                        
-                        <div class="breathe-circle-modern bg-active" id="circle-power">
-                            <span id="text-power">Ready</span>
-                        </div>
-                        
-                        <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Fast Inhale & Exhale Rhythm</p>
-                        <button class="breathe-btn" id="btn-power" onclick="toggleBreathingGame('power')">
-                            <i class="fas fa-play"></i> Start Game
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="section" style="background: #ffffff;">
+    <section class="section" style="background: #ffffff; padding-top: 1rem;">
         <div class="container">
             <div class="section-head">
                 <span class="tag">Reference Guide</span>
@@ -451,259 +232,469 @@
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
-                
                 <div style="background: #d1fae5; border-left: 6px solid #10b981; padding: 1.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div style="font-size: 1.4rem; font-weight: 800; color: #047857;">0 - 50</div>
                     <div style="font-weight: 700; color: #10b981; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Good</div>
                     <p style="font-size: 0.8rem; color: #065f46; margin: 0;">Air quality is satisfactory; poses little or no risk.</p>
                 </div>
-
                 <div style="background: #fef3c7; border-left: 6px solid #f59e0b; padding: 1.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div style="font-size: 1.4rem; font-weight: 800; color: #b45309;">51 - 100</div>
                     <div style="font-weight: 700; color: #f59e0b; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Moderate</div>
                     <p style="font-size: 0.8rem; color: #92400e; margin: 0;">Acceptable. May be a moderate health concern for a very small number of people.</p>
                 </div>
-
                 <div style="background: #ffedd5; border-left: 6px solid #f97316; padding: 1.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div style="font-size: 1.4rem; font-weight: 800; color: #c2410c;">101 - 150</div>
                     <div style="font-weight: 700; color: #f97316; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Sensitive</div>
                     <p style="font-size: 0.8rem; color: #9a3412; margin: 0;">Members of sensitive groups may experience health effects.</p>
                 </div>
-
                 <div style="background: #fee2e2; border-left: 6px solid #ef4444; padding: 1.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div style="font-size: 1.4rem; font-weight: 800; color: #b91c1c;">151 - 200</div>
                     <div style="font-weight: 700; color: #ef4444; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Unhealthy</div>
                     <p style="font-size: 0.8rem; color: #991b1b; margin: 0;">Everyone may begin to experience health effects.</p>
                 </div>
-
                 <div style="background: #f3e8ff; border-left: 6px solid #8b5cf6; padding: 1.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div style="font-size: 1.4rem; font-weight: 800; color: #6d28d9;">201 - 300</div>
                     <div style="font-weight: 700; color: #8b5cf6; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Very Unhealthy</div>
                     <p style="font-size: 0.8rem; color: #5b21b6; margin: 0;">Health warnings of emergency conditions. The entire population is more likely to be affected.</p>
                 </div>
-
                 <div style="background: #ffe4e6; border-left: 6px solid #e11d48; padding: 1.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
                     <div style="font-size: 1.4rem; font-weight: 800; color: #9f1239;">301+</div>
                     <div style="font-weight: 700; color: #e11d48; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Hazardous</div>
                     <p style="font-size: 0.8rem; color: #9f1239; margin: 0;">Health alert: everyone may experience more serious health effects.</p>
                 </div>
-
             </div>
         </div>
     </section>
 
-        <footer class="footer">
-            <div class="container">
-                <div class="footer-grid">
-                    <div>
-                        <div class="footer-brand"><i class="fas fa-shield-virus"></i> VayuGuard</div>
-                        <p style="color: var(--gray-light); font-size: 0.9rem; margin-top: 1rem;">
-                            The world's first quantum-hybrid air quality forecasting platform. Built for a healthier tomorrow.
-                        </p>
-                    </div>
-                    <div>
-                        <h4>Platform</h4>
-                        <a href="#forecast">AQI Forecast</a>
-                        <a href="#health">Health Solutions</a>
-                        <a href="helpdesk.html">Help Desk</a>
-                    </div>
-                    <div>
-                        <h4>Technology</h4>
-                        <a href="#">Quantum Engine</a>
-                        <a href="#">Machine Learning</a>
-                        <a href="#">API Documentation</a>
-                    </div>
-                    <div>
-                        <h4>Connect</h4>
-                        <a href="https://github.com/Marampawan/vayuguard-aiml" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-                        <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
-                        <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    &copy; 2026 VayuGuard. All rights reserved. Built with <i class="fas fa-heart"></i> and Quantum Technology.
-                </div>
+    <section id="health" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Health Data</span>
+                <h2>Activity Safety Recommendations</h2>
+                <p>Personalized advice based on current local air quality.</p>
             </div>
-        </footer>
+            
+            <div class="health-grid">
+                <div class="health-item"><div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div><h3>Outdoor Exercise</h3><p>Safe for all groups. Great time for a run.</p></div>
+                <div class="health-item"><div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div><h3>Kids & Elderly</h3><p>Monitor closely. Limit extreme exertion.</p></div>
+                <div class="health-item"><div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div><h3>Asthma Risk</h3><p>Elevated pollen levels detected.</p></div>
+                <div class="health-item"><div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div><h3>Ventilation</h3><p>Safe to open windows and circulate air.</p></div>
+            </div>
+        </div>
+    </section>
 
-        <div class="modal-overlay hidden" id="addPersonModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Add Family Member</h3>
-                    <button class="close-btn" id="closeModalBtn">&times;</button>
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Technology</span>
+                <h2>Why Quantum?</h2>
+                <p>See how our qBraid-powered hybrid engine compares to standard AQI apps.</p>
+            </div>
+            
+            <div class="quantum-compare" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <thead style="background: #f8fafc; text-align: left;">
+                        <tr>
+                            <th style="padding: 1.2rem; border-bottom: 2px solid #e2e8f0; color: #1e293b;">Feature</th>
+                            <th style="padding: 1.2rem; border-bottom: 2px solid #e2e8f0; color: #1e293b;">Standard AQI Apps</th>
+                            <th style="padding: 1.2rem; border-bottom: 2px solid #e2e8f0; color: var(--primary);">VayuGuard (Quantum)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">Prediction Accuracy</td>
+                            <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #64748b;">~70% (Classical ML)</td>
+                            <td class="win" style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: 700;">94%+ (Quantum Hybrid)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">Variables Processed</td>
+                            <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #64748b;">~50 variables</td>
+                            <td class="win" style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: 700;">10,000+ simultaneous</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #334155;">Update Frequency</td>
+                            <td style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #64748b;">Hourly</td>
+                            <td class="win" style="padding: 1.2rem; border-bottom: 1px solid #e2e8f0; color: #10b981; font-weight: 700;">Real-time (Sub-second)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="quantum-features" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                    <i class="fas fa-network-wired" style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1rem;"></i>
+                    <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Hybrid Architecture</h4>
+                    <p style="margin:0; font-size: 0.9rem; color: #64748b;">Seamlessly blending classical ML with quantum processing.</p>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group"><label>Name</label><input type="text" id="newMemberName" placeholder="e.g., Grandma, John"></div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>Health Conditions / Lifestyle</label>
-                        <div class="checkbox-group" id="conditionCheckboxes">
-                            <label><input type="checkbox" value="asthma"> Asthma</label>
-                            <label><input type="checkbox" value="copd"> COPD / Emphysema</label>
-                            <label><input type="checkbox" value="allergies"> Severe Allergies</label>
-                            <label><input type="checkbox" value="heart"> Heart Condition</label>
-                            <label><input type="checkbox" value="children"> Young Children</label>
-                            <label><input type="checkbox" value="outside"> Works Outside</label>
-                        </div>
-                    </div>
+                <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                    <i class="fas fa-bolt" style="color: #f59e0b; font-size: 1.8rem; margin-bottom: 1rem;"></i>
+                    <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Real-Time Sync</h4>
+                    <p style="margin:0; font-size: 0.9rem; color: #64748b;">Instantaneous data updates from IoT sensors globally.</p>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
-                    <button class="btn btn-primary" id="saveMemberBtn">Save Member</button>
+                <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                    <i class="fas fa-shield-alt" style="color: #10b981; font-size: 1.8rem; margin-bottom: 1rem;"></i>
+                    <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Quantum Security</h4>
+                    <p style="margin:0; font-size: 0.9rem; color: #64748b;">Your health data is protected by quantum-safe encryption.</p>
+                </div>
+                <div class="q-feature" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                    <i class="fas fa-globe" style="color: #0ea5e9; font-size: 1.8rem; margin-bottom: 1rem;"></i>
+                    <h4 style="margin:0 0 0.5rem 0; color: #1e293b;">Global Scale</h4>
+                    <p style="margin:0; font-size: 0.9rem; color: #64748b;">Powered by qBraid's distributed quantum cloud network.</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <script>
-            // Modal & Dynamic Chips Logic
-            const modal = document.getElementById('addPersonModal');
-            const openModalBtn = document.getElementById('openModalBtn');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const cancelModalBtn = document.getElementById('cancelModalBtn');
-            const saveMemberBtn = document.getElementById('saveMemberBtn');
-            const newMemberNameInput = document.getElementById('newMemberName');
-            const chipsContainer = document.getElementById('familyChipsContainer');
-            const detailsBox = document.getElementById('familyDetailsBox');
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Specialists</span>
+                <h2>Consult Top Pulmonologists</h2>
+                <p>Connect with verified respiratory experts in your area.</p>
+            </div>
+            
+            <div class="ultra-doc-list">
+                <div class="ultra-doc-card">
+                    <div class="ultra-doc-header">
+                        <div class="ultra-avatar">SC</div>
+                        <div class="ultra-doc-info">
+                            <h4>Dr. Sarah Chen</h4>
+                            <p><i class="fas fa-stethoscope"></i> 15 Years Experience</p>
+                        </div>
+                    </div>
+                    <div class="ultra-badges">
+                        <span class="ultra-badge primary">Asthma Specialist</span>
+                        <span class="ultra-badge">Pediatrics</span>
+                    </div>
+                    <div class="ultra-footer">
+                        <div class="ultra-stats">
+                            <div class="ultra-rating"><i class="fas fa-star"></i> 4.9 <span class="ultra-reviews">(120+)</span></div>
+                            <div style="color: #10b981; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                <i class="fas fa-video"></i> Available Today
+                            </div>
+                        </div>
+                        <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Sarah Chen.')">
+                            <i class="fas fa-calendar-check"></i> Book Appointment
+                        </button>
+                    </div>
+                </div>
 
-            openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
-            closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
-            cancelModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+                <div class="ultra-doc-card">
+                    <div class="ultra-doc-header">
+                        <div class="ultra-avatar">MR</div>
+                        <div class="ultra-doc-info">
+                            <h4>Dr. Marcus Rao</h4>
+                            <p><i class="fas fa-stethoscope"></i> 12 Years Experience</p>
+                        </div>
+                    </div>
+                    <div class="ultra-badges">
+                        <span class="ultra-badge primary">Pulmonology</span>
+                        <span class="ultra-badge">COPD</span>
+                    </div>
+                    <div class="ultra-footer">
+                        <div class="ultra-stats">
+                            <div class="ultra-rating"><i class="fas fa-star"></i> 4.8 <span class="ultra-reviews">(85+)</span></div>
+                            <div style="color: #10b981; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                <i class="fas fa-video"></i> Available Today
+                            </div>
+                        </div>
+                        <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Marcus Rao.')">
+                            <i class="fas fa-calendar-check"></i> Book Appointment
+                        </button>
+                    </div>
+                </div>
 
-            const familyData = {
-                'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
-                'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
-                'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> Shift in AQI may cause mild discomfort. Keep air purifiers running.'
-            };
+                <div class="ultra-doc-card">
+                    <div class="ultra-doc-header">
+                        <div class="ultra-avatar">EP</div>
+                        <div class="ultra-doc-info">
+                            <h4>Dr. Elena Patel</h4>
+                            <p><i class="fas fa-stethoscope"></i> 20 Years Experience</p>
+                        </div>
+                    </div>
+                    <div class="ultra-badges">
+                        <span class="ultra-badge primary">Allergy & Immunology</span>
+                        <span class="ultra-badge">Adults</span>
+                    </div>
+                    <div class="ultra-footer">
+                        <div class="ultra-stats">
+                            <div class="ultra-rating"><i class="fas fa-star"></i> 5.0 <span class="ultra-reviews">(200+)</span></div>
+                            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                <i class="fas fa-calendar-alt"></i> Next Avail: Tomorrow
+                            </div>
+                        </div>
+                        <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Elena Patel.')">
+                            <i class="fas fa-calendar-check"></i> Book Appointment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            function attachChipListeners() {
-                document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
-                    chip.replaceWith(chip.cloneNode(true));
-                });
-                document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
-                    chip.addEventListener('click', function() {
-                        document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(c => c.classList.remove('active'));
-                        this.classList.add('active');
-                        detailsBox.innerHTML = familyData[this.getAttribute('data-profile')];
-                    });
-                });
-            }
-            attachChipListeners();
+    <section class="breathing-zone">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag" style="background: rgba(255,255,255,0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Interactive</span>
+                <h2>Breathing Games</h2>
+                <p>Sync your breathing with the animated guide to improve lung capacity and reduce stress.</p>
+            </div>
 
-            saveMemberBtn.addEventListener('click', () => {
-                const name = newMemberNameInput.value.trim();
-                if (!name) { alert("Please enter a name."); return; }
-                const checkboxes = document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]:checked');
-                let conditions = [];
-                checkboxes.forEach(cb => conditions.push(cb.parentElement.textContent.trim()));
-                const profileId = 'profile-' + Date.now();
-                const newChip = document.createElement('div');
-                newChip.className = 'chip';
-                newChip.setAttribute('data-profile', profileId);
+            <div class="modern-breathe-grid">
+                <div class="dark-breathe-card">
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">4-7-8 Relaxation</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Reduces anxiety and stress.</p>
+                    
+                    <div class="breathe-circle-modern bg-relax" id="circle-478">
+                        <span id="text-478">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (7s) - Exhale (8s)</p>
+                    <button class="breathe-btn" id="btn-478" onclick="toggleBreathingGame('478')">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
                 
-                let icon = '<i class="fas fa-user"></i>';
-                if (conditions.includes('Young Children')) icon = '<i class="fas fa-child"></i>';
-                else if (conditions.includes('Works Outside')) icon = '<i class="fas fa-hard-hat"></i>';
-                else if (conditions.length > 0) icon = '<i class="fas fa-notes-medical"></i>';
+                <div class="dark-breathe-card">
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">Box Breathing</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Clears lungs and sharpens focus.</p>
+                    
+                    <div class="breathe-circle-modern bg-cleanse" id="circle-box">
+                        <span id="text-box">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (4s) - Exhale (4s)</p>
+                    <button class="breathe-btn" id="btn-box" onclick="toggleBreathingGame('box')">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+                
+                <div class="dark-breathe-card">
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">Power Breathing</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Rapid boost of oxygen.</p>
+                    
+                    <div class="breathe-circle-modern bg-active" id="circle-power">
+                        <span id="text-power">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Fast Inhale & Exhale Rhythm</p>
+                    <button class="breathe-btn" id="btn-power" onclick="toggleBreathingGame('power')">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                let tagText = conditions.length > 0 ? ` (${conditions[0]})` : '';
-                newChip.innerHTML = `${icon} ${name}${tagText}`;
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand"><i class="fas fa-shield-virus"></i> VayuGuard</div>
+                    <p style="color: var(--gray-light); font-size: 0.9rem; margin-top: 1rem;">
+                        The world's first quantum-hybrid air quality forecasting platform. Built for a healthier tomorrow.
+                    </p>
+                </div>
+                <div>
+                    <h4>Platform</h4>
+                    <a href="#forecast">AQI Forecast</a>
+                    <a href="#health">Health Solutions</a>
+                    <a href="helpdesk.html">Help Desk</a>
+                </div>
+                <div>
+                    <h4>Technology</h4>
+                    <a href="#">Quantum Engine</a>
+                    <a href="#">Machine Learning</a>
+                    <a href="#">API Documentation</a>
+                </div>
+                <div>
+                    <h4>Connect</h4>
+                    <a href="https://github.com/Marampawan/vayuguard-aiml" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 VayuGuard. All rights reserved. Built with <i class="fas fa-heart"></i> and Quantum Technology.
+            </div>
+        </div>
+    </footer>
 
-                let conditionString = conditions.length > 0 ? conditions.join(', ') : 'No specific conditions';
-                familyData[profileId] = `<strong>${name}:</strong> Tracked Conditions: <span style="color:var(--primary); font-weight:600;">${conditionString}</span>. Quantum forecast is monitoring local AQI carefully based on this profile.`;
+    <div class="modal-overlay hidden" id="addPersonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Add Family Member</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group"><label>Name</label><input type="text" id="newMemberName" placeholder="e.g., Grandma, John"></div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Health Conditions / Lifestyle</label>
+                    <div class="checkbox-group" id="conditionCheckboxes">
+                        <label><input type="checkbox" value="asthma"> Asthma</label>
+                        <label><input type="checkbox" value="copd"> COPD / Emphysema</label>
+                        <label><input type="checkbox" value="allergies"> Severe Allergies</label>
+                        <label><input type="checkbox" value="heart"> Heart Condition</label>
+                        <label><input type="checkbox" value="children"> Young Children</label>
+                        <label><input type="checkbox" value="outside"> Works Outside</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveMemberBtn">Save Member</button>
+            </div>
+        </div>
+    </div>
 
-                chipsContainer.insertBefore(newChip, openModalBtn);
-                attachChipListeners();
-                newChip.click();
+    <script>
+        // Modal & Dynamic Chips Logic
+        const modal = document.getElementById('addPersonModal');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const saveMemberBtn = document.getElementById('saveMemberBtn');
+        const newMemberNameInput = document.getElementById('newMemberName');
+        const chipsContainer = document.getElementById('familyChipsContainer');
+        const detailsBox = document.getElementById('familyDetailsBox');
 
-                newMemberNameInput.value = '';
-                document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
-                modal.classList.add('hidden');
+        openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        cancelModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+        const familyData = {
+            'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
+            'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
+            'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> Shift in AQI may cause mild discomfort. Keep air purifiers running.'
+        };
+
+        function attachChipListeners() {
+            document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
+                chip.replaceWith(chip.cloneNode(true));
             });
-
-            // City Selector Logic
-            const cityForecasts = {
-                'bengaluru': `<div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div><div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div><div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>`,
-                'delhi': `<div class="forecast-card poor"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">156</div><div class="forecast-cat poor">Unhealthy</div></div><div class="forecast-card poor"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">170</div><div class="forecast-cat poor">Unhealthy</div></div><div class="forecast-card poor" style="border-color: #7f1d1d;"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">210</div><div class="forecast-cat poor" style="background: #7f1d1d; color: white;">Hazardous</div></div>`,
-                'newyork': `<div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">28</div><div class="forecast-cat good">Good</div></div><div class="forecast-card good"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">35</div><div class="forecast-cat good">Good</div></div><div class="forecast-card good"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">42</div><div class="forecast-cat good">Good</div></div>`
-            };
-            document.getElementById('cityForecastSelect').addEventListener('change', function() { document.getElementById('dynamicForecastGrid').innerHTML = cityForecasts[this.value]; });
-
-            // 🌌 INTERACTIVE BREATHING GAME ENGINE (UPGRADED WITH GLOW)
-            let breathIntervals = {};
-
-            function toggleBreathingGame(type) {
-                const btn = document.getElementById(`btn-${type}`);
-                const circle = document.getElementById(`circle-${type}`);
-                const text = document.getElementById(`text-${type}`);
-
-                // Stop Game
-                if (circle.classList.contains('active-anim')) {
-                    circle.classList.remove('active-anim', `run-${type}`);
-                    clearInterval(breathIntervals[type]);
-                    btn.classList.remove('active');
-                    btn.innerHTML = '<i class="fas fa-play"></i> Start Game';
-                    text.textContent = 'Ready';
-                } 
-                // Start Game
-                else {
-                    circle.classList.add('active-anim', `run-${type}`);
-                    btn.classList.add('active');
-                    btn.innerHTML = '<i class="fas fa-stop"></i> Stop Game';
-                    runBreathingCycle(type, text, circle);
-                }
-            }
-
-            function runBreathingCycle(type, textEl, circleEl) {
-                if(breathIntervals[type]) clearInterval(breathIntervals[type]);
-
-                const checkActive = () => circleEl.classList.contains('active-anim');
-
-                if (type === '478') {
-                    const cycle = () => {
-                        if(!checkActive()) return; textEl.textContent = 'Inhale';
-                        setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 4000);
-                        setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 11000);
-                    };
-                    cycle(); breathIntervals[type] = setInterval(cycle, 19000);
-                } 
-                else if (type === 'box') {
-                    const cycle = () => {
-                        if(!checkActive()) return; textEl.textContent = 'Inhale';
-                        setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 4000);
-                        setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 8000);
-                        setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 12000);
-                    };
-                    cycle(); breathIntervals[type] = setInterval(cycle, 16000);
-                } 
-                else if (type === 'power') {
-                    const cycle = () => {
-                        if(!checkActive()) return; textEl.textContent = 'Inhale';
-                        setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 1000);
-                    };
-                    cycle(); breathIntervals[type] = setInterval(cycle, 2000);
-                }
-            }
-        </script>
-
-        <script type="module">
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-            import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-            const firebaseConfig = {
-                apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E", authDomain: "vayuguard-44a1e.firebaseapp.com",
-                projectId: "vayuguard-44a1e", storageBucket: "vayuguard-44a1e.firebasestorage.app",
-                messagingSenderId: "815444891179", appId: "1:815444891179:web:f46326073caecaee3c3c6e"
-            };
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const loginButton = document.getElementById('navLoginBtn');
-
-            onAuthStateChanged(auth, (user) => {
-                if (user && loginButton) {
-                    loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
-                    loginButton.style.backgroundColor = "transparent"; loginButton.style.border = "1px solid var(--danger)";
-                    loginButton.style.color = "var(--danger)"; loginButton.href = "#"; 
-                    loginButton.addEventListener('click', (e) => { e.preventDefault(); signOut(auth).then(() => { window.location.reload(); }); });
-                }
+            document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    detailsBox.innerHTML = familyData[this.getAttribute('data-profile')];
+                });
             });
-        </script>
-    </body>
-    </html>
+        }
+        attachChipListeners();
+
+        saveMemberBtn.addEventListener('click', () => {
+            const name = newMemberNameInput.value.trim();
+            if (!name) { alert("Please enter a name."); return; }
+            const checkboxes = document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]:checked');
+            let conditions = [];
+            checkboxes.forEach(cb => conditions.push(cb.parentElement.textContent.trim()));
+            const profileId = 'profile-' + Date.now();
+            const newChip = document.createElement('div');
+            newChip.className = 'chip';
+            newChip.setAttribute('data-profile', profileId);
+            
+            let icon = '<i class="fas fa-user"></i>';
+            if (conditions.includes('Young Children')) icon = '<i class="fas fa-child"></i>';
+            else if (conditions.includes('Works Outside')) icon = '<i class="fas fa-hard-hat"></i>';
+            else if (conditions.length > 0) icon = '<i class="fas fa-notes-medical"></i>';
+
+            let tagText = conditions.length > 0 ? ` (${conditions[0]})` : '';
+            newChip.innerHTML = `${icon} ${name}${tagText}`;
+
+            let conditionString = conditions.length > 0 ? conditions.join(', ') : 'No specific conditions';
+            familyData[profileId] = `<strong>${name}:</strong> Tracked Conditions: <span style="color:var(--primary); font-weight:600;">${conditionString}</span>. Quantum forecast is monitoring local AQI carefully based on this profile.`;
+
+            chipsContainer.insertBefore(newChip, openModalBtn);
+            attachChipListeners();
+            newChip.click();
+
+            newMemberNameInput.value = '';
+            document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
+            modal.classList.add('hidden');
+        });
+
+        // City Selector Logic
+        const cityForecasts = {
+            'bengaluru': `<div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div><div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div><div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>`,
+            'delhi': `<div class="forecast-card poor"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">156</div><div class="forecast-cat poor">Unhealthy</div></div><div class="forecast-card poor"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">170</div><div class="forecast-cat poor">Unhealthy</div></div><div class="forecast-card poor" style="border-color: #7f1d1d;"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">210</div><div class="forecast-cat poor" style="background: #7f1d1d; color: white;">Hazardous</div></div>`,
+            'newyork': `<div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">28</div><div class="forecast-cat good">Good</div></div><div class="forecast-card good"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">35</div><div class="forecast-cat good">Good</div></div><div class="forecast-card good"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">42</div><div class="forecast-cat good">Good</div></div>`
+        };
+        document.getElementById('cityForecastSelect').addEventListener('change', function() { document.getElementById('dynamicForecastGrid').innerHTML = cityForecasts[this.value]; });
+
+        // 🌌 INTERACTIVE BREATHING GAME ENGINE
+        let breathIntervals = {};
+
+        function toggleBreathingGame(type) {
+            const btn = document.getElementById(`btn-${type}`);
+            const circle = document.getElementById(`circle-${type}`);
+            const text = document.getElementById(`text-${type}`);
+
+            if (circle.classList.contains('active-anim')) {
+                circle.classList.remove('active-anim', `run-${type}`);
+                clearInterval(breathIntervals[type]);
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-play"></i> Start Game';
+                text.textContent = 'Ready';
+            } 
+            else {
+                circle.classList.add('active-anim', `run-${type}`);
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop Game';
+                runBreathingCycle(type, text, circle);
+            }
+        }
+
+        function runBreathingCycle(type, textEl, circleEl) {
+            if(breathIntervals[type]) clearInterval(breathIntervals[type]);
+            const checkActive = () => circleEl.classList.contains('active-anim');
+
+            if (type === '478') {
+                const cycle = () => {
+                    if(!checkActive()) return; textEl.textContent = 'Inhale';
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 4000);
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 11000);
+                };
+                cycle(); breathIntervals[type] = setInterval(cycle, 19000);
+            } 
+            else if (type === 'box') {
+                const cycle = () => {
+                    if(!checkActive()) return; textEl.textContent = 'Inhale';
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 4000);
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 8000);
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 12000);
+                };
+                cycle(); breathIntervals[type] = setInterval(cycle, 16000);
+            } 
+            else if (type === 'power') {
+                const cycle = () => {
+                    if(!checkActive()) return; textEl.textContent = 'Inhale';
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 1000);
+                };
+                cycle(); breathIntervals[type] = setInterval(cycle, 2000);
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E", authDomain: "vayuguard-44a1e.firebaseapp.com",
+            projectId: "vayuguard-44a1e", storageBucket: "vayuguard-44a1e.firebasestorage.app",
+            messagingSenderId: "815444891179", appId: "1:815444891179:web:f46326073caecaee3c3c6e"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const loginButton = document.getElementById('navLoginBtn');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && loginButton) {
+                loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
+                loginButton.style.backgroundColor = "transparent"; loginButton.style.border = "1px solid var(--danger)";
+                loginButton.style.color = "var(--danger)"; loginButton.href = "#"; 
+                loginButton.addEventListener('click', (e) => { e.preventDefault(); signOut(auth).then(() => { window.location.reload(); }); });
+            }
+        });
+    </script>
+</body>
+</html>
