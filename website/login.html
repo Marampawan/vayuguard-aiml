@@ -3,312 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication — VayuGuard</title>
+    <title>VayuGuard — Quantum Air Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        /* === qBraid-Style Deep Space Background === */
-        body { 
-            margin: 0; 
-            overflow-x: hidden; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            background-color: #030008; 
-            font-family: 'Inter', sans-serif; 
-        }
-
-        .space-bg { 
-            position: fixed; 
-            top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: radial-gradient(circle at 50% 30%, #1d0743 0%, #030008 70%); 
-            z-index: -3; 
-        }
-
-        .stars { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background-image: 
-                radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)), 
-                radial-gradient(1.5px 1.5px at 80px 70px, #eee, rgba(0,0,0,0)), 
-                radial-gradient(2px 2px at 150px 160px, #ddd, rgba(0,0,0,0)), 
-                radial-gradient(1.5px 1.5px at 290px 40px, #fff, rgba(0,0,0,0)), 
-                radial-gradient(2px 2px at 330px 80px, #eee, rgba(0,0,0,0)); 
-            background-repeat: repeat; 
-            background-size: 400px 400px; 
-            animation: twinkle 5s infinite alternate; 
-            z-index: -2; 
-            opacity: 0.5; 
-        }
-
-        .glowing-orb { 
-            position: fixed; 
-            border-radius: 50%; 
-            filter: blur(140px); 
-            z-index: -1; 
-            animation: floatOrb 15s infinite ease-in-out alternate; 
-        }
-
-        .orb-magenta { 
-            width: 45vw; height: 45vw; 
-            background: rgba(217, 70, 239, 0.12); 
-            top: -20%; left: 20%; 
-        }
-
-        .orb-purple { 
-            width: 50vw; height: 50vw; 
-            background: rgba(124, 58, 237, 0.15); 
-            bottom: -10%; right: -10%; 
-            animation-delay: -5s; 
-            animation-duration: 20s; 
-        }
-
-        @keyframes twinkle { 
-            0% { opacity: 0.2; } 
-            100% { opacity: 0.7; } 
-        }
-
-        @keyframes floatOrb { 
-            0% { transform: translate(0, 0) scale(1); } 
-            50% { transform: translate(5%, 5%) scale(1.1); } 
-            100% { transform: translate(-2%, 8%) scale(0.9); } 
-        }
-
-        /* === qBraid-Style Navbar === */
-        .q-navbar { 
-            width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; padding: 1.5rem 4rem; 
-            box-sizing: border-box; z-index: 20; 
-        }
-
-        .q-brand { 
-            display: flex; align-items: center; gap: 12px; 
-            font-weight: 700; font-size: 1.4rem; 
-            color: white; text-decoration: none; 
-        }
-
-        .q-brand-icon { 
-            width: 32px; height: 32px; 
-            background: linear-gradient(135deg, #d946ef, #8b5cf6); 
-            border-radius: 50%; display: flex; 
-            align-items: center; justify-content: center; 
-        }
-
-        .q-nav-links { 
-            display: flex; gap: 2rem; list-style: none; margin: 0; padding: 0; 
-        }
-
-        .q-nav-links a { 
-            color: rgba(255,255,255,0.8); text-decoration: none; 
-            font-size: 0.95rem; font-weight: 500; transition: color 0.3s; 
-        }
-
-        .q-nav-links a:hover { color: white; }
-
-        .btn-return { 
-            background: rgba(255,255,255,0.1); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            color: white; padding: 0.6rem 1.5rem; 
-            border-radius: 50px; text-decoration: none; 
-            font-weight: 600; font-size: 0.9rem; transition: all 0.3s; 
-        }
-
-        .btn-return:hover { background: rgba(255,255,255,0.2); }
-
-        /* === Main Content Area === */
-        .main-container { 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; flex: 1; width: 100%; 
-            margin-top: -2rem; z-index: 10; margin-bottom: 4rem; 
-        }
-
-        .hero-heading { text-align: center; margin-bottom: 2.5rem; margin-top: 2rem; }
-        
-        .hero-heading h1 { 
-            color: white; font-size: 3.5rem; font-weight: 800; 
-            line-height: 1.1; margin: 0; letter-spacing: -1px; 
-        }
-        
-        .hero-heading h1 span { 
-            background: linear-gradient(90deg, #d946ef, #8b5cf6); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-        }
-
-        /* Premium Glassmorphism Card */
-        .glass-card { 
-            background: rgba(15, 7, 28, 0.6); 
-            backdrop-filter: blur(24px); 
-            -webkit-backdrop-filter: blur(24px); 
-            padding: 2.5rem 3rem; border-radius: 16px; 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05); 
-            width: 100%; max-width: 420px; text-align: center; 
-            transition: height 0.3s ease; 
-        }
-
-        .modern-input { 
-            width: 100%; padding: 0.9rem 1.2rem; border-radius: 8px; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            background: rgba(0,0,0,0.5); color: white; 
-            font-family: 'Inter', sans-serif; transition: all 0.3s ease; 
-            outline: none; box-sizing: border-box; 
-        }
-
-        .modern-input:focus { 
-            border-color: #d946ef; 
-            box-shadow: 0 0 15px rgba(217, 70, 239, 0.2); 
-            background: rgba(0,0,0,0.7); 
-        }
-
-        .btn-submit { 
-            width: 100%; display: flex; justify-content: center; align-items: center; 
-            gap: 10px; border-radius: 8px; padding: 1rem; 
-            font-weight: 600; font-size: 1rem; 
-            background: linear-gradient(90deg, #c026d3, #db2777); 
-            border: none; color: white; cursor: pointer; transition: all 0.3s ease; 
-            box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3); 
-        }
-
-        .btn-submit:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 25px rgba(217, 70, 239, 0.5); 
-        }
-
-        .btn-submit:disabled { 
-            background: rgba(255,255,255,0.1); 
-            color: rgba(255,255,255,0.5); 
-            box-shadow: none; cursor: not-allowed; transform: none; 
-        }
-
-        .btn-google { 
-            width: 100%; display: flex; justify-content: center; align-items: center; 
-            gap: 10px; border-radius: 8px; padding: 1rem; 
-            font-weight: 600; font-size: 1rem; 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            color: white; cursor: pointer; transition: all 0.3s ease; 
-        }
-
-        .btn-google:hover { background: rgba(255,255,255,0.1); }
-        .btn-google:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .spinner { 
-            width: 20px; height: 20px; 
-            border: 3px solid rgba(255,255,255,0.3); 
-            border-top: 3px solid white; border-radius: 50%; 
-            animation: spin 1s linear infinite; display: none; 
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .hidden-field { 
-            max-height: 0; opacity: 0; overflow: hidden; 
-            transition: all 0.4s ease; margin-bottom: 0 !important; 
-        }
-
-        .show-field { 
-            max-height: 100px; opacity: 1; margin-bottom: 1.2rem !important; 
-        }
-
-        /* Error Box Styling */
-        .error-box { 
-            display: none; background: rgba(239, 68, 68, 0.15); 
-            border: 1px solid rgba(239, 68, 68, 0.4); 
-            color: #fca5a5; padding: 0.75rem; border-radius: 8px; 
-            font-size: 0.85rem; margin-bottom: 1.5rem; 
-            text-align: left; font-weight: 500; 
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="space-bg"></div>
-    <div class="stars"></div>
-    <div class="glowing-orb orb-magenta"></div>
-    <div class="glowing-orb orb-purple"></div>
-
-    <nav class="q-navbar">
-        <a href="index.html" class="q-brand">
-            <div class="q-brand-icon">
-                <div style="width: 12px; height: 12px; background: #030008; border-radius: 50%;"></div>
-            </div>
-            <span>VayuGuard</span>
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand" style="text-decoration: none;">
+            <i class="fas fa-shield-virus"></i>
+            VayuGuard
         </a>
         
-        <ul class="q-nav-links">
-            <li><a href="index.html#forecast">Products</a></li>
-            <li><a href="index.html#solutions">Solutions</a></li>
-            <li><a href="helpdesk.html">Resources</a></li>
+        <ul class="nav-menu">
+            <li><a href="#forecast">Forecast</a></li>
+            <li><a href="#cities">Locations</a></li>
+            <li><a href="#health">Health</a></li>
+            <li><a href="helpdesk.html">Help Desk</a></li>
+            <li><a href="login.html" class="btn btn-primary" id="navLoginBtn" style="color: white; padding: 0.5rem 1.2rem; margin-left: 1rem;">Log In</a></li>
         </ul>
-
-        <a href="index.html" class="btn-return">Return to App</a>
     </nav>
 
-    <div class="main-container">
-        <div class="hero-heading">
-            <h1>The One-Stop<br><span>Quantum Air</span><br>Platform</h1>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <i class="fas fa-atom"></i> Powered by Quantum AI
+            </div>
+            <h1>Breathe Smarter with <br><span class="accent">Quantum Intelligence</span></h1>
+            <p>VayuGuard leverages quantum-hybrid forecasting to provide ultra-accurate, real-time Air Quality Index (AQI) predictions and personalized health recommendations tailored to your family's needs.</p>
+            <div class="hero-buttons">
+                <a href="#forecast" class="btn btn-primary">Check AQI Forecast</a>
+                <a href="helpdesk.html" class="btn btn-ghost">Contact Support</a>
+            </div>
         </div>
-
-        <div class="glass-card" id="authCard">
-            <h2 id="authTitle" style="color: var(--white); margin-top: 0; margin-bottom: 0.3rem; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;">Log in</h2>
-            <p id="authSubtitle" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 2rem;">Access your quantum computing profile.</p>
-
-            <div id="errorBox" class="error-box">
-                <i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i>
-                <span id="errorMessageText">An error occurred.</span>
+        
+        <div class="hero-visual">
+            <div class="aqi-card">
+                <div class="aqi-label">Current AQI - Local</div>
+                <div class="aqi-value">42</div>
+                <div class="aqi-status good">Good</div>
+                <div class="aqi-bar">
+                    <div class="aqi-fill" style="width: 25%;"></div>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <form id="authForm">
-                <div id="nameFieldContainer" class="hidden-field" style="text-align: left;">
-                    <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: block;">Full Name</label>
-                    <input type="text" id="nameInput" placeholder="John Doe" class="modern-input">
-                </div>
-
-                <div style="text-align: left; margin-bottom: 1.2rem;">
-                    <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: block;">Email</label>
-                    <input type="email" id="emailInput" placeholder="name@company.com" required class="modern-input">
-                </div>
-
-                <div style="text-align: left; margin-bottom: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500;">Password</label>
-                        <a href="#" id="forgotPasswordLink" style="color: #d946ef; font-size: 0.8rem; text-decoration: none; font-weight: 500;">Forgot password?</a>
-                    </div>
-                    <input type="password" id="passInput" placeholder="••••••••" required class="modern-input">
-                </div>
-
-                <button type="submit" id="submitBtn" class="btn-submit">
-                    <span id="btnText">Log in</span>
-                    <div class="spinner" id="btnSpinner"></div>
-                </button>
-            </form>
-
-            <div style="display: flex; align-items: center; margin: 1.2rem 0;">
-                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                <span style="color: rgba(255,255,255,0.5); padding: 0 10px; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">OR</span>
-                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-            </div>
-
-            <button type="button" id="googleBtn" class="btn-google">
-                <i class="fab fa-google" style="color: #ea4335; font-size: 1.1rem;"></i> 
-                <span id="googleBtnText">Continue with Google</span>
-                <div class="spinner" id="googleSpinner" style="border-top-color: #ea4335;"></div>
-            </button>
-
-            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 0;">
-                <span id="togglePreText">Don't have an account?</span> 
-                <a href="#" id="toggleAuthMode" style="color: #d946ef; font-weight: 600; text-decoration: none;">Sign Up</a>
-            </p>
+    <div class="ticker">
+        <div class="ticker-wrap">
+            <span><span class="live">●</span> <strong>LIVE:</strong> Real-time quantum hybrid AQI model successfully deployed.</span>
+            <span><i class="fas fa-check-circle quantum-tag"></i> <strong>SYSTEM OPTIMAL:</strong> All quantum sensors reporting normally.</span>
+            <span><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> <strong>ALERT:</strong> Moderate AQI expected in Sector 4 later today.</span>
         </div>
     </div>
 
+    <section id="forecast" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Predictive Engine</span>
+                <h2>Quantum AQI Forecast</h2>
+                <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
+            </div>
+
+            <div class="forecast-box">
+                
+                <div class="controls">
+                    <div class="control-group" style="grid-column: span 3;">
+                        <label>Active Health Profiles</label>
+                        <div class="people-chips">
+                            <div class="chip active"><i class="fas fa-user"></i> My Profile</div>
+                            <div class="chip"><i class="fas fa-child"></i> Sarah (Asthma)</div>
+                            <div class="chip"><i class="fas fa-wheelchair"></i> Grandpa (COPD)</div>
+                            <div class="chip" id="openModalBtn" style="background: var(--light); border: 1px dashed var(--gray-light);"><i class="fas fa-plus"></i> Add Person</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quantum-note">
+                    <i class="fas fa-microchip"></i>
+                    <div>
+                        <strong>Quantum Advantage Active:</strong> Processing 10,000+ atmospheric variables to predict asthma triggers for <em>Sarah</em> with 94% accuracy.
+                    </div>
+                </div>
+
+                <div class="forecast-grid">
+                    <div class="forecast-card good">
+                        <div class="forecast-time">In 2 Hours</div>
+                        <div class="forecast-aqi">45</div>
+                        <div class="forecast-cat good">Good</div>
+                    </div>
+                    <div class="forecast-card moderate">
+                        <div class="forecast-time">In 12 Hours</div>
+                        <div class="forecast-aqi">85</div>
+                        <div class="forecast-cat moderate">Moderate</div>
+                    </div>
+                    <div class="forecast-card poor">
+                        <div class="forecast-time">Tomorrow</div>
+                        <div class="forecast-aqi">112</div>
+                        <div class="forecast-cat poor">Unhealthy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cities" class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Global Network</span>
+                <h2>Saved Locations</h2>
+                <p>Monitor the air quality for your loved ones around the world.</p>
+            </div>
+
+            <div class="cities-row">
+                <div class="city-item">
+                    <div class="city-aqi-box good">
+                        <span class="city-aqi-num">32</span>
+                        <span class="city-aqi-text">AQI</span>
+                    </div>
+                    <h3>Bengaluru, IN</h3>
+                    <p>Current Location</p>
+                    <div class="city-meta">
+                        <span><i class="fas fa-wind"></i> 12 km/h</span>
+                        <span><i class="fas fa-tint"></i> 45%</span>
+                    </div>
+                </div>
+
+                <div class="city-item">
+                    <div class="city-aqi-box poor">
+                        <span class="city-aqi-num">156</span>
+                        <span class="city-aqi-text">AQI</span>
+                    </div>
+                    <h3>Delhi, IN</h3>
+                    <p>Grandparents' Home</p>
+                    <div class="city-meta">
+                        <span><i class="fas fa-wind"></i> 4 km/h</span>
+                        <span><i class="fas fa-tint"></i> 60%</span>
+                    </div>
+                </div>
+
+                <div class="city-item">
+                    <div class="city-aqi-box moderate">
+                        <span class="city-aqi-num">88</span>
+                        <span class="city-aqi-text">AQI</span>
+                    </div>
+                    <h3>New York, US</h3>
+                    <p>Office HQ</p>
+                    <div class="city-meta">
+                        <span><i class="fas fa-wind"></i> 18 km/h</span>
+                        <span><i class="fas fa-tint"></i> 30%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="health" class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Health & Wellness</span>
+                <h2>Activity Safety & Breathing</h2>
+                <p>Personalized recommendations based on current local air quality.</p>
+            </div>
+
+            <div class="health-grid" style="margin-bottom: 4rem;">
+                <div class="health-item">
+                    <div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div>
+                    <h3>Outdoor Exercise</h3>
+                    <p>Safe for all groups. Great time for a run.</p>
+                </div>
+                <div class="health-item">
+                    <div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div>
+                    <h3>Kids & Elderly</h3>
+                    <p>Monitor closely. Limit extreme exertion.</p>
+                </div>
+                <div class="health-item">
+                    <div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div>
+                    <h3>Asthma Risk</h3>
+                    <p>Elevated pollen levels detected.</p>
+                </div>
+                <div class="health-item">
+                    <div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div>
+                    <h3>Ventilation</h3>
+                    <p>Safe to open windows and circulate air.</p>
+                </div>
+            </div>
+
+            <div class="breathe-grid">
+                <div class="breathe-card">
+                    <div class="breathe-visual">
+                        <div class="breath-circle relax">Relax</div>
+                    </div>
+                    <h3>4-7-8 Breathing</h3>
+                    <p>Perfect for reducing stress and anxiety when staying indoors.</p>
+                </div>
+                
+                <div class="breathe-card">
+                    <div class="breathe-visual">
+                        <div class="breath-circle cleanse">Cleanse</div>
+                    </div>
+                    <h3>Box Breathing</h3>
+                    <p>Clear your lungs and improve focus with structured intervals.</p>
+                </div>
+                
+                <div class="breathe-card">
+                    <div class="breathe-visual">
+                        <div class="breath-circle active">Active</div>
+                    </div>
+                    <h3>Power Breathing</h3>
+                    <p>Boost your oxygen levels before heading out into clean air.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Technology</span>
+                <h2>Why Quantum?</h2>
+                <p>See how our qBraid-powered hybrid engine compares to standard AQI apps.</p>
+            </div>
+
+            <div class="quantum-compare">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Standard AQI Apps</th>
+                            <th>VayuGuard (Quantum)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Prediction Accuracy</td>
+                            <td>~70% (Classical ML)</td>
+                            <td class="win">94%+ (Quantum Hybrid)</td>
+                        </tr>
+                        <tr>
+                            <td>Variables Processed</td>
+                            <td>~50 variables</td>
+                            <td class="win">10,000+ simultaneous</td>
+                        </tr>
+                        <tr>
+                            <td>Update Frequency</td>
+                            <td>Hourly</td>
+                            <td class="win">Real-time (Sub-second)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="quantum-features">
+                <div class="q-feature">
+                    <i class="fas fa-network-wired"></i>
+                    <h4>Hybrid Architecture</h4>
+                    <p>Seamlessly blending classical ML with quantum processing.</p>
+                </div>
+                <div class="q-feature">
+                    <i class="fas fa-bolt"></i>
+                    <h4>Real-Time Sync</h4>
+                    <p>Instantaneous data updates from IoT sensors globally.</p>
+                </div>
+                <div class="q-feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Quantum Security</h4>
+                    <p>Your health data is protected by quantum-safe encryption.</p>
+                </div>
+                <div class="q-feature">
+                    <i class="fas fa-globe"></i>
+                    <h4>Global Scale</h4>
+                    <p>Powered by qBraid's distributed quantum cloud network.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Specialists</span>
+                <h2>Consult Top Pulmonologists</h2>
+                <p>Connect with verified respiratory experts in your area.</p>
+            </div>
+
+            <div class="doctor-list">
+                <div class="doc-card">
+                    <div class="doc-top">
+                        <div class="doc-avatar">DS</div>
+                        <div class="doc-info">
+                            <h4>Dr. Sarah Chen</h4>
+                            <span>15 yrs experience</span>
+                        </div>
+                    </div>
+                    <div class="doc-spec">Asthma Specialist</div>
+                    <div class="doc-meta"><i class="fas fa-star"></i> 4.9 (120 reviews)</div>
+                    <div class="doc-actions">
+                        <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <div class="doc-top">
+                        <div class="doc-avatar">MR</div>
+                        <div class="doc-info">
+                            <h4>Dr. Marcus Rao</h4>
+                            <span>12 yrs experience</span>
+                        </div>
+                    </div>
+                    <div class="doc-spec">Pulmonology</div>
+                    <div class="doc-meta"><i class="fas fa-star"></i> 4.8 (85 reviews)</div>
+                    <div class="doc-actions">
+                        <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <div class="doc-top">
+                        <div class="doc-avatar">EP</div>
+                        <div class="doc-info">
+                            <h4>Dr. Elena Patel</h4>
+                            <span>20 yrs experience</span>
+                        </div>
+                    </div>
+                    <div class="doc-spec">Allergy & Immunology</div>
+                    <div class="doc-meta"><i class="fas fa-star"></i> 5.0 (200+ reviews)</div>
+                    <div class="doc-actions">
+                        <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand">
+                        <i class="fas fa-shield-virus"></i> VayuGuard
+                    </div>
+                    <p style="color: var(--gray-light); font-size: 0.9rem; margin-top: 1rem;">
+                        The world's first quantum-hybrid air quality forecasting platform. Built for a healthier tomorrow.
+                    </p>
+                </div>
+                <div>
+                    <h4>Platform</h4>
+                    <a href="#forecast">AQI Forecast</a>
+                    <a href="#health">Health Solutions</a>
+                    <a href="helpdesk.html">Help Desk</a>
+                </div>
+                <div>
+                    <h4>Technology</h4>
+                    <a href="#">Quantum Engine</a>
+                    <a href="#">Machine Learning</a>
+                    <a href="#">API Documentation</a>
+                </div>
+                <div>
+                    <h4>Connect</h4>
+                    <a href="https://github.com/Marampawan/vayuguard-aiml" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 VayuGuard. All rights reserved. Built with <i class="fas fa-heart"></i> and Quantum Technology.
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay hidden" id="addPersonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Add Family Member</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" placeholder="e.g., Grandma">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Health Conditions (Optional)</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" value="asthma"> Asthma</label>
+                        <label><input type="checkbox" value="copd"> COPD / Emphysema</label>
+                        <label><input type="checkbox" value="allergies"> Severe Allergies</label>
+                        <label><input type="checkbox" value="heart"> Heart Condition</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
+                <button class="btn btn-primary" onclick="alert('Member added successfully!'); document.getElementById('addPersonModal').classList.add('hidden');">Save Member</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('addPersonModal');
+        const openBtn = document.getElementById('openModalBtn');
+        const closeBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelModalBtn');
+
+        openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        // YOUR REAL FIREBASE KEYS
         const firebaseConfig = {
             apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E",
             authDomain: "vayuguard-44a1e.firebaseapp.com",
@@ -321,117 +429,24 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
+        const loginButton = document.getElementById('navLoginBtn');
 
-        let isLoginMode = true; 
-        const authTitle = document.getElementById('authTitle');
-        const authSubtitle = document.getElementById('authSubtitle');
-        const nameFieldContainer = document.getElementById('nameFieldContainer');
-        const nameInput = document.getElementById('nameInput');
-        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-        const btnText = document.getElementById('btnText');
-        const togglePreText = document.getElementById('togglePreText');
-        const toggleAuthMode = document.getElementById('toggleAuthMode');
-        const btn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('btnSpinner');
-        const email = document.getElementById('emailInput');
-        const pass = document.getElementById('passInput');
-        const googleBtn = document.getElementById('googleBtn');
-        const googleBtnText = document.getElementById('googleBtnText');
-        const googleSpinner = document.getElementById('googleSpinner');
-        
-        // Error Box Elements
-        const errorBox = document.getElementById('errorBox');
-        const errorMessageText = document.getElementById('errorMessageText');
-
-        function displayError(errorCode) {
-            errorBox.style.display = "block";
-            if (errorCode.includes('invalid-credential') || errorCode.includes('wrong-password') || errorCode.includes('user-not-found')) {
-                errorMessageText.textContent = "Incorrect email or password. Please try again.";
-            } else if (errorCode.includes('email-already-in-use')) {
-                errorMessageText.textContent = "This email is already registered. Please log in.";
-            } else if (errorCode.includes('weak-password')) {
-                errorMessageText.textContent = "Your password must be at least 6 characters long.";
-            } else {
-                errorMessageText.textContent = "An error occurred. Please try again.";
-            }
-        }
-
-        toggleAuthMode.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            isLoginMode = !isLoginMode; 
-            errorBox.style.display = "none"; // Clear error on toggle
-
-            if (isLoginMode) {
-                authTitle.textContent = "Log in";
-                authSubtitle.textContent = "Access your quantum computing profile.";
-                nameFieldContainer.classList.remove('show-field'); 
-                nameInput.removeAttribute('required'); 
-                forgotPasswordLink.style.display = "block"; 
-                btnText.textContent = "Log in";
-                togglePreText.textContent = "Don't have an account?";
-                toggleAuthMode.textContent = "Sign Up";
-            } else {
-                authTitle.textContent = "Create Account";
-                authSubtitle.textContent = "Join the VayuGuard quantum network.";
-                nameFieldContainer.classList.add('show-field'); 
-                nameInput.setAttribute('required', 'true'); 
-                forgotPasswordLink.style.display = "none"; 
-                btnText.textContent = "Sign Up";
-                togglePreText.textContent = "Already have an account?";
-                toggleAuthMode.textContent = "Log in";
-            }
-        });
-
-        document.getElementById('authForm').addEventListener('submit', function(event) {
-            event.preventDefault(); 
-            errorBox.style.display = "none"; // Hide any old errors
-            lockUI(btn, btnText, spinner, isLoginMode ? "Authenticating..." : "Creating Account...");
-
-            if (isLoginMode) {
-                signInWithEmailAndPassword(auth, email.value, pass.value)
-                    .then(() => window.location.href = 'index.html')
-                    .catch((error) => {
-                        displayError(error.code);
-                        unlockUI();
-                    });
-            } else {
-                createUserWithEmailAndPassword(auth, email.value, pass.value)
-                    .then(() => window.location.href = 'index.html')
-                    .catch((error) => {
-                        displayError(error.code);
-                        unlockUI();
-                    });
-            }
-        });
-
-        googleBtn.addEventListener('click', () => {
-            errorBox.style.display = "none";
-            googleBtn.disabled = true;
-            googleBtnText.style.display = "none";
-            googleSpinner.style.display = "block";
-
-            signInWithPopup(auth, googleProvider)
-                .then(() => window.location.href = 'index.html')
-                .catch((error) => {
-                    displayError(error.code || "google-error");
-                    googleBtn.disabled = false;
-                    googleBtnText.style.display = "inline";
-                    googleSpinner.style.display = "none";
+        onAuthStateChanged(auth, (user) => {
+            if (user && loginButton) {
+                loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
+                loginButton.style.backgroundColor = "transparent";
+                loginButton.style.border = "1px solid var(--danger)";
+                loginButton.style.color = "var(--danger)";
+                loginButton.href = "#"; 
+                
+                loginButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    signOut(auth).then(() => {
+                        window.location.reload();
+                    }).catch((error) => console.error("Logout Error:", error));
                 });
+            }
         });
-
-        function lockUI(button, textElement, loadSpinner, text) {
-            button.disabled = true; email.disabled = true; pass.disabled = true; googleBtn.disabled = true;
-            if(!isLoginMode) nameInput.disabled = true;
-            textElement.textContent = text; loadSpinner.style.display = "block"; 
-        }
-
-        function unlockUI() {
-            btn.disabled = false; email.disabled = false; pass.disabled = false; googleBtn.disabled = false;
-            if(!isLoginMode) nameInput.disabled = false;
-            btnText.textContent = isLoginMode ? "Log in" : "Sign Up"; spinner.style.display = "none"; 
-        }
     </script>
 </body>
 </html>
