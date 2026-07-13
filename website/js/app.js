@@ -27,11 +27,26 @@ function initUnifiedCityData() {
         newyork: 'New York, US'
     };
 
-    select.addEventListener('change', function() {
-        updateCityData(this.value);
+    select.addEventListener('change', async function() {
+        // 1. Disable the dropdown and make it look locked
+        this.disabled = true;
+        this.style.opacity = '0.5';
+        this.style.cursor = 'not-allowed';
+
+        // 2. Instantly update the label
         const label = document.querySelector('.aqi-label');
         if (label) {
             label.textContent = `Live AQI - ${cityNames[this.value] || 'Bengaluru, IN'}`;
+        }
+
+        try {
+            // 3. Wait for the entire Quantum Fetch process to finish
+            await updateCityData(this.value);
+        } finally {
+            // 4. Re-enable the dropdown
+            this.disabled = false;
+            this.style.opacity = '1';
+            this.style.cursor = 'pointer';
         }
     });
 
