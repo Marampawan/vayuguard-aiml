@@ -13,43 +13,33 @@
 
     <nav class="navbar">
         <a href="index.html" class="nav-brand" style="text-decoration: none;">
-            <i class="fas fa-shield-virus"></i>
-            VayuGuard
+            <i class="fas fa-shield-virus"></i> VayuGuard
         </a>
-        
         <ul class="nav-menu">
-            <li><a href="#forecast">Products</a></li>
-            <li><a href="#solutions">Solutions</a></li>
+            <li><a href="#forecast">Forecast</a></li>
+            <li><a href="#cities">Locations</a></li>
+            <li><a href="#health">Health</a></li>
             <li><a href="helpdesk.html">Help Desk</a></li>
             <li><a href="login.html" class="btn btn-primary" id="navLoginBtn" style="color: white; padding: 0.5rem 1.2rem; margin-left: 1rem;">Log In</a></li>
         </ul>
-
-        <div class="hamburger">
-            <span></span><span></span><span></span>
-        </div>
     </nav>
 
     <section class="hero">
         <div class="hero-content">
-            <div class="badge">
-                <i class="fas fa-atom"></i> Powered by Quantum AI
-            </div>
+            <div class="badge"><i class="fas fa-atom"></i> Powered by Quantum AI</div>
             <h1>Breathe Smarter with <br><span class="accent">Quantum Intelligence</span></h1>
-            <p>VayuGuard leverages quantum-hybrid forecasting to provide ultra-accurate, real-time Air Quality Index (AQI) predictions and personalized health recommendations.</p>
+            <p>VayuGuard leverages quantum-hybrid forecasting to provide ultra-accurate, real-time Air Quality Index (AQI) predictions and personalized health recommendations tailored to your family's needs.</p>
             <div class="hero-buttons">
                 <a href="#forecast" class="btn btn-primary">Check AQI Forecast</a>
                 <a href="helpdesk.html" class="btn btn-ghost">Contact Support</a>
             </div>
         </div>
-        
         <div class="hero-visual">
             <div class="aqi-card">
                 <div class="aqi-label">Current AQI - Local</div>
                 <div class="aqi-value">42</div>
                 <div class="aqi-status good">Good</div>
-                <div class="aqi-bar">
-                    <div class="aqi-fill" style="width: 25%;"></div>
-                </div>
+                <div class="aqi-bar"><div class="aqi-fill" style="width: 25%;"></div></div>
             </div>
         </div>
     </section>
@@ -59,7 +49,6 @@
             <span><span class="live">●</span> <strong>LIVE:</strong> Real-time quantum hybrid AQI model successfully deployed.</span>
             <span><i class="fas fa-check-circle quantum-tag"></i> <strong>SYSTEM OPTIMAL:</strong> All quantum sensors reporting normally.</span>
             <span><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> <strong>ALERT:</strong> Moderate AQI expected in Sector 4 later today.</span>
-            <span><span class="live">●</span> <strong>LIVE:</strong> Global air quality mapping synchronized via qBraid backend.</span>
         </div>
     </div>
 
@@ -68,17 +57,24 @@
             <div class="section-head">
                 <span class="tag">Predictive Engine</span>
                 <h2>Quantum AQI Forecast</h2>
-                <p>Plan your day with hyper-accurate, quantum-accelerated predictions.</p>
+                <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
             </div>
-
             <div class="forecast-box">
-                <div class="quantum-note">
-                    <i class="fas fa-microchip"></i>
-                    <div>
-                        <strong>Quantum Advantage Active:</strong> Our hybrid model processes 10,000+ atmospheric variables simultaneously for 40% higher accuracy than classical models.
+                <div class="controls">
+                    <div class="control-group" style="grid-column: span 3;">
+                        <label>Active Health Profiles</label>
+                        <div class="people-chips">
+                            <div class="chip active"><i class="fas fa-user"></i> My Profile</div>
+                            <div class="chip"><i class="fas fa-child"></i> Sarah (Asthma)</div>
+                            <div class="chip"><i class="fas fa-wheelchair"></i> Grandpa (COPD)</div>
+                            <div class="chip" id="openModalBtn" style="background: var(--light); border: 1px dashed var(--gray-light);"><i class="fas fa-plus"></i> Add Person</div>
+                        </div>
                     </div>
                 </div>
-
+                <div class="quantum-note">
+                    <i class="fas fa-microchip"></i>
+                    <div><strong>Quantum Advantage Active:</strong> Processing 10,000+ atmospheric variables to predict asthma triggers for <em>Sarah</em> with 94% accuracy.</div>
+                </div>
                 <div class="forecast-grid">
                     <div class="forecast-card good">
                         <div class="forecast-time">In 2 Hours</div>
@@ -100,99 +96,68 @@
         </div>
     </section>
 
-    <section id="solutions" class="section">
+    <section id="cities" class="section">
         <div class="container">
             <div class="section-head">
-                <span class="tag">Health & Wellness</span>
-                <h2>Breathe Better</h2>
-                <p>Guided respiratory exercises based on your current local air quality.</p>
+                <span class="tag">Global Network</span>
+                <h2>Saved Locations</h2>
+                <p>Monitor the air quality for your loved ones around the world.</p>
             </div>
-
-            <div class="breathe-grid">
-                <div class="breathe-card">
-                    <div class="breathe-visual">
-                        <div class="breath-circle relax">Relax</div>
-                    </div>
-                    <h3>4-7-8 Breathing</h3>
-                    <p>Perfect for reducing stress and anxiety when staying indoors.</p>
+            <div class="cities-row">
+                <div class="city-item">
+                    <div class="city-aqi-box good"><span class="city-aqi-num">32</span><span class="city-aqi-text">AQI</span></div>
+                    <h3>Bengaluru, IN</h3><p>Current Location</p>
+                    <div class="city-meta"><span><i class="fas fa-wind"></i> 12 km/h</span><span><i class="fas fa-tint"></i> 45%</span></div>
                 </div>
-                
-                <div class="breathe-card">
-                    <div class="breathe-visual">
-                        <div class="breath-circle cleanse">Cleanse</div>
-                    </div>
-                    <h3>Box Breathing</h3>
-                    <p>Clear your lungs and improve focus with structured intervals.</p>
+                <div class="city-item">
+                    <div class="city-aqi-box poor"><span class="city-aqi-num">156</span><span class="city-aqi-text">AQI</span></div>
+                    <h3>Delhi, IN</h3><p>Grandparents' Home</p>
+                    <div class="city-meta"><span><i class="fas fa-wind"></i> 4 km/h</span><span><i class="fas fa-tint"></i> 60%</span></div>
                 </div>
-                
-                <div class="breathe-card">
-                    <div class="breathe-visual">
-                        <div class="breath-circle active">Active</div>
-                    </div>
-                    <h3>Power Breathing</h3>
-                    <p>Boost your oxygen levels before heading out into clean air.</p>
+                <div class="city-item">
+                    <div class="city-aqi-box moderate"><span class="city-aqi-num">88</span><span class="city-aqi-text">AQI</span></div>
+                    <h3>New York, US</h3><p>Office HQ</p>
+                    <div class="city-meta"><span><i class="fas fa-wind"></i> 18 km/h</span><span><i class="fas fa-tint"></i> 30%</span></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section section-alt">
+    <section id="health" class="section section-alt">
         <div class="container">
             <div class="section-head">
-                <span class="tag">Technology</span>
-                <h2>Why Quantum?</h2>
-                <p>See how our qBraid-powered hybrid engine compares to standard AQI apps.</p>
+                <span class="tag">Health & Wellness</span>
+                <h2>Activity Safety & Breathing</h2>
+                <p>Personalized recommendations based on current local air quality.</p>
+            </div>
+            
+            <div class="health-grid" style="margin-bottom: 4rem;">
+                <div class="health-item"><div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div>
+                    <h3>Outdoor Exercise</h3><p>Safe for all groups. Great time for a run.</p>
+                </div>
+                <div class="health-item"><div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div>
+                    <h3>Kids & Elderly</h3><p>Monitor closely. Limit extreme exertion.</p>
+                </div>
+                <div class="health-item"><div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div>
+                    <h3>Asthma Risk</h3><p>Elevated pollen levels detected.</p>
+                </div>
+                <div class="health-item"><div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div>
+                    <h3>Ventilation</h3><p>Safe to open windows and circulate air.</p>
+                </div>
             </div>
 
-            <div class="quantum-compare">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Standard AQI Apps</th>
-                            <th>VayuGuard (Quantum)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Prediction Accuracy</td>
-                            <td>~70% (Classical ML)</td>
-                            <td class="win">94%+ (Quantum Hybrid)</td>
-                        </tr>
-                        <tr>
-                            <td>Variables Processed</td>
-                            <td>~50 variables</td>
-                            <td class="win">10,000+ simultaneous</td>
-                        </tr>
-                        <tr>
-                            <td>Update Frequency</td>
-                            <td>Hourly</td>
-                            <td class="win">Real-time (Sub-second)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="quantum-features">
-                <div class="q-feature">
-                    <i class="fas fa-network-wired"></i>
-                    <h4>Hybrid Architecture</h4>
-                    <p>Seamlessly blending classical ML with quantum processing.</p>
+            <div class="breathe-grid">
+                <div class="breathe-card">
+                    <div class="breathe-visual"><div class="breath-circle relax">Relax</div></div>
+                    <h3>4-7-8 Breathing</h3><p>Perfect for reducing stress and anxiety when staying indoors.</p>
                 </div>
-                <div class="q-feature">
-                    <i class="fas fa-bolt"></i>
-                    <h4>Real-Time Sync</h4>
-                    <p>Instantaneous data updates from IoT sensors globally.</p>
+                <div class="breathe-card">
+                    <div class="breathe-visual"><div class="breath-circle cleanse">Cleanse</div></div>
+                    <h3>Box Breathing</h3><p>Clear your lungs and improve focus with structured intervals.</p>
                 </div>
-                <div class="q-feature">
-                    <i class="fas fa-shield-alt"></i>
-                    <h4>Quantum Security</h4>
-                    <p>Your health data is protected by quantum-safe encryption.</p>
-                </div>
-                <div class="q-feature">
-                    <i class="fas fa-globe"></i>
-                    <h4>Global Scale</h4>
-                    <p>Powered by qBraid's distributed quantum cloud network.</p>
+                <div class="breathe-card">
+                    <div class="breathe-visual"><div class="breath-circle active">Active</div></div>
+                    <h3>Power Breathing</h3><p>Boost your oxygen levels before heading out into clean air.</p>
                 </div>
             </div>
         </div>
@@ -201,11 +166,29 @@
     <section class="section">
         <div class="container">
             <div class="section-head">
+                <span class="tag">Technology</span>
+                <h2>Why Quantum?</h2>
+            </div>
+            <div class="quantum-compare">
+                <table>
+                    <thead><tr><th>Feature</th><th>Standard AQI Apps</th><th>VayuGuard (Quantum)</th></tr></thead>
+                    <tbody>
+                        <tr><td>Prediction Accuracy</td><td>~70% (Classical ML)</td><td class="win">94%+ (Quantum Hybrid)</td></tr>
+                        <tr><td>Variables Processed</td><td>~50 variables</td><td class="win">10,000+ simultaneous</td></tr>
+                        <tr><td>Update Frequency</td><td>Hourly</td><td class="win">Real-time (Sub-second)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-head">
                 <span class="tag">Specialists</span>
                 <h2>Consult Top Pulmonologists</h2>
                 <p>Connect with verified respiratory experts in your area.</p>
             </div>
-
             <div class="doctor-list">
                 <div class="doc-card">
                     <div class="doc-top">
@@ -259,9 +242,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <div class="footer-brand">
-                        <i class="fas fa-shield-virus"></i> VayuGuard
-                    </div>
+                    <div class="footer-brand"><i class="fas fa-shield-virus"></i> VayuGuard</div>
                     <p style="color: var(--gray-light); font-size: 0.9rem; margin-top: 1rem;">
                         The world's first quantum-hybrid air quality forecasting platform. Built for a healthier tomorrow.
                     </p>
@@ -269,7 +250,7 @@
                 <div>
                     <h4>Platform</h4>
                     <a href="#forecast">AQI Forecast</a>
-                    <a href="#solutions">Health Solutions</a>
+                    <a href="#health">Health Solutions</a>
                     <a href="helpdesk.html">Help Desk</a>
                 </div>
                 <div>
@@ -291,11 +272,33 @@
         </div>
     </footer>
 
+    <div class="modal-overlay hidden" id="addPersonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Add Family Member</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group"><label>Name</label><input type="text" placeholder="e.g., Grandma"></div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Health Conditions (Optional)</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" value="asthma"> Asthma</label>
+                        <label><input type="checkbox" value="copd"> COPD / Emphysema</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
+                <button class="btn btn-primary" onclick="alert('Member added successfully!'); document.getElementById('addPersonModal').classList.add('hidden');">Save Member</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        // Your Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E",
             authDomain: "vayuguard-44a1e.firebaseapp.com",
@@ -306,40 +309,33 @@
             measurementId: "G-2KRT1YYMSS"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-
-        // Find the Log In button by its ID
+        
+        // This targets the Login button to change it to Logout
         const loginButton = document.getElementById('navLoginBtn');
 
-        // Check if the user is signed in
         onAuthStateChanged(auth, (user) => {
             if (user && loginButton) {
-                // User IS logged in! 
-                // 1. Change the text and icon to "Log Out"
+                // Change button to Log Out
                 loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
-                
-                // 2. Change the button style slightly to indicate it's a logout button
                 loginButton.style.backgroundColor = "transparent";
                 loginButton.style.border = "1px solid var(--danger)";
                 loginButton.style.color = "var(--danger)";
-                
-                // 3. Remove the link to login.html
                 loginButton.href = "#"; 
                 
-                // 4. Add the sign-out click action
                 loginButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    signOut(auth).then(() => {
-                        // When they log out, refresh the page to reset everything
-                        window.location.reload();
-                    }).catch((error) => {
-                        console.error("Logout Error:", error);
-                    });
+                    signOut(auth).then(() => { window.location.reload(); });
                 });
             }
         });
+
+        // Modal JS
+        const modal = document.getElementById('addPersonModal');
+        document.getElementById('openModalBtn').addEventListener('click', () => modal.classList.remove('hidden'));
+        document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
+        document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
     </script>
 </body>
 </html>

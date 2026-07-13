@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* === qBraid-Style Deep Space Background === */
+        /* === Deep Space Background === */
         body { 
             margin: 0; 
             overflow-x: hidden; 
@@ -76,7 +76,7 @@
             100% { transform: translate(-2%, 8%) scale(0.9); } 
         }
 
-        /* === qBraid-Style Navbar === */
+        /* === Navbar === */
         .q-navbar { 
             width: 100%; display: flex; justify-content: space-between; 
             align-items: center; padding: 1.5rem 4rem; 
@@ -218,7 +218,7 @@
             border: 1px solid rgba(239, 68, 68, 0.4); 
             color: #fca5a5; padding: 0.75rem; border-radius: 8px; 
             font-size: 0.85rem; margin-bottom: 1.5rem; 
-            text-align: left; font-weight: 500; 
+            text-align: left; font-weight: 500; transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -256,7 +256,7 @@
             <p id="authSubtitle" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 2rem;">Access your quantum computing profile.</p>
 
             <div id="errorBox" class="error-box">
-                <i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i>
+                <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
                 <span id="errorMessageText">An error occurred.</span>
             </div>
 
@@ -271,7 +271,7 @@
                     <input type="email" id="emailInput" placeholder="name@company.com" required class="modern-input">
                 </div>
 
-                <div style="text-align: left; margin-bottom: 1.5rem;">
+                <div style="text-align: left; margin-bottom: 1.5rem;" id="passwordFieldContainer">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                         <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500;">Password</label>
                         <a href="#" id="forgotPasswordLink" style="color: #d946ef; font-size: 0.8rem; text-decoration: none; font-weight: 500;">Forgot password?</a>
@@ -285,7 +285,7 @@
                 </button>
             </form>
 
-            <div style="display: flex; align-items: center; margin: 1.2rem 0;">
+            <div style="display: flex; align-items: center; margin: 1.2rem 0;" id="dividerOr">
                 <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
                 <span style="color: rgba(255,255,255,0.5); padding: 0 10px; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">OR</span>
                 <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
@@ -306,9 +306,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        // --- ADDED sendPasswordResetEmail HERE ---
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        // YOUR REAL FIREBASE KEYS
         const firebaseConfig = {
             apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E",
             authDomain: "vayuguard-44a1e.firebaseapp.com",
@@ -340,27 +340,64 @@
         const googleBtnText = document.getElementById('googleBtnText');
         const googleSpinner = document.getElementById('googleSpinner');
         
-        // Error Box Elements
         const errorBox = document.getElementById('errorBox');
         const errorMessageText = document.getElementById('errorMessageText');
 
-        function displayError(errorCode) {
+        // Dynamic Display Engine for Errors AND Successes
+        function displayMessage(messageCode, isSuccess = false) {
             errorBox.style.display = "block";
-            if (errorCode.includes('invalid-credential') || errorCode.includes('wrong-password') || errorCode.includes('user-not-found')) {
-                errorMessageText.textContent = "Incorrect email or password. Please try again.";
-            } else if (errorCode.includes('email-already-in-use')) {
-                errorMessageText.textContent = "This email is already registered. Please log in.";
-            } else if (errorCode.includes('weak-password')) {
-                errorMessageText.textContent = "Your password must be at least 6 characters long.";
+            
+            if (isSuccess) {
+                // Make the box Green for success messages (like password reset)
+                errorBox.style.background = "rgba(34, 197, 94, 0.15)";
+                errorBox.style.borderColor = "rgba(34, 197, 94, 0.4)";
+                errorBox.style.color = "#86efac";
+                errorMessageText.textContent = messageCode; 
             } else {
-                errorMessageText.textContent = "An error occurred. Please try again.";
+                // Make the box Red for errors
+                errorBox.style.background = "rgba(239, 68, 68, 0.15)";
+                errorBox.style.borderColor = "rgba(239, 68, 68, 0.4)";
+                errorBox.style.color = "#fca5a5";
+                
+                if (messageCode.includes('invalid-credential') || messageCode.includes('wrong-password') || messageCode.includes('user-not-found')) {
+                    errorMessageText.textContent = "Incorrect email or password. Please try again.";
+                } else if (messageCode.includes('email-already-in-use')) {
+                    errorMessageText.textContent = "This email is already registered. Please log in.";
+                } else if (messageCode.includes('weak-password')) {
+                    errorMessageText.textContent = "Your password must be at least 6 characters long.";
+                } else if (messageCode.includes('missing-email')) {
+                    errorMessageText.textContent = "Please provide an email address.";
+                } else {
+                    errorMessageText.textContent = "An error occurred. Please try again.";
+                }
             }
         }
+
+        // --- NEW: Working Forgot Password Logic ---
+        forgotPasswordLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            const userEmail = email.value.trim();
+            
+            if (!userEmail) {
+                displayMessage("auth/missing-email", false);
+                errorMessageText.textContent = "Please enter your email above to reset your password.";
+                return;
+            }
+
+            // Send actual Firebase reset email
+            sendPasswordResetEmail(auth, userEmail)
+                .then(() => {
+                    displayMessage("Password reset email sent! Check your inbox.", true);
+                })
+                .catch((error) => {
+                    displayMessage(error.code, false);
+                });
+        });
 
         toggleAuthMode.addEventListener('click', function(event) {
             event.preventDefault(); 
             isLoginMode = !isLoginMode; 
-            errorBox.style.display = "none"; // Clear error on toggle
+            errorBox.style.display = "none"; 
 
             if (isLoginMode) {
                 authTitle.textContent = "Log in";
@@ -385,21 +422,29 @@
 
         document.getElementById('authForm').addEventListener('submit', function(event) {
             event.preventDefault(); 
-            errorBox.style.display = "none"; // Hide any old errors
+            errorBox.style.display = "none"; 
             lockUI(btn, btnText, spinner, isLoginMode ? "Authenticating..." : "Creating Account...");
 
             if (isLoginMode) {
                 signInWithEmailAndPassword(auth, email.value, pass.value)
-                    .then(() => window.location.href = 'index.html')
+                    .then((userCredential) => {
+                        // --- FIX: Save Token for app.js so it knows we are logged in! ---
+                        localStorage.setItem('token', userCredential.user.uid);
+                        window.location.href = 'index.html';
+                    })
                     .catch((error) => {
-                        displayError(error.code);
+                        displayMessage(error.code, false);
                         unlockUI();
                     });
             } else {
                 createUserWithEmailAndPassword(auth, email.value, pass.value)
-                    .then(() => window.location.href = 'index.html')
+                    .then((userCredential) => {
+                        // --- FIX: Save Token for app.js ---
+                        localStorage.setItem('token', userCredential.user.uid);
+                        window.location.href = 'index.html';
+                    })
                     .catch((error) => {
-                        displayError(error.code);
+                        displayMessage(error.code, false);
                         unlockUI();
                     });
             }
@@ -412,9 +457,13 @@
             googleSpinner.style.display = "block";
 
             signInWithPopup(auth, googleProvider)
-                .then(() => window.location.href = 'index.html')
+                .then((result) => {
+                    // --- FIX: Save Token for app.js ---
+                    localStorage.setItem('token', result.user.uid);
+                    window.location.href = 'index.html';
+                })
                 .catch((error) => {
-                    displayError(error.code || "google-error");
+                    displayMessage(error.code || "google-error", false);
                     googleBtn.disabled = false;
                     googleBtnText.style.display = "inline";
                     googleSpinner.style.display = "none";

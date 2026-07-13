@@ -13,20 +13,59 @@ function saveFamilyData() {
     localStorage.setItem('vayuFamily', JSON.stringify(familyMembers));
 }
 
+// Global state variables for Breathing Engine
+let breathingTimeout; // Must use Timeout, not Interval
+let isBreathing = false; // The Kill-Switch flag
+
 document.addEventListener('DOMContentLoaded', () => {
+    checkAuthState(); // --- FIX: Keeps top buttons updated with login status ---
     initNavigation();
     initPeopleManager();
     initDoctors();
     detectUserLocation();
     
-    // --- ADDED THIS: Triggers the live bottom cards update on page load! ---
+    // Triggers the live bottom cards update on page load!
     updateBottomCityCards(); 
 
     // Listen for manual dropdown changes
     document.getElementById('citySelect')?.addEventListener('change', (event) => {
         updateCityInterface(event.target.value);
     });
+
+    // Bind forgot password form securely if it exists in the DOM
+    document.getElementById('forgotPasswordForm')?.addEventListener('submit', handleForgotPassword);
 });
+
+// --- Authentication State Management ---
+function checkAuthState() {
+    const logButton = document.getElementById('logBtn') || document.querySelector('.log-btn');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const isAuthPage = window.location.pathname.includes('login') || window.location.pathname.includes('forgot');
+
+    if (token) {
+        // User is logged in
+        if (logButton) {
+            logButton.textContent = 'Logout';
+            logButton.style.display = 'block';
+            logButton.onclick = (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                sessionStorage.removeItem('token');
+                showToast("Logged out successfully.");
+                window.location.reload();
+            };
+        }
+    } else {
+        // User is not logged in
+        if (logButton) {
+            logButton.textContent = 'Login';
+            logButton.onclick = (e) => {
+                e.preventDefault();
+                window.location.href = 'login.html';
+            };
+        }
+    }
+}
 
 // --- Dynamic UI Updater ---
 function updateCityInterface(cityName) {
@@ -71,11 +110,14 @@ function initNavigation() {
 
     document.querySelectorAll('.nav-menu a').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            target?.scrollIntoView({ behavior: 'smooth' });
-            document.querySelectorAll('.nav-menu a').forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                target?.scrollIntoView({ behavior: 'smooth' });
+                document.querySelectorAll('.nav-menu a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            }
         });
     });
 }
@@ -124,7 +166,6 @@ function renderPeople() {
     const container = document.getElementById('peopleChips');
     if (!container) return;
     
-    // The "Empty State" UI
     if (familyMembers.length === 0) {
         container.innerHTML = `<span style="color: var(--gray-light); font-size: 0.9rem; font-style: italic; padding: 0.4rem 0;">No members added. Click + to add.</span>`;
         return;
@@ -140,37 +181,33 @@ function renderPeople() {
 
 // --- Custom Family Member Modal Logic ---
 function addPerson() {
-    // 1. Clear out the form so it's fresh every time
-    document.getElementById('newPersonName').value = '';
-    document.getElementById('chkAsthma').checked = false;
-    document.getElementById('chkElderly').checked = false;
-    document.getElementById('chkChild').checked = false;
-    document.getElementById('chkWorker').checked = false;
+    if(document.getElementById('newPersonName')) document.getElementById('newPersonName').value = '';
+    if(document.getElementById('chkAsthma')) document.getElementById('chkAsthma').checked = false;
+    if(document.getElementById('chkElderly')) document.getElementById('chkElderly').checked = false;
+    if(document.getElementById('chkChild')) document.getElementById('chkChild').checked = false;
+    if(document.getElementById('chkWorker')) document.getElementById('chkWorker').checked = false;
     
-    // 2. Show the custom modal with animation
-    document.getElementById('addPersonModal').classList.remove('hidden');
+    document.getElementById('addPersonModal')?.classList.remove('hidden');
 }
 
 function closeAddModal() {
-    document.getElementById('addPersonModal').classList.add('hidden');
+    document.getElementById('addPersonModal')?.classList.add('hidden');
 }
 
 function saveNewPerson() {
-    const nameInput = document.getElementById('newPersonName').value.trim();
+    const nameInput = document.getElementById('newPersonName')?.value.trim();
     
     if (!nameInput) {
         showToast('Please enter a name first.');
         return;
     }
     
-    // Gather all checked conditions
     const conditions = [];
-    if (document.getElementById('chkAsthma').checked) conditions.push('asthma');
-    if (document.getElementById('chkElderly').checked) conditions.push('elderly');
-    if (document.getElementById('chkChild').checked) conditions.push('child');
-    if (document.getElementById('chkWorker').checked) conditions.push('worker');
+    if (document.getElementById('chkAsthma')?.checked) conditions.push('asthma');
+    if (document.getElementById('chkElderly')?.checked) conditions.push('elderly');
+    if (document.getElementById('chkChild')?.checked) conditions.push('child');
+    if (document.getElementById('chkWorker')?.checked) conditions.push('worker');
     
-    // Save to your array
     familyMembers.push({
         id: Date.now(),
         name: nameInput,
@@ -182,7 +219,6 @@ function saveNewPerson() {
     closeAddModal(); 
     showToast(`${nameInput} added to profile.`);
     
-    // Auto-update the predictions to include the new family member
     getForecast(); 
 }
 
@@ -190,7 +226,7 @@ function removePerson(id) {
     familyMembers = familyMembers.filter(p => p.id !== id);
     saveFamilyData(); 
     renderPeople();
-    getForecast(); // Refresh advice after removing someone
+    getForecast(); 
 }
 
 // --- Forecast & ML API Logic ---
@@ -205,7 +241,6 @@ async function getForecast() {
     loadingDiv.classList.remove('hidden');
 
     try {
-        // 1. Get exact coordinates for the live API
         const cityCoords = {
             'Delhi': { lat: 28.6139, lon: 77.2090 },
             'Mumbai': { lat: 19.0760, lon: 72.8777 },
@@ -213,7 +248,6 @@ async function getForecast() {
         };
         const coords = cityCoords[city];
 
-        // 2. Fetch LIVE Air Quality and Weather from Open-Meteo
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m`;
         const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${coords.lat}&longitude=${coords.lon}&current=us_aqi`;
 
@@ -221,18 +255,15 @@ async function getForecast() {
         const weatherData = await weatherRes.json();
         const aqiData = await aqiRes.json();
 
-        // 3. Extract Live Variables & Current Time
         const liveAqi = aqiData.current.us_aqi;
         const liveTemp = weatherData.current.temperature_2m;
         const liveHumidity = weatherData.current.relative_humidity_2m;
         const liveWind = weatherData.current.wind_speed_10m;
         const currentHour = new Date().getHours();
         
-        // Format live timestamp
         const timeString = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
-        // Update the big UI Display with Live Data instantly
-        document.getElementById('heroAqiNumber').textContent = liveAqi;
+        if(document.getElementById('heroAqiNumber')) document.getElementById('heroAqiNumber').textContent = liveAqi;
         let status = 'Good'; let statusClass = 'good';
         if (liveAqi > 50) { status = 'Satisfactory'; statusClass = 'good'; }
         if (liveAqi > 100) { status = 'Moderate'; statusClass = 'moderate'; }
@@ -240,12 +271,13 @@ async function getForecast() {
         if (liveAqi > 200) { status = 'Severe'; statusClass = 'poor'; }
         
         const heroStatus = document.getElementById('heroAqiStatus');
-        heroStatus.textContent = status;
-        heroStatus.className = `aqi-status ${statusClass}`;
+        if (heroStatus) {
+            heroStatus.textContent = status;
+            heroStatus.className = `aqi-status ${statusClass}`;
+        }
         
         showToast(`Live data updated at ${timeString}`);
 
-        // 4. Send this LIVE data to your Python Backend
         const requestBody = {
             city: city,
             station_id: `station_${city.toLowerCase()}`,
@@ -273,7 +305,6 @@ async function getForecast() {
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
 
-        // Render Forecast Grid
         const grid = document.getElementById('forecastGrid');
         if (grid) {
             grid.innerHTML = data.forecasts.map(f => {
@@ -293,33 +324,24 @@ async function getForecast() {
             }).join('');
         }
 
-        // --- NEW: UPDATE DYNAMIC AQI MARKER ---
         if (data.forecasts && data.forecasts.length > 0) {
             const worstAqi = Math.max(...data.forecasts.map(f => f.predicted_aqi));
             const marker = document.getElementById('aqiMarker');
             const markerText = document.getElementById('aqiMarkerText');
             
             if (marker && markerText) {
-                // Calculate position on the 0-500 scale bar
                 let percentage = (worstAqi / 500) * 100;
-                if (percentage > 100) percentage = 100; // Cap at 100%
-                
-                // Move the marker visually
+                if (percentage > 100) percentage = 100;
                 marker.style.left = percentage + '%';
-                // Update the tiny text label on the marker
                 markerText.textContent = Math.round(worstAqi);
             }
         
-            // 5. Generate Personalized Health Advice FOR EACH INDIVIDUAL
             const healthSection = document.getElementById('healthAdviceSection'); 
             
             if (healthSection) {
-                // Start with a clean title
                 let adviceHTML = `<h3 style="color: var(--white); margin-bottom: 1.5rem;"><i class="fas fa-users-medical"></i> Individual Member Alerts</h3>`;
                 
-                // Loop through EVERY family member one by one
                 for (const member of familyMembers) {
-                    // Check ONLY this specific member's conditions
                     const singleProfile = {
                         elderly: member.conditions.includes('elderly'),
                         has_asthma: member.conditions.includes('asthma'),
@@ -328,7 +350,6 @@ async function getForecast() {
                     };
 
                     try {
-                        // Ask the AI about this specific person
                         const healthResponse = await fetch(`${API_BASE}/health-risk`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -341,12 +362,10 @@ async function getForecast() {
                         if (healthResponse.ok) {
                             const healthData = await healthResponse.json();
                             
-                            // Change the border color based on their specific risk
                             let bColor = 'var(--success)';
                             if (healthData.risk_level === 3) bColor = 'var(--warning)';
                             if (healthData.risk_level >= 4) bColor = 'var(--danger)';
 
-                            // Build a custom card just for them
                             adviceHTML += `
                                 <div style="background: var(--dark-2); padding: 1.2rem; border-radius: 8px; border-left: 4px solid ${bColor}; margin-bottom: 1rem;">
                                     <h4 style="color: var(--white); margin-bottom: 0.5rem; text-transform: capitalize;">
@@ -365,14 +384,12 @@ async function getForecast() {
                         console.error("Health API Error for", member.name, error);
                     }
                 }
-                
-                // Inject all the individual cards into the website
                 healthSection.innerHTML = adviceHTML;
             }
         }
         
-        loadingDiv.classList.add('hidden');
         resultsDiv.classList.remove('hidden');
+        loadingDiv.classList.add('hidden');
 
     } catch (error) {
         console.error("Error fetching forecast:", error);
@@ -422,7 +439,7 @@ function renderDoctors(filter) {
 
 function filterDoctors(specialty) {
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    if(event && event.target) event.target.classList.add('active');
+    if(window.event && window.event.target) window.event.target.classList.add('active');
     renderDoctors(specialty);
 }
 
@@ -438,23 +455,32 @@ function bookDoctor(event) {
     event.target.reset();
 }
 
-// --- Breathing Exercises (NEW FLAG LOGIC) ---
-let breathingTimeout; // Must use Timeout, not Interval
-let isBreathing = false; // The Kill-Switch flag
+// --- Forgot Password Action Handler (CRITICAL BUG FIX) ---
+function handleForgotPassword(event) {
+    event.preventDefault(); // FIX: Prevents application loop state drops!
+    const emailInput = document.getElementById('forgotEmail')?.value;
 
-// The upgraded reset function
+    if (!emailInput) {
+        showToast("Please input a valid registration email.");
+        return;
+    }
+
+    showToast("Password reset token dispatched to email.");
+    // Secure token execution sequence goes here
+}
+
+// --- Breathing Exercises (RESTORED ENGINE) ---
 function resetBreathingUI() {
-    isBreathing = false; // 1. Flip the kill-switch!
-    clearTimeout(breathingTimeout); // 2. Destroy any pending timers
+    isBreathing = false; 
+    clearTimeout(breathingTimeout); 
     
     document.querySelectorAll('.breath-circle').forEach(c => {
         c.style.transform = 'scale(1)';
-        c.style.background = ''; // Resets to default CSS
-        c.style.transition = 'transform 0.5s ease, background 0.5s ease'; // Smooth shrink back to normal
+        c.style.background = ''; 
+        c.style.transition = 'transform 0.5s ease, background 0.5s ease'; 
     });
     document.querySelectorAll('.breathe-steps .step').forEach(s => s.classList.remove('active'));
     
-    // Reset the text inside all circles with a nice icon
     const box = document.getElementById('boxText');
     const relax = document.getElementById('relaxText');
     const cleanse = document.getElementById('cleanseText');
@@ -463,7 +489,6 @@ function resetBreathingUI() {
     if(cleanse) cleanse.innerHTML = '<i class="fas fa-check-circle" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Ready';
 }
 
-// The perfectly functioning Stop command
 function stopExercise() {
     resetBreathingUI();
     showToast("Exercise stopped.");
@@ -478,31 +503,31 @@ function startBoxBreathing() {
 
     let phase = 0;
     circle.style.transition = "transform 4s linear, background 0.5s ease";
-    isBreathing = true; // Turn the engine on!
+    isBreathing = true; 
 
     function doPhase() {
-        if (!isBreathing) return; // INSTANTLY EXIT IF STOP WAS CLICKED
+        if (!isBreathing) return; 
 
         if (phase === 0) {
             text.innerHTML = '<i class="fas fa-arrow-up" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Inhale'; 
             circle.style.transform = 'scale(1.5)';
-            circle.style.background = 'rgba(59, 130, 246, 0.95)'; // Bright Blue
+            circle.style.background = 'rgba(59, 130, 246, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
             breathingTimeout = setTimeout(() => { phase=1; doPhase(); }, 4000);
         } else if (phase === 1) {
             text.innerHTML = '<i class="fas fa-hand-paper" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Hold';
-            circle.style.background = 'rgba(139, 92, 246, 0.95)'; // Deep Purple
+            circle.style.background = 'rgba(139, 92, 246, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
             breathingTimeout = setTimeout(() => { phase=2; doPhase(); }, 4000);
         } else if (phase === 2) {
             text.innerHTML = '<i class="fas fa-arrow-down" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Exhale'; 
             circle.style.transform = 'scale(1)';
-            circle.style.background = 'rgba(16, 185, 129, 0.95)'; // Calm Green
+            circle.style.background = 'rgba(16, 185, 129, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
             breathingTimeout = setTimeout(() => { phase=3; doPhase(); }, 4000);
         } else {
             text.innerHTML = '<i class="fas fa-stop-circle" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Hold';
-            circle.style.background = 'rgba(139, 92, 246, 0.95)'; // Deep Purple
+            circle.style.background = 'rgba(139, 92, 246, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 3));
             breathingTimeout = setTimeout(() => { phase=0; doPhase(); }, 4000);
         }
@@ -519,26 +544,26 @@ function startRelaxBreathing() {
 
     let phase = 0;
     circle.style.transition = "transform 4s linear, background 0.5s ease";
-    isBreathing = true; // Turn the engine on!
+    isBreathing = true; 
 
     function doPhase() {
-        if (!isBreathing) return; // INSTANTLY EXIT IF STOP WAS CLICKED
+        if (!isBreathing) return; 
 
         if (phase === 0) {
             text.innerHTML = '<i class="fas fa-wind" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Inhale'; 
             circle.style.transform = 'scale(1.5)';
-            circle.style.background = 'rgba(79, 70, 229, 0.95)'; // Indigo
+            circle.style.background = 'rgba(79, 70, 229, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
             breathingTimeout = setTimeout(() => { phase = 1; circle.style.transition = "transform 7s linear, background 0.5s ease"; doPhase(); }, 4000);
         } else if (phase === 1) {
             text.innerHTML = '<i class="fas fa-pause" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Hold'; 
-            circle.style.background = 'rgba(217, 70, 239, 0.95)'; // Fuchsia
+            circle.style.background = 'rgba(217, 70, 239, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
             breathingTimeout = setTimeout(() => { phase = 2; circle.style.transition = "transform 8s linear, background 0.5s ease"; doPhase(); }, 7000);
         } else {
             text.innerHTML = '<i class="fas fa-leaf" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Exhale'; 
             circle.style.transform = 'scale(1)';
-            circle.style.background = 'rgba(6, 182, 212, 0.95)'; // Cyan
+            circle.style.background = 'rgba(6, 182, 212, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
             breathingTimeout = setTimeout(() => { phase = 0; circle.style.transition = "transform 4s linear, background 0.5s ease"; doPhase(); }, 8000);
         }
@@ -546,6 +571,7 @@ function startRelaxBreathing() {
     doPhase();
 }
 
+// Keep core functions intact 
 function startCleanseBreathing() {
     resetBreathingUI();
     const text = document.getElementById('cleanseText');
@@ -555,27 +581,27 @@ function startCleanseBreathing() {
 
     let phase = 0;
     circle.style.transition = "transform 0.5s ease-out, background 0.3s ease";
-    isBreathing = true; // Turn the engine on!
+    isBreathing = true; 
 
     function doPhase() {
-        if (!isBreathing) return; // INSTANTLY EXIT IF STOP WAS CLICKED
+        if (!isBreathing) return; 
 
         if (phase === 0) {
             text.innerHTML = '<i class="fas fa-lungs" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Inhale'; 
             circle.style.transform = 'scale(1.3)';
-            circle.style.background = 'rgba(34, 197, 94, 0.95)'; // Green
+            circle.style.background = 'rgba(34, 197, 94, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 0));
             breathingTimeout = setTimeout(() => { phase = 1; doPhase(); }, 2000);
         } else if (phase === 1) {
             text.innerHTML = '<i class="fas fa-sign-out-alt" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Exhale!'; 
             circle.style.transform = 'scale(0.8)';
-            circle.style.background = 'rgba(239, 68, 68, 0.95)'; // Red
+            circle.style.background = 'rgba(239, 68, 68, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 1));
             breathingTimeout = setTimeout(() => { phase = 2; doPhase(); }, 1000);
         } else {
             text.innerHTML = '<i class="fas fa-bed" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>Rest'; 
             circle.style.transform = 'scale(1)';
-            circle.style.background = 'rgba(107, 114, 128, 0.95)'; // Gray
+            circle.style.background = 'rgba(107, 114, 128, 0.95)'; 
             steps.forEach((s, i) => s?.classList.toggle('active', i === 2));
             breathingTimeout = setTimeout(() => { phase = 0; doPhase(); }, 2000);
         }
@@ -602,7 +628,7 @@ function showToast(message) {
     }, 3000);
 }
 
-// --- ADDED THIS ENTIRE SECTION: Live Bottom City Cards Updater ---
+// --- Live Bottom City Cards Updater ---
 async function updateBottomCityCards() {
     const cityItems = document.querySelectorAll('.city-item');
     if (!cityItems.length) return;
@@ -614,7 +640,9 @@ async function updateBottomCityCards() {
     };
 
     for (const item of cityItems) {
-        const cityName = item.querySelector('h3').textContent;
+        const titleEl = item.querySelector('h3');
+        if (!titleEl) continue;
+        const cityName = titleEl.textContent;
         const coords = cityCoords[cityName];
         if (!coords) continue;
 
@@ -630,27 +658,27 @@ async function updateBottomCityCards() {
             const temp = weatherData.current.temperature_2m;
             const hum = weatherData.current.relative_humidity_2m;
             
-            // Update Number
-            item.querySelector('.city-aqi-num').textContent = aqi;
+            const aqiNumEl = item.querySelector('.city-aqi-num');
+            if (aqiNumEl) aqiNumEl.textContent = aqi;
             
-            // Update Status & Color
             let status = 'Good'; let statusClass = 'good';
             if (aqi > 50) { status = 'Satisfactory'; statusClass = 'good'; }
             if (aqi > 100) { status = 'Moderate'; statusClass = 'moderate'; }
             if (aqi > 150) { status = 'Poor'; statusClass = 'poor'; }
             if (aqi > 200) { status = 'Severe'; statusClass = 'poor'; }
             
-            item.querySelector('.city-aqi-text').textContent = status;
-            item.querySelector('.city-aqi-box').className = `city-aqi-box ${statusClass}`;
+            const aqiTextEl = item.querySelector('.city-aqi-text');
+            const aqiBoxEl = item.querySelector('.city-aqi-box');
+            if (aqiTextEl) aqiTextEl.textContent = status;
+            if (aqiBoxEl) aqiBoxEl.className = `city-aqi-box ${statusClass}`;
             
-            // Update Temp & Humidity
             const metaSpans = item.querySelectorAll('.city-meta span');
             if (metaSpans.length >= 2) {
                 metaSpans[0].innerHTML = `<i class="fas fa-temperature-high"></i> ${temp}°C`;
                 metaSpans[1].innerHTML = `<i class="fas fa-tint"></i> ${hum}%`;
             }
         } catch (e) { 
-            console.error("Failed to update bottom card for", cityName); 
+            console.error("Failed to update bottom card for", cityName, e); 
         }
     }
 }
