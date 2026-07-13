@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — VayuGuard Quantum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Modern Quantum Animated Background */
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevents scrolling on login page */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #050505;
+        }
+
+        .quantum-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(45deg, #020617, #0f172a, #1e1b4b, #020617);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        /* Floating Glowing Orbs */
+        .glowing-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            animation: floatOrb 20s infinite ease-in-out alternate;
+        }
+
+        .orb-purple {
+            width: 45vw; height: 45vw;
+            background: rgba(124, 58, 237, 0.25);
+            top: -10%; left: -10%;
+        }
+
+        .orb-cyan {
+            width: 40vw; height: 40vw;
+            background: rgba(6, 182, 212, 0.2);
+            bottom: -10%; right: -10%;
+            animation-delay: -5s;
+            animation-duration: 25s;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 5%) scale(1.05); }
+            100% { transform: translate(-2%, 8%) scale(0.95); }
+        }
+
+        /* Glassmorphism Card Effect */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quantum-bg"></div>
+    <div class="glowing-orb orb-purple"></div>
+    <div class="glowing-orb orb-cyan"></div>
+
+    <nav class="navbar" style="position: absolute; top: 0; width: 100%; background: transparent; border-bottom: none; z-index: 20;">
+        <div class="nav-brand">
+            <i class="fas fa-wind"></i>
+            <span>VayuGuard</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="index.html" style="color: white; opacity: 0.8; transition: 0.3s;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <div class="glass-card">
+        
+        <div style="width: 65px; height: 65px; background: linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(6, 182, 212, 0.4)); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);">
+            <i class="fas fa-fingerprint"></i>
+        </div>
+        
+        <h2 style="color: var(--white); margin-bottom: 0.5rem; font-size: 1.6rem; letter-spacing: -0.5px;">Welcome Back</h2>
+        <p style="color: rgba(255,255,255,0.6); font-size: 0.95rem; margin-bottom: 2.5rem;">Secure your quantum health profile.</p>
+
+        <form id="loginForm" onsubmit="event.preventDefault(); window.location.href='index.html';">
+            
+            <div style="text-align: left; margin-bottom: 1.2rem;">
+                <label style="color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; display: block;"><i class="fas fa-envelope" style="opacity: 0.7; margin-right: 5px;"></i> Email Address</label>
+                <input type="email" placeholder="name@example.com" required style="width: 100%; padding: 0.9rem 1.2rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='rgba(124, 58, 237, 0.8)'; this.style.boxShadow='0 0 10px rgba(124, 58, 237, 0.3)';" onblur="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.boxShadow='none';">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <label style="color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 600;"><i class="fas fa-lock" style="opacity: 0.7; margin-right: 5px;"></i> Password</label>
+                    <a href="#" style="color: #38bdf8; font-size: 0.8rem; text-decoration: none; font-weight: 500;">Forgot?</a>
+                </div>
+                <input type="password" placeholder="••••••••" required style="width: 100%; padding: 0.9rem 1.2rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='rgba(124, 58, 237, 0.8)'; this.style.boxShadow='0 0 10px rgba(124, 58, 237, 0.3)';" onblur="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.boxShadow='none';">
+            </div>
+
+            <button type="submit" style="width: 100%; justify-content: center; border-radius: 50px; padding: 1.1rem; font-weight: 600; font-size: 1rem; background: linear-gradient(90deg, #4f46e5, #7c3aed); border: none; color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(124, 58, 237, 0.6)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(124, 58, 237, 0.4)';">
+                Sign In
+            </button>
+        </form>
+
+        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 2rem;">
+            Don't have an account? <a href="#" style="color: #38bdf8; font-weight: 600; text-decoration: none;">Create one</a>
+        </p>
+    </div>
+
+</body>
+</html> 

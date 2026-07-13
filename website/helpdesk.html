@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk — VayuGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-wind"></i>
+            <span>VayuGuard</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="helpdesk.html" class="active">Help Desk</a></li>
+            <li><a href="login.html" style="background: var(--primary); padding: 0.5rem 1.2rem; border-radius: 50px; color: white;">Log In</a></li>
+        </ul>
+    </nav>
+
+    <section class="section" style="padding-top: 120px; text-align: center;">
+        <div class="container">
+            <h1 style="color: var(--white); font-size: 2.5rem; margin-bottom: 1rem;">How can we help you?</h1>
+            <p style="color: var(--gray-light); font-size: 1.1rem; max-width: 600px; margin: 0 auto 3rem;">Search our knowledge base or submit a support ticket to our team.</p>
+            
+            <div style="max-width: 500px; margin: 0 auto; position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--gray-light);"></i>
+                <input type="text" placeholder="Search for answers..." style="width: 100%; padding: 1rem 1rem 1rem 3rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: var(--dark-2); color: white; font-size: 1rem;">
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag">Knowledge Base</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
+                
+                <div style="background: var(--dark-2); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-atom" style="color: var(--primary-light); margin-right: 10px;"></i> How does the Quantum AI work?</h4>
+                    <p style="color: var(--gray-light); font-size: 0.95rem; line-height: 1.6;">Our platform uses IBM Quantum processors to perform Feature Selection via QAOA. This filters out noise in weather data, allowing our classical XGBoost model to predict AQI with 91.7% accuracy using 25% fewer features.</p>
+                </div>
+
+                <div style="background: var(--dark-2); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-users-medical" style="color: var(--danger); margin-right: 10px;"></i> How do I add family members?</h4>
+                    <p style="color: var(--gray-light); font-size: 0.95rem; line-height: 1.6;">Go to the main Dashboard and click the "+ Add" button in the Forecast section. You can specify conditions like Asthma or Elderly, and our AI will generate custom health warnings for them.</p>
+                </div>
+
+                <div style="background: var(--dark-2); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-globe-asia" style="color: var(--success); margin-right: 10px;"></i> Where do you get your live data?</h4>
+                    <p style="color: var(--gray-light); font-size: 0.95rem; line-height: 1.6;">We fetch real-time air quality and meteorological data directly from the Open-Meteo Global API, ensuring your predictions are always based on the exact current conditions of your city.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container" style="max-width: 600px;">
+            <div class="section-head">
+                <span class="tag">Contact Support</span>
+                <h2>Submit a Ticket</h2>
+            </div>
+            
+            <div style="background: var(--dark-2); padding: 2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <form onsubmit="event.preventDefault(); alert('Ticket submitted successfully! Our team will email you within 24 hours.'); this.reset();">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="color: var(--gray-light); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; display: block;">Full Name</label>
+                        <input type="text" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="color: var(--gray-light); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; display: block;">Email Address</label>
+                        <input type="email" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="color: var(--gray-light); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; display: block;">Issue Description</label>
+                        <textarea rows="4" required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; border-radius: 50px; font-weight: 600;">Submit Ticket</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
