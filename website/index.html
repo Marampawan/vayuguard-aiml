@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     
     <style>
-        /* === Modal & General Fixes === */
+        /* === General Fixes === */
         .modal-overlay { padding: 1rem; }
         .modal-content { max-height: 90vh; display: flex; flex-direction: column; }
         .modal-body { overflow-y: auto; padding-right: 10px; }
@@ -20,45 +20,7 @@
         .city-selector-dropdown { width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; border-radius: 50px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); background-color: var(--light); cursor: pointer; outline: none; transition: border-color 0.2s; }
         .city-selector-dropdown:focus { border-color: var(--primary); }
 
-        /* === 🎮 NEW: INTERACTIVE BREATHING GAMES === */
-        .modern-breathe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-top: 1rem; }
-        .modern-breathe-card {
-            background: #ffffff; border-radius: 24px; padding: 2.5rem 2rem;
-            text-align: center; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
-            border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.4s ease;
-            display: flex; flex-direction: column; align-items: center; gap: 1rem;
-            position: relative; overflow: hidden;
-        }
-        .modern-breathe-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -12px rgba(14, 165, 233, 0.25); border-color: rgba(14, 165, 233, 0.3); }
-        .breathe-circle-modern {
-            width: 140px; height: 140px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            margin: 2rem 0; position: relative; letter-spacing: 1px; text-transform: uppercase;
-        }
-        .bg-relax { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
-        .bg-cleanse { background: linear-gradient(135deg, #10b981, #3b82f6); }
-        .bg-active { background: linear-gradient(135deg, #f59e0b, #ef4444); }
-
-        /* Perfect Sync Keyframes */
-        @keyframes anim-478 { 0% { transform: scale(1); } 21% { transform: scale(1.6); } 58% { transform: scale(1.6); } 100% { transform: scale(1); } }
-        @keyframes anim-box { 0% { transform: scale(1); } 25% { transform: scale(1.5); } 50% { transform: scale(1.5); } 75% { transform: scale(1); } 100% { transform: scale(1); } }
-        @keyframes anim-power { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-
-        .run-478 { animation: anim-478 19s infinite linear; }
-        .run-box { animation: anim-box 16s infinite linear; }
-        .run-power { animation: anim-power 2s infinite ease-in-out; }
-
-        .breathe-btn {
-            padding: 1rem 1.5rem; border-radius: 50px; border: none; background: #f1f5f9; color: #475569;
-            font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%;
-            display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 1.05rem;
-        }
-        .breathe-btn:hover { background: #e2e8f0; transform: scale(1.02); }
-        .breathe-btn.active { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-
-        /* === 🩺 NEW: ULTRA-MODERN DOCTOR CARDS === */
+        /* === 🩺 ULTRA-MODERN DOCTOR CARDS === */
         .ultra-doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
         .ultra-doc-card {
             background: #ffffff; border-radius: 24px; padding: 2rem;
@@ -90,6 +52,71 @@
             align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
         .ultra-btn:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5); filter: brightness(1.1); transform: translateY(-2px); }
+
+        /* === 🧘 NEW: IMMERSIVE DARK BREATHING ZONE === */
+        .breathing-zone {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            padding: 5rem 0;
+        }
+        .breathing-zone .section-head h2 { color: #ffffff; }
+        .breathing-zone .section-head p { color: #94a3b8; }
+        
+        .modern-breathe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
+        
+        .dark-breathe-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border-radius: 24px; padding: 2.5rem 2rem;
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease; display: flex; flex-direction: column; align-items: center; gap: 1rem;
+        }
+        .dark-breathe-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.06); border-color: rgba(56, 189, 248, 0.4); }
+        
+        .breathe-circle-modern {
+            width: 140px; height: 140px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            margin: 2.5rem 0; position: relative; letter-spacing: 1px; text-transform: uppercase;
+        }
+        
+        .bg-relax { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+        .bg-cleanse { background: linear-gradient(135deg, #10b981, #0ea5e9); }
+        .bg-active { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+
+        /* Glowing Pulse Keyframes - Synced with Inhale/Exhale */
+        @keyframes anim-478 { 
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(139, 92, 246, 0); } 
+            21% { transform: scale(1.6); box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
+            58% { transform: scale(1.6); box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(139, 92, 246, 0); } 
+        }
+        @keyframes anim-box { 
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
+            25% { transform: scale(1.5); box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); } 
+            50% { transform: scale(1.5); box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); } 
+            75% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(16, 185, 129, 0); } 
+        }
+        @keyframes anim-power { 
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); } 
+            50% { transform: scale(1.3); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); } 
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); } 
+        }
+
+        .run-478 { animation: anim-478 19s infinite linear; }
+        .run-box { animation: anim-box 16s infinite linear; }
+        .run-power { animation: anim-power 2s infinite ease-in-out; }
+
+        .breathe-btn {
+            padding: 1rem 1.5rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); 
+            background: rgba(255,255,255,0.05); color: white;
+            font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 1.05rem;
+        }
+        .breathe-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.02); }
+        .breathe-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4); }
     </style>
 </head>
 <body>
@@ -213,61 +240,7 @@
         </div>
     </section>
 
-    <section class="section" style="background: #f8fafc;">
-        <div class="container">
-            <div class="section-head">
-                <span class="tag" style="background: var(--primary); color: white;">Interactive</span>
-                <h2>Breathing Games</h2>
-                <p>Sync your breathing with the animated guide to improve lung capacity and reduce stress.</p>
-            </div>
-
-            <div class="modern-breathe-grid">
-                <div class="modern-breathe-card">
-                    <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem;">4-7-8 Relaxation</h3>
-                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Reduces anxiety and stress.</p>
-                    
-                    <div class="breathe-circle-modern bg-relax" id="circle-478">
-                        <span id="text-478">Ready</span>
-                    </div>
-                    
-                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (7s) - Exhale (8s)</p>
-                    <button class="breathe-btn" id="btn-478" onclick="toggleBreathingGame('478')">
-                        <i class="fas fa-play"></i> Start Game
-                    </button>
-                </div>
-                
-                <div class="modern-breathe-card">
-                    <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem;">Box Breathing</h3>
-                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Clears lungs and sharpens focus.</p>
-                    
-                    <div class="breathe-circle-modern bg-cleanse" id="circle-box">
-                        <span id="text-box">Ready</span>
-                    </div>
-                    
-                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (4s) - Exhale (4s)</p>
-                    <button class="breathe-btn" id="btn-box" onclick="toggleBreathingGame('box')">
-                        <i class="fas fa-play"></i> Start Game
-                    </button>
-                </div>
-                
-                <div class="modern-breathe-card">
-                    <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem;">Power Breathing</h3>
-                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Rapid boost of oxygen.</p>
-                    
-                    <div class="breathe-circle-modern bg-active" id="circle-power">
-                        <span id="text-power">Ready</span>
-                    </div>
-                    
-                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Fast Inhale & Exhale Rhythm</p>
-                    <button class="breathe-btn" id="btn-power" onclick="toggleBreathingGame('power')">
-                        <i class="fas fa-play"></i> Start Game
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-alt">
+    <section class="section">
         <div class="container">
             <div class="section-head">
                 <span class="tag">Specialists</span>
@@ -353,6 +326,94 @@
             </div>
         </div>
     </section>
+
+    <section class="breathing-zone">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag" style="background: rgba(255,255,255,0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Interactive</span>
+                <h2>Breathing Games</h2>
+                <p>Sync your breathing with the animated guide to improve lung capacity and reduce stress.</p>
+            </div>
+
+            <div class="modern-breathe-grid">
+                <div class="dark-breathe-card">
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">4-7-8 Relaxation</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Reduces anxiety and stress.</p>
+                    
+                    <div class="breathe-circle-modern bg-relax" id="circle-478">
+                        <span id="text-478">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (7s) - Exhale (8s)</p>
+                    <button class="breathe-btn" id="btn-478" onclick="toggleBreathingGame('478')">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+                
+                <div class="dark-breathe-card">
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">Box Breathing</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Clears lungs and sharpens focus.</p>
+                    
+                    <div class="breathe-circle-modern bg-cleanse" id="circle-box">
+                        <span id="text-box">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (4s) - Exhale (4s)</p>
+                    <button class="breathe-btn" id="btn-box" onclick="toggleBreathingGame('box')">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+                
+                <div class="dark-breathe-card">
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.4rem;">Power Breathing</h3>
+                    <p style="font-size: 0.9rem; color: #cbd5e1; margin: 0;">Rapid boost of oxygen.</p>
+                    
+                    <div class="breathe-circle-modern bg-active" id="circle-power">
+                        <span id="text-power">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Fast Inhale & Exhale Rhythm</p>
+                    <button class="breathe-btn" id="btn-power" onclick="toggleBreathingGame('power')">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand"><i class="fas fa-shield-virus"></i> VayuGuard</div>
+                    <p style="color: var(--gray-light); font-size: 0.9rem; margin-top: 1rem;">
+                        The world's first quantum-hybrid air quality forecasting platform. Built for a healthier tomorrow.
+                    </p>
+                </div>
+                <div>
+                    <h4>Platform</h4>
+                    <a href="#forecast">AQI Forecast</a>
+                    <a href="#health">Health Solutions</a>
+                    <a href="helpdesk.html">Help Desk</a>
+                </div>
+                <div>
+                    <h4>Technology</h4>
+                    <a href="#">Quantum Engine</a>
+                    <a href="#">Machine Learning</a>
+                    <a href="#">API Documentation</a>
+                </div>
+                <div>
+                    <h4>Connect</h4>
+                    <a href="https://github.com/Marampawan/vayuguard-aiml" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 VayuGuard. All rights reserved. Built with <i class="fas fa-heart"></i> and Quantum Technology.
+            </div>
+        </div>
+    </footer>
 
     <div class="modal-overlay hidden" id="addPersonModal">
         <div class="modal-content">
@@ -455,7 +516,7 @@
         };
         document.getElementById('cityForecastSelect').addEventListener('change', function() { document.getElementById('dynamicForecastGrid').innerHTML = cityForecasts[this.value]; });
 
-        // 🎮 INTERACTIVE BREATHING GAME ENGINE
+        // 🌌 INTERACTIVE BREATHING GAME ENGINE (UPGRADED WITH GLOW)
         let breathIntervals = {};
 
         function toggleBreathingGame(type) {
