@@ -20,28 +20,30 @@
         .city-selector-dropdown { width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; border-radius: 50px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); background-color: var(--light); cursor: pointer; outline: none; transition: border-color 0.2s; }
         .city-selector-dropdown:focus { border-color: var(--primary); }
 
-        /* === 🧘 NEW: ANIMATED BREATHING EXERCISES === */
-        .modern-breathe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        /* === 🎮 NEW: INTERACTIVE BREATHING GAMES === */
+        .modern-breathe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-top: 1rem; }
         .modern-breathe-card {
             background: #ffffff; border-radius: 24px; padding: 2.5rem 2rem;
             text-align: center; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
             border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.4s ease;
             display: flex; flex-direction: column; align-items: center; gap: 1rem;
+            position: relative; overflow: hidden;
         }
         .modern-breathe-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -12px rgba(14, 165, 233, 0.25); border-color: rgba(14, 165, 233, 0.3); }
         .breathe-circle-modern {
-            width: 130px; height: 130px; border-radius: 50%;
+            width: 140px; height: 140px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 700; font-size: 1.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            margin: 1.5rem 0; position: relative;
+            color: white; font-weight: 800; font-size: 1.4rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin: 2rem 0; position: relative; letter-spacing: 1px; text-transform: uppercase;
         }
         .bg-relax { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
         .bg-cleanse { background: linear-gradient(135deg, #10b981, #3b82f6); }
         .bg-active { background: linear-gradient(135deg, #f59e0b, #ef4444); }
 
-        @keyframes anim-478 { 0% { transform: scale(1); } 21% { transform: scale(1.5); } 57% { transform: scale(1.5); } 100% { transform: scale(1); } }
-        @keyframes anim-box { 0% { transform: scale(1); } 25% { transform: scale(1.4); } 50% { transform: scale(1.4); } 75% { transform: scale(1); } 100% { transform: scale(1); } }
+        /* Perfect Sync Keyframes */
+        @keyframes anim-478 { 0% { transform: scale(1); } 21% { transform: scale(1.6); } 58% { transform: scale(1.6); } 100% { transform: scale(1); } }
+        @keyframes anim-box { 0% { transform: scale(1); } 25% { transform: scale(1.5); } 50% { transform: scale(1.5); } 75% { transform: scale(1); } 100% { transform: scale(1); } }
         @keyframes anim-power { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 
         .run-478 { animation: anim-478 19s infinite linear; }
@@ -49,12 +51,12 @@
         .run-power { animation: anim-power 2s infinite ease-in-out; }
 
         .breathe-btn {
-            padding: 0.8rem 1.5rem; border-radius: 50px; border: none; background: #f1f5f9; color: #475569;
-            font-weight: 600; cursor: pointer; transition: all 0.3s ease; width: 100%;
-            display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 1rem;
+            padding: 1rem 1.5rem; border-radius: 50px; border: none; background: #f1f5f9; color: #475569;
+            font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 1.05rem;
         }
         .breathe-btn:hover { background: #e2e8f0; transform: scale(1.02); }
-        .breathe-btn.active { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .breathe-btn.active { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
 
         /* === 🩺 NEW: ULTRA-MODERN DOCTOR CARDS === */
         .ultra-doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
@@ -141,7 +143,6 @@
                 <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
             </div>
             <div class="forecast-box">
-                
                 <div class="controls" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
                     <div class="control-group" style="flex: 1; min-width: 200px;">
                         <label><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> Forecast Location</label>
@@ -151,7 +152,6 @@
                             <option value="newyork">New York, US</option>
                         </select>
                     </div>
-
                     <div class="control-group" style="flex: 2; min-width: 300px;">
                         <label>Active Health Profiles</label>
                         <div class="people-chips" id="familyChipsContainer">
@@ -173,21 +173,9 @@
                 </div>
 
                 <div class="forecast-grid" id="dynamicForecastGrid">
-                    <div class="forecast-card good">
-                        <div class="forecast-time">+24 Hours</div>
-                        <div class="forecast-aqi">45</div>
-                        <div class="forecast-cat good">Good</div>
-                    </div>
-                    <div class="forecast-card moderate">
-                        <div class="forecast-time">+42 Hours</div>
-                        <div class="forecast-aqi">85</div>
-                        <div class="forecast-cat moderate">Moderate</div>
-                    </div>
-                    <div class="forecast-card poor">
-                        <div class="forecast-time">+72 Hours</div>
-                        <div class="forecast-aqi">112</div>
-                        <div class="forecast-cat poor">Unhealthy</div>
-                    </div>
+                    <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
+                    <div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div>
+                    <div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>
                 </div>
             </div>
         </div>
@@ -211,44 +199,54 @@
     <section id="health" class="section section-alt">
         <div class="container">
             <div class="section-head">
-                <span class="tag">Health & Wellness</span>
-                <h2>Activity Safety & Breathing</h2>
-                <p>Personalized recommendations based on current local air quality.</p>
+                <span class="tag">Health Data</span>
+                <h2>Activity Safety Recommendations</h2>
+                <p>Personalized advice based on current local air quality.</p>
             </div>
             
-            <div class="health-grid" style="margin-bottom: 4rem;">
+            <div class="health-grid">
                 <div class="health-item"><div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div><h3>Outdoor Exercise</h3><p>Safe for all groups. Great time for a run.</p></div>
                 <div class="health-item"><div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div><h3>Kids & Elderly</h3><p>Monitor closely. Limit extreme exertion.</p></div>
                 <div class="health-item"><div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div><h3>Asthma Risk</h3><p>Elevated pollen levels detected.</p></div>
                 <div class="health-item"><div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div><h3>Ventilation</h3><p>Safe to open windows and circulate air.</p></div>
             </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: #f8fafc;">
+        <div class="container">
+            <div class="section-head">
+                <span class="tag" style="background: var(--primary); color: white;">Interactive</span>
+                <h2>Breathing Games</h2>
+                <p>Sync your breathing with the animated guide to improve lung capacity and reduce stress.</p>
+            </div>
 
             <div class="modern-breathe-grid">
                 <div class="modern-breathe-card">
-                    <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem;">4-7-8 Breathing</h3>
-                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Perfect for reducing stress.</p>
+                    <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem;">4-7-8 Relaxation</h3>
+                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Reduces anxiety and stress.</p>
                     
-                    <div class="breathe-circle-modern bg-relax" id="circle-relax">
-                        <span id="text-relax">Ready</span>
+                    <div class="breathe-circle-modern bg-relax" id="circle-478">
+                        <span id="text-478">Ready</span>
                     </div>
                     
                     <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (7s) - Exhale (8s)</p>
-                    <button class="breathe-btn" id="btn-relax" onclick="toggleBreathing('relax', 'run-478')">
-                        <i class="fas fa-play"></i> Start Exercise
+                    <button class="breathe-btn" id="btn-478" onclick="toggleBreathingGame('478')">
+                        <i class="fas fa-play"></i> Start Game
                     </button>
                 </div>
                 
                 <div class="modern-breathe-card">
                     <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem;">Box Breathing</h3>
-                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Clear lungs and improve focus.</p>
+                    <p style="font-size: 0.9rem; color: #64748b; margin: 0;">Clears lungs and sharpens focus.</p>
                     
                     <div class="breathe-circle-modern bg-cleanse" id="circle-box">
                         <span id="text-box">Ready</span>
                     </div>
                     
                     <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Inhale (4s) - Hold (4s) - Exhale (4s)</p>
-                    <button class="breathe-btn" id="btn-box" onclick="toggleBreathing('box', 'run-box')">
-                        <i class="fas fa-play"></i> Start Exercise
+                    <button class="breathe-btn" id="btn-box" onclick="toggleBreathingGame('box')">
+                        <i class="fas fa-play"></i> Start Game
                     </button>
                 </div>
                 
@@ -261,15 +259,15 @@
                     </div>
                     
                     <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.5rem;">Fast Inhale & Exhale Rhythm</p>
-                    <button class="breathe-btn" id="btn-power" onclick="toggleBreathing('power', 'run-power')">
-                        <i class="fas fa-play"></i> Start Exercise
+                    <button class="breathe-btn" id="btn-power" onclick="toggleBreathingGame('power')">
+                        <i class="fas fa-play"></i> Start Game
                     </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section">
+    <section class="section section-alt">
         <div class="container">
             <div class="section-head">
                 <span class="tag">Specialists</span>
@@ -356,52 +354,14 @@
         </div>
     </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <div class="footer-brand"><i class="fas fa-shield-virus"></i> VayuGuard</div>
-                    <p style="color: var(--gray-light); font-size: 0.9rem; margin-top: 1rem;">
-                        The world's first quantum-hybrid air quality forecasting platform. Built for a healthier tomorrow.
-                    </p>
-                </div>
-                <div>
-                    <h4>Platform</h4>
-                    <a href="#forecast">AQI Forecast</a>
-                    <a href="#health">Health Solutions</a>
-                    <a href="helpdesk.html">Help Desk</a>
-                </div>
-                <div>
-                    <h4>Technology</h4>
-                    <a href="#">Quantum Engine</a>
-                    <a href="#">Machine Learning</a>
-                    <a href="#">API Documentation</a>
-                </div>
-                <div>
-                    <h4>Connect</h4>
-                    <a href="https://github.com/Marampawan/vayuguard-aiml" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
-                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                &copy; 2026 VayuGuard. All rights reserved. Built with <i class="fas fa-heart"></i> and Quantum Technology.
-            </div>
-        </div>
-    </footer>
-
     <div class="modal-overlay hidden" id="addPersonModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Add Family Member</h3>
                 <button class="close-btn" id="closeModalBtn">&times;</button>
             </div>
-            
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" id="newMemberName" placeholder="e.g., Grandma, John">
-                </div>
+                <div class="form-group"><label>Name</label><input type="text" id="newMemberName" placeholder="e.g., Grandma, John"></div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Health Conditions / Lifestyle</label>
                     <div class="checkbox-group" id="conditionCheckboxes">
@@ -414,7 +374,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="modal-footer">
                 <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
                 <button class="btn btn-primary" id="saveMemberBtn">Save Member</button>
@@ -455,7 +414,6 @@
                 });
             });
         }
-        
         attachChipListeners();
 
         saveMemberBtn.addEventListener('click', () => {
@@ -497,24 +455,59 @@
         };
         document.getElementById('cityForecastSelect').addEventListener('change', function() { document.getElementById('dynamicForecastGrid').innerHTML = cityForecasts[this.value]; });
 
-        // 🧘 ANIMATED BREATHING LOGIC
-        function toggleBreathing(type, animClass) {
+        // 🎮 INTERACTIVE BREATHING GAME ENGINE
+        let breathIntervals = {};
+
+        function toggleBreathingGame(type) {
             const btn = document.getElementById(`btn-${type}`);
             const circle = document.getElementById(`circle-${type}`);
             const text = document.getElementById(`text-${type}`);
 
-            if (circle.classList.contains(animClass)) {
-                // Stop Animation
-                circle.classList.remove(animClass);
+            // Stop Game
+            if (circle.classList.contains('active-anim')) {
+                circle.classList.remove('active-anim', `run-${type}`);
+                clearInterval(breathIntervals[type]);
                 btn.classList.remove('active');
-                btn.innerHTML = '<i class="fas fa-play"></i> Start Exercise';
+                btn.innerHTML = '<i class="fas fa-play"></i> Start Game';
                 text.textContent = 'Ready';
-            } else {
-                // Start Animation
-                circle.classList.add(animClass);
+            } 
+            // Start Game
+            else {
+                circle.classList.add('active-anim', `run-${type}`);
                 btn.classList.add('active');
-                btn.innerHTML = '<i class="fas fa-stop"></i> Stop Exercise';
-                text.textContent = 'Breathe';
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop Game';
+                runBreathingCycle(type, text, circle);
+            }
+        }
+
+        function runBreathingCycle(type, textEl, circleEl) {
+            if(breathIntervals[type]) clearInterval(breathIntervals[type]);
+
+            const checkActive = () => circleEl.classList.contains('active-anim');
+
+            if (type === '478') {
+                const cycle = () => {
+                    if(!checkActive()) return; textEl.textContent = 'Inhale';
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 4000);
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 11000);
+                };
+                cycle(); breathIntervals[type] = setInterval(cycle, 19000);
+            } 
+            else if (type === 'box') {
+                const cycle = () => {
+                    if(!checkActive()) return; textEl.textContent = 'Inhale';
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 4000);
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 8000);
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Hold'; }, 12000);
+                };
+                cycle(); breathIntervals[type] = setInterval(cycle, 16000);
+            } 
+            else if (type === 'power') {
+                const cycle = () => {
+                    if(!checkActive()) return; textEl.textContent = 'Inhale';
+                    setTimeout(() => { if(checkActive()) textEl.textContent = 'Exhale'; }, 1000);
+                };
+                cycle(); breathIntervals[type] = setInterval(cycle, 2000);
             }
         }
     </script>
@@ -522,17 +515,11 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
         const firebaseConfig = {
-            apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E",
-            authDomain: "vayuguard-44a1e.firebaseapp.com",
-            projectId: "vayuguard-44a1e",
-            storageBucket: "vayuguard-44a1e.firebasestorage.app",
-            messagingSenderId: "815444891179",
-            appId: "1:815444891179:web:f46326073caecaee3c3c6e",
-            measurementId: "G-2KRT1YYMSS"
+            apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E", authDomain: "vayuguard-44a1e.firebaseapp.com",
+            projectId: "vayuguard-44a1e", storageBucket: "vayuguard-44a1e.firebasestorage.app",
+            messagingSenderId: "815444891179", appId: "1:815444891179:web:f46326073caecaee3c3c6e"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const loginButton = document.getElementById('navLoginBtn');
@@ -540,15 +527,9 @@
         onAuthStateChanged(auth, (user) => {
             if (user && loginButton) {
                 loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
-                loginButton.style.backgroundColor = "transparent";
-                loginButton.style.border = "1px solid var(--danger)";
-                loginButton.style.color = "var(--danger)";
-                loginButton.href = "#"; 
-                
-                loginButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    signOut(auth).then(() => { window.location.reload(); });
-                });
+                loginButton.style.backgroundColor = "transparent"; loginButton.style.border = "1px solid var(--danger)";
+                loginButton.style.color = "var(--danger)"; loginButton.href = "#"; 
+                loginButton.addEventListener('click', (e) => { e.preventDefault(); signOut(auth).then(() => { window.location.reload(); }); });
             }
         });
     </script>
