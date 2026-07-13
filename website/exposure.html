@@ -95,8 +95,31 @@
     <script>
         document.getElementById('exposureForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Here you would normally send this to Firebase!
-            // For now, we will show a success alert and go back to the dashboard.
+            
+            // 1. Gather all the data you just typed in
+            const dateVal = document.getElementById('expDate').value;
+            const aqiVal = document.getElementById('expAqi').options[document.getElementById('expAqi').selectedIndex].text;
+            const durationVal = document.getElementById('expDuration').options[document.getElementById('expDuration').selectedIndex].text;
+            
+            // 2. Gather the checked symptoms
+            const checkboxes = document.querySelectorAll('.checkbox-grid input[type="checkbox"]:checked');
+            let symptoms = [];
+            checkboxes.forEach(cb => symptoms.push(cb.parentElement.textContent.trim()));
+
+            // 3. Package it into a neat log entry
+            const logEntry = {
+                date: new Date(dateVal).toLocaleString(),
+                aqi: aqiVal,
+                duration: durationVal,
+                symptoms: symptoms.length > 0 ? symptoms.join(', ') : 'None reported'
+            };
+
+            // 4. Save it permanently to the browser's memory
+            let exposureHistory = JSON.parse(localStorage.getItem('vayuExposureHistory')) || [];
+            exposureHistory.push(logEntry);
+            localStorage.setItem('vayuExposureHistory', JSON.stringify(exposureHistory));
+
+            // 5. Show success and go back to dashboard
             const btn = document.querySelector('.submit-btn');
             btn.innerHTML = '<i class="fas fa-check-circle"></i> Log Saved Successfully!';
             btn.style.background = '#10b981';

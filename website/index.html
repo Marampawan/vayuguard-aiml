@@ -164,6 +164,13 @@
                 </div>
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 1.2rem; margin-bottom: 0; font-style: italic;"><i class="fas fa-satellite-dish" style="color: #38bdf8;"></i> Updated just now via Quantum Sensors</p>
             </div>
+
+            <div id="exposureHistoryContainer" style="margin-top: 3rem; display: none;">
+                <h4 style="color: #1e293b; font-size: 1.3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem;"><i class="fas fa-history" style="color: #8b5cf6;"></i> Your Exposure History</h4>
+                
+                <div id="exposureHistoryList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+            </div>
+
         </div>
     </section>
 
@@ -835,6 +842,44 @@
         });
 
         updateCityData('bengaluru');
+
+        // 🕒 LOAD & DISPLAY EXPOSURE HISTORY
+        function loadExposureHistory() {
+            const historyList = document.getElementById('exposureHistoryList');
+            const historyContainer = document.getElementById('exposureHistoryContainer');
+            if (!historyList || !historyContainer) return;
+
+            let exposureHistory = JSON.parse(localStorage.getItem('vayuExposureHistory')) || [];
+
+            if (exposureHistory.length > 0) {
+                historyContainer.style.display = 'block';
+                historyList.innerHTML = ''; // Clear old entries
+                
+                // Reverse the array so your newest logs show up at the top
+                exposureHistory.slice().reverse().forEach(log => {
+                    const logCard = document.createElement('div');
+                    logCard.style = "background: #ffffff; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; transition: transform 0.2s;";
+                    logCard.onmouseover = () => logCard.style.transform = 'translateY(-2px)';
+                    logCard.onmouseout = () => logCard.style.transform = 'translateY(0)';
+                    
+                    logCard.innerHTML = `
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="font-size: 0.85rem; color: #64748b; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">${log.date}</div>
+                            <div style="font-weight: 800; color: #1e293b; font-size: 1.2rem; margin-bottom: 4px;">${log.aqi}</div>
+                            <div style="font-size: 0.95rem; color: #475569;"><i class="fas fa-clock" style="color: #3b82f6;"></i> Exposed for: ${log.duration}</div>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #f1f5f9; min-width: 280px; flex: 1;">
+                            <span style="font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;"><i class="fas fa-notes-medical"></i> Logged Symptoms</span>
+                            <div style="font-size: 1rem; color: #334155; font-weight: 600; margin-top: 6px; line-height: 1.4;">${log.symptoms}</div>
+                        </div>
+                    `;
+                    historyList.appendChild(logCard);
+                });
+            }
+        }
+        
+        // Trigger it immediately
+        loadExposureHistory();
     </script>
 
     <script type="module">
