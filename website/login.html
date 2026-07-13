@@ -3,132 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — VayuGuard Quantum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Authentication — VayuGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Modern Quantum Animated Background */
-        body {
-            margin: 0;
-            overflow: hidden; /* Prevents scrolling on login page */
+        /* === qBraid-Style Deep Space Background === */
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh; 
+            background-color: #030008; /* Ultra dark deep space */
+            font-family: 'Inter', sans-serif; 
+        }
+
+        .space-bg { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: radial-gradient(circle at 50% 30%, #1d0743 0%, #030008 70%); 
+            z-index: -3; 
+        }
+
+        .stars { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background-image: 
+                radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)), 
+                radial-gradient(1.5px 1.5px at 80px 70px, #eee, rgba(0,0,0,0)), 
+                radial-gradient(2px 2px at 150px 160px, #ddd, rgba(0,0,0,0)), 
+                radial-gradient(1.5px 1.5px at 290px 40px, #fff, rgba(0,0,0,0)), 
+                radial-gradient(2px 2px at 330px 80px, #eee, rgba(0,0,0,0)); 
+            background-repeat: repeat; 
+            background-size: 400px 400px; 
+            animation: twinkle 5s infinite alternate; 
+            z-index: -2; 
+            opacity: 0.5; 
+        }
+
+        .glowing-orb { 
+            position: fixed; border-radius: 50%; filter: blur(140px); z-index: -1; 
+            animation: floatOrb 15s infinite ease-in-out alternate; 
+        }
+        .orb-magenta { width: 45vw; height: 45vw; background: rgba(217, 70, 239, 0.12); top: -20%; left: 20%; }
+        .orb-purple { width: 50vw; height: 50vw; background: rgba(124, 58, 237, 0.15); bottom: -10%; right: -10%; animation-delay: -5s; animation-duration: 20s; }
+
+        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 0.7; } }
+        @keyframes floatOrb { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 5%) scale(1.1); } 100% { transform: translate(-2%, 8%) scale(0.9); } }
+
+        /* === qBraid-Style Navbar === */
+        .q-navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4rem;
+            box-sizing: border-box;
+            z-index: 20;
+        }
+
+        .q-brand {
             display: flex;
             align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .q-brand-icon {
+            width: 32px; height: 32px; 
+            background: linear-gradient(135deg, #d946ef, #8b5cf6); 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .q-nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .q-nav-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .q-nav-links a:hover { color: white; }
+
+        .btn-return {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-return:hover { background: rgba(255,255,255,0.2); }
+
+        /* === Main Content Area === */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            background-color: #050505;
-        }
-
-        .quantum-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(45deg, #020617, #0f172a, #1e1b4b, #020617);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            z-index: -2;
-        }
-
-        /* Floating Glowing Orbs */
-        .glowing-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(90px);
-            z-index: -1;
-            animation: floatOrb 20s infinite ease-in-out alternate;
-        }
-
-        .orb-purple {
-            width: 45vw; height: 45vw;
-            background: rgba(124, 58, 237, 0.25);
-            top: -10%; left: -10%;
-        }
-
-        .orb-cyan {
-            width: 40vw; height: 40vw;
-            background: rgba(6, 182, 212, 0.2);
-            bottom: -10%; right: -10%;
-            animation-delay: -5s;
-            animation-duration: 25s;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(5%, 5%) scale(1.05); }
-            100% { transform: translate(-2%, 8%) scale(0.95); }
-        }
-
-        /* Glassmorphism Card Effect */
-        .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 3rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            flex: 1;
             width: 100%;
-            max-width: 420px;
-            text-align: center;
-            position: relative;
+            margin-top: -2rem;
             z-index: 10;
         }
+
+        /* Massive qBraid Heading */
+        .hero-heading {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-heading h1 {
+            color: white;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .hero-heading h1 span {
+            background: linear-gradient(90deg, #d946ef, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Premium Glassmorphism Card */
+        .glass-card { 
+            background: rgba(15, 7, 28, 0.6); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px); 
+            padding: 2.5rem 3rem; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05); 
+            width: 100%; 
+            max-width: 420px; 
+            text-align: center; 
+            transition: height 0.3s ease; 
+        }
+
+        .modern-input { 
+            width: 100%; padding: 0.9rem 1.2rem; border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.5); 
+            color: white; font-family: 'Inter', sans-serif; transition: all 0.3s ease; 
+            outline: none; box-sizing: border-box; 
+        }
+        .modern-input:focus { border-color: #d946ef; box-shadow: 0 0 15px rgba(217, 70, 239, 0.2); background: rgba(0,0,0,0.7); }
+
+        .btn-submit { 
+            width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; 
+            border-radius: 8px; padding: 1rem; font-weight: 600; font-size: 1rem; 
+            background: linear-gradient(90deg, #c026d3, #db2777); border: none; color: white; 
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3); 
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(217, 70, 239, 0.5); }
+        .btn-submit:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); box-shadow: none; cursor: not-allowed; transform: none; }
+
+        .btn-google { 
+            width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; 
+            border-radius: 8px; padding: 1rem; font-weight: 600; font-size: 1rem; 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); 
+            color: white; cursor: pointer; transition: all 0.3s ease; 
+        }
+        .btn-google:hover { background: rgba(255,255,255,0.1); }
+        .btn-google:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .hidden-field { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease; margin-bottom: 0 !important; }
+        .show-field { max-height: 100px; opacity: 1; margin-bottom: 1.2rem !important; }
     </style>
 </head>
 <body>
 
-    <div class="quantum-bg"></div>
+    <div class="space-bg"></div>
+    <div class="stars"></div>
+    <div class="glowing-orb orb-magenta"></div>
     <div class="glowing-orb orb-purple"></div>
-    <div class="glowing-orb orb-cyan"></div>
 
-    <nav class="navbar" style="position: absolute; top: 0; width: 100%; background: transparent; border-bottom: none; z-index: 20;">
-        <div class="nav-brand">
-            <i class="fas fa-wind"></i>
+    <nav class="q-navbar">
+        <a href="index.html" class="q-brand">
+            <div class="q-brand-icon">
+                <div style="width: 12px; height: 12px; background: #030008; border-radius: 50%;"></div>
+            </div>
             <span>VayuGuard</span>
-        </div>
-        <ul class="nav-menu">
-            <li><a href="index.html" style="color: white; opacity: 0.8; transition: 0.3s;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a></li>
+        </a>
+        
+        <ul class="q-nav-links">
+            <li><a href="index.html#forecast">Products</a></li>
+            <li><a href="index.html#health">Solutions</a></li>
+            <li><a href="helpdesk.html">Resources</a></li>
         </ul>
+
+        <a href="index.html" class="btn-return">Return to App</a>
     </nav>
 
-    <div class="glass-card">
+    <div class="main-container">
         
-        <div style="width: 65px; height: 65px; background: linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(6, 182, 212, 0.4)); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);">
-            <i class="fas fa-fingerprint"></i>
+        <div class="hero-heading">
+            <h1>The One-Stop<br><span>Quantum Air</span><br>Platform</h1>
         </div>
-        
-        <h2 style="color: var(--white); margin-bottom: 0.5rem; font-size: 1.6rem; letter-spacing: -0.5px;">Welcome Back</h2>
-        <p style="color: rgba(255,255,255,0.6); font-size: 0.95rem; margin-bottom: 2.5rem;">Secure your quantum health profile.</p>
 
-        <form id="loginForm" onsubmit="event.preventDefault(); window.location.href='index.html';">
-            
-            <div style="text-align: left; margin-bottom: 1.2rem;">
-                <label style="color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; display: block;"><i class="fas fa-envelope" style="opacity: 0.7; margin-right: 5px;"></i> Email Address</label>
-                <input type="email" placeholder="name@example.com" required style="width: 100%; padding: 0.9rem 1.2rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='rgba(124, 58, 237, 0.8)'; this.style.boxShadow='0 0 10px rgba(124, 58, 237, 0.3)';" onblur="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.boxShadow='none';">
-            </div>
+        <div class="glass-card" id="authCard">
+            <h2 id="authTitle" style="color: var(--white); margin-top: 0; margin-bottom: 0.3rem; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;">Log in</h2>
+            <p id="authSubtitle" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 2rem;">Access your quantum computing profile.</p>
 
-            <div style="text-align: left; margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <label style="color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 600;"><i class="fas fa-lock" style="opacity: 0.7; margin-right: 5px;"></i> Password</label>
-                    <a href="#" style="color: #38bdf8; font-size: 0.8rem; text-decoration: none; font-weight: 500;">Forgot?</a>
+            <form id="authForm">
+                <div id="nameFieldContainer" class="hidden-field" style="text-align: left;">
+                    <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: block;">Full Name</label>
+                    <input type="text" id="nameInput" placeholder="John Doe" class="modern-input">
                 </div>
-                <input type="password" placeholder="••••••••" required style="width: 100%; padding: 0.9rem 1.2rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: white; font-family: 'Inter', sans-serif; transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='rgba(124, 58, 237, 0.8)'; this.style.boxShadow='0 0 10px rgba(124, 58, 237, 0.3)';" onblur="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.boxShadow='none';">
+
+                <div style="text-align: left; margin-bottom: 1.2rem;">
+                    <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; display: block;">Email</label>
+                    <input type="email" id="emailInput" placeholder="name@company.com" required class="modern-input">
+                </div>
+
+                <div style="text-align: left; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <label style="color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 500;">Password</label>
+                        <a href="#" id="forgotPasswordLink" style="color: #d946ef; font-size: 0.8rem; text-decoration: none; font-weight: 500;">Forgot password?</a>
+                    </div>
+                    <input type="password" id="passInput" placeholder="••••••••" required class="modern-input">
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-submit">
+                    <span id="btnText">Log in</span>
+                    <div class="spinner" id="btnSpinner"></div>
+                </button>
+            </form>
+
+            <div style="display: flex; align-items: center; margin: 1.2rem 0;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                <span style="color: rgba(255,255,255,0.5); padding: 0 10px; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">OR</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
             </div>
 
-            <button type="submit" style="width: 100%; justify-content: center; border-radius: 50px; padding: 1.1rem; font-weight: 600; font-size: 1rem; background: linear-gradient(90deg, #4f46e5, #7c3aed); border: none; color: white; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(124, 58, 237, 0.6)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(124, 58, 237, 0.4)';">
-                Sign In
+            <button type="button" id="googleBtn" class="btn-google">
+                <i class="fab fa-google" style="color: #ea4335; font-size: 1.1rem;"></i> 
+                <span id="googleBtnText">Continue with Google</span>
+                <div class="spinner" id="googleSpinner" style="border-top-color: #ea4335;"></div>
             </button>
-        </form>
 
-        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 2rem;">
-            Don't have an account? <a href="#" style="color: #38bdf8; font-weight: 600; text-decoration: none;">Create one</a>
-        </p>
+            <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 0;">
+                <span id="togglePreText">Don't have an account?</span> 
+                <a href="#" id="toggleAuthMode" style="color: #d946ef; font-weight: 600; text-decoration: none;">Sign Up</a>
+            </p>
+        </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // YOUR REAL FIREBASE KEYS
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdaswB4j3lImZ4O_3uyxNmqOJRGqJuu0E",
+            authDomain: "vayuguard-44a1e.firebaseapp.com",
+            projectId: "vayuguard-44a1e",
+            storageBucket: "vayuguard-44a1e.firebasestorage.app",
+            messagingSenderId: "815444891179",
+            appId: "1:815444891179:web:f46326073caecaee3c3c6e",
+            measurementId: "G-2KRT1YYMSS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        let isLoginMode = true; 
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const nameFieldContainer = document.getElementById('nameFieldContainer');
+        const nameInput = document.getElementById('nameInput');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const btnText = document.getElementById('btnText');
+        const togglePreText = document.getElementById('togglePreText');
+        const toggleAuthMode = document.getElementById('toggleAuthMode');
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const email = document.getElementById('emailInput');
+        const pass = document.getElementById('passInput');
+        const googleBtn = document.getElementById('googleBtn');
+        const googleBtnText = document.getElementById('googleBtnText');
+        const googleSpinner = document.getElementById('googleSpinner');
+
+        toggleAuthMode.addEventListener('click', function(event) {
+            event.preventDefault(); 
+            isLoginMode = !isLoginMode; 
+
+            if (isLoginMode) {
+                authTitle.textContent = "Log in";
+                authSubtitle.textContent = "Access your quantum computing profile.";
+                nameFieldContainer.classList.remove('show-field'); 
+                nameInput.removeAttribute('required'); 
+                forgotPasswordLink.style.display = "block"; 
+                btnText.textContent = "Log in";
+                togglePreText.textContent = "Don't have an account?";
+                toggleAuthMode.textContent = "Sign Up";
+            } else {
+                authTitle.textContent = "Create Account";
+                authSubtitle.textContent = "Join the VayuGuard quantum network.";
+                nameFieldContainer.classList.add('show-field'); 
+                nameInput.setAttribute('required', 'true'); 
+                forgotPasswordLink.style.display = "none"; 
+                btnText.textContent = "Sign Up";
+                togglePreText.textContent = "Already have an account?";
+                toggleAuthMode.textContent = "Log in";
+            }
+        });
+
+        document.getElementById('authForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            lockUI(btn, btnText, spinner, isLoginMode ? "Authenticating..." : "Creating Account...");
+
+            if (isLoginMode) {
+                signInWithEmailAndPassword(auth, email.value, pass.value)
+                    .then(() => window.location.href = 'index.html')
+                    .catch((error) => { alert("Error: " + error.message); unlockUI(); });
+            } else {
+                createUserWithEmailAndPassword(auth, email.value, pass.value)
+                    .then(() => window.location.href = 'index.html')
+                    .catch((error) => { alert("Error: " + error.message); unlockUI(); });
+            }
+        });
+
+        googleBtn.addEventListener('click', () => {
+            googleBtn.disabled = true;
+            googleBtnText.style.display = "none";
+            googleSpinner.style.display = "block";
+
+            signInWithPopup(auth, googleProvider)
+                .then(() => window.location.href = 'index.html')
+                .catch((error) => {
+                    alert("Google Sign-In Error: " + error.message);
+                    googleBtn.disabled = false;
+                    googleBtnText.style.display = "inline";
+                    googleSpinner.style.display = "none";
+                });
+        });
+
+        function lockUI(button, textElement, loadSpinner, text) {
+            button.disabled = true; email.disabled = true; pass.disabled = true; googleBtn.disabled = true;
+            if(!isLoginMode) nameInput.disabled = true;
+            textElement.textContent = text; loadSpinner.style.display = "block"; 
+        }
+
+        function unlockUI() {
+            btn.disabled = false; email.disabled = false; pass.disabled = false; googleBtn.disabled = false;
+            if(!isLoginMode) nameInput.disabled = false;
+            btnText.textContent = isLoginMode ? "Log in" : "Sign Up"; spinner.style.display = "none"; 
+        }
+    </script>
 </body>
-</html> 
+</html>
