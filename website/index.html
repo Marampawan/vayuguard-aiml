@@ -10,58 +10,65 @@
     
     <style>
         /* === Modal Scroll Fix === */
-        .modal-overlay {
-            padding: 1rem;
-        }
-        .modal-content {
-            max-height: 90vh; /* Limits height to 90% of screen */
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-body {
-            overflow-y: auto; /* Adds a scrollbar specifically to the content */
-            padding-right: 10px; /* Gives room for scrollbar */
-        }
+        .modal-overlay { padding: 1rem; }
+        .modal-content { max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-body { overflow-y: auto; padding-right: 10px; }
         
         /* === Forecast Grid & Chips Fix === */
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .chip { transition: all 0.2s; user-select: none; }
+        .forecast-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .chip { transition: all 0.2s; user-select: none; cursor: pointer; }
         .chip:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
         .family-details-box {
-            margin-top: 1.5rem;
-            padding: 1.2rem;
-            background: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.95rem;
-            color: #334155;
-            transition: all 0.3s ease;
+            margin-top: 1.5rem; padding: 1.2rem; background: #f8fafc;
+            border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.95rem;
+            color: #334155; transition: all 0.3s ease;
         }
 
-        /* === City Selector Styling === */
         .city-selector-dropdown {
-            width: 100%;
-            padding: 0.6rem 1rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 50px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--dark);
-            background-color: var(--light);
-            cursor: pointer;
-            outline: none;
-            transition: border-color 0.2s;
+            width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1;
+            border-radius: 50px; font-family: inherit; font-size: 0.9rem;
+            font-weight: 600; color: var(--dark); background-color: var(--light);
+            cursor: pointer; outline: none; transition: border-color 0.2s;
         }
-        .city-selector-dropdown:focus {
-            border-color: var(--primary);
+        .city-selector-dropdown:focus { border-color: var(--primary); }
+
+        /* === 🩺 NEW: MODERN DOCTOR CARDS === */
+        .doctor-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .modern-doc-card {
+            background: #ffffff; border-radius: 16px; padding: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.3s ease;
+            border: 1px solid #f1f5f9; display: flex; flex-direction: column;
+            gap: 1.2rem; position: relative; overflow: hidden;
         }
+        .modern-doc-card:hover {
+            transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: #d946ef;
+        }
+        .modern-doc-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #d946ef, #8b5cf6);
+        }
+        .doc-header { display: flex; align-items: center; gap: 1rem; }
+        .doc-avatar-modern {
+            width: 65px; height: 65px; background: linear-gradient(135deg, #f3e8ff, #e0e7ff);
+            color: #7c3aed; font-size: 1.4rem; font-weight: 800; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .doc-title-area h4 { margin: 0 0 0.3rem 0; font-size: 1.2rem; color: #0f172a; }
+        .doc-title-area span { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+        .doc-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .doc-badge {
+            background: #f1f5f9; color: #475569; font-size: 0.75rem;
+            padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 600;
+        }
+        .doc-badge.highlight { background: #fdf4ff; color: #c026d3; }
+        .doc-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.9rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;
+        }
+        .doc-rating { color: #f59e0b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
     </style>
 </head>
 <body>
@@ -237,57 +244,63 @@
     <section class="section">
         <div class="container">
             <div class="section-head">
-                <span class="tag">Technology</span>
-                <h2>Why Quantum?</h2>
-            </div>
-            <div class="quantum-compare">
-                <table>
-                    <thead><tr><th>Feature</th><th>Standard AQI Apps</th><th>VayuGuard (Quantum)</th></tr></thead>
-                    <tbody>
-                        <tr><td>Prediction Accuracy</td><td>~70% (Classical ML)</td><td class="win">94%+ (Quantum Hybrid)</td></tr>
-                        <tr><td>Variables Processed</td><td>~50 variables</td><td class="win">10,000+ simultaneous</td></tr>
-                        <tr><td>Update Frequency</td><td>Hourly</td><td class="win">Real-time (Sub-second)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section class="section section-alt">
-        <div class="container">
-            <div class="section-head">
                 <span class="tag">Specialists</span>
                 <h2>Consult Top Pulmonologists</h2>
                 <p>Connect with verified respiratory experts in your area.</p>
             </div>
+            
             <div class="doctor-list">
-                <div class="doc-card">
-                    <div class="doc-top">
-                        <div class="doc-avatar">DS</div>
-                        <div class="doc-info">
+                <div class="modern-doc-card">
+                    <div class="doc-header">
+                        <div class="doc-avatar-modern">SC</div>
+                        <div class="doc-title-area">
                             <h4>Dr. Sarah Chen</h4>
                             <span>15 yrs experience</span>
                         </div>
                     </div>
-                    <div class="doc-spec">Asthma Specialist</div>
-                    <div class="doc-meta"><i class="fas fa-star"></i> 4.9 (120 reviews)</div>
-                    <div class="doc-actions">
-                        <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
+                    <div class="doc-badges">
+                        <span class="doc-badge highlight">Asthma Specialist</span>
+                        <span class="doc-badge">Pediatrics</span>
+                    </div>
+                    <div class="doc-footer">
+                        <div class="doc-rating"><i class="fas fa-star"></i> 4.9 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(120)</span></div>
+                        <button class="btn btn-primary btn-sm">Book Consult</button>
                     </div>
                 </div>
 
-                <div class="doc-card">
-                    <div class="doc-top">
-                        <div class="doc-avatar">MR</div>
-                        <div class="doc-info">
+                <div class="modern-doc-card">
+                    <div class="doc-header">
+                        <div class="doc-avatar-modern">MR</div>
+                        <div class="doc-title-area">
                             <h4>Dr. Marcus Rao</h4>
                             <span>12 yrs experience</span>
                         </div>
                     </div>
-                    <div class="doc-spec">Pulmonology</div>
-                    <div class="doc-meta"><i class="fas fa-star"></i> 4.8 (85 reviews)</div>
-                    <div class="doc-actions">
-                        <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
+                    <div class="doc-badges">
+                        <span class="doc-badge highlight">Pulmonology</span>
+                        <span class="doc-badge">COPD</span>
+                    </div>
+                    <div class="doc-footer">
+                        <div class="doc-rating"><i class="fas fa-star"></i> 4.8 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(85)</span></div>
+                        <button class="btn btn-primary btn-sm">Book Consult</button>
+                    </div>
+                </div>
+
+                <div class="modern-doc-card">
+                    <div class="doc-header">
+                        <div class="doc-avatar-modern">EP</div>
+                        <div class="doc-title-area">
+                            <h4>Dr. Elena Patel</h4>
+                            <span>20 yrs experience</span>
+                        </div>
+                    </div>
+                    <div class="doc-badges">
+                        <span class="doc-badge highlight">Allergy & Immunology</span>
+                        <span class="doc-badge">Adults</span>
+                    </div>
+                    <div class="doc-footer">
+                        <div class="doc-rating"><i class="fas fa-star"></i> 5.0 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(200+)</span></div>
+                        <button class="btn btn-primary btn-sm">Book Consult</button>
                     </div>
                 </div>
             </div>
@@ -336,51 +349,122 @@
             </div>
             
             <div class="modal-body">
-                <div class="form-group"><label>Name</label><input type="text" placeholder="e.g., Grandma"></div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="newMemberName" placeholder="e.g., Grandma, John">
+                </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label>Health Conditions (Optional)</label>
-                    <div class="checkbox-group">
+                    <label>Health Conditions / Lifestyle</label>
+                    <div class="checkbox-group" id="conditionCheckboxes">
                         <label><input type="checkbox" value="asthma"> Asthma</label>
                         <label><input type="checkbox" value="copd"> COPD / Emphysema</label>
                         <label><input type="checkbox" value="allergies"> Severe Allergies</label>
                         <label><input type="checkbox" value="heart"> Heart Condition</label>
-                        <label><input type="checkbox" value="diabetes"> Diabetes</label>
+                        <label><input type="checkbox" value="children"> Young Children</label>
+                        <label><input type="checkbox" value="outside"> Works Outside</label>
                     </div>
                 </div>
             </div>
             
             <div class="modal-footer">
                 <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
-                <button class="btn btn-primary" onclick="alert('Member added successfully!'); document.getElementById('addPersonModal').classList.add('hidden');">Save Member</button>
+                <button class="btn btn-primary" id="saveMemberBtn">Save Member</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Modal Logic
+        // --- Modal & Dynamic Chip Logic ---
         const modal = document.getElementById('addPersonModal');
-        document.getElementById('openModalBtn').addEventListener('click', () => modal.classList.remove('hidden'));
-        document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
-        document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const saveMemberBtn = document.getElementById('saveMemberBtn');
+        const newMemberNameInput = document.getElementById('newMemberName');
+        const chipsContainer = document.getElementById('familyChipsContainer');
+        const detailsBox = document.getElementById('familyDetailsBox');
 
-        // Family Chips Logic
+        openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        cancelModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+        // Initial Family Data
         const familyData = {
             'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
             'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
             'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> Shift in AQI may cause mild discomfort. Keep air purifiers running.'
         };
-        const chips = document.querySelectorAll('.people-chips .chip:not(#openModalBtn)');
-        const detailsBox = document.getElementById('familyDetailsBox');
 
-        chips.forEach(chip => {
-            chip.addEventListener('click', function() {
-                chips.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                detailsBox.innerHTML = familyData[this.getAttribute('data-profile')];
+        // Function to make chips clickable
+        function attachChipListeners() {
+            const allChips = document.querySelectorAll('.people-chips .chip:not(#openModalBtn)');
+            allChips.forEach(chip => {
+                // Remove existing listener to avoid duplicates
+                chip.replaceWith(chip.cloneNode(true));
             });
+            // Re-select and attach
+            document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    detailsBox.innerHTML = familyData[this.getAttribute('data-profile')];
+                });
+            });
+        }
+        
+        // Attach initial listeners
+        attachChipListeners();
+
+        // DYNAMIC ADD MEMBER
+        saveMemberBtn.addEventListener('click', () => {
+            const name = newMemberNameInput.value.trim();
+            if (!name) {
+                alert("Please enter a name.");
+                return;
+            }
+
+            // Collect checked conditions
+            const checkboxes = document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]:checked');
+            let conditions = [];
+            checkboxes.forEach(cb => conditions.push(cb.parentElement.textContent.trim()));
+
+            // Generate unique ID
+            const profileId = 'profile-' + Date.now();
+
+            // Create new chip element
+            const newChip = document.createElement('div');
+            newChip.className = 'chip';
+            newChip.setAttribute('data-profile', profileId);
+            
+            // Choose icon based on conditions
+            let icon = '<i class="fas fa-user"></i>';
+            if (conditions.includes('Young Children')) icon = '<i class="fas fa-child"></i>';
+            else if (conditions.includes('Works Outside')) icon = '<i class="fas fa-hard-hat"></i>';
+            else if (conditions.length > 0) icon = '<i class="fas fa-notes-medical"></i>';
+
+            let tagText = conditions.length > 0 ? ` (${conditions[0]})` : '';
+            newChip.innerHTML = `${icon} ${name}${tagText}`;
+
+            // Add data to dictionary
+            let conditionString = conditions.length > 0 ? conditions.join(', ') : 'No specific conditions';
+            familyData[profileId] = `<strong>${name}:</strong> Tracked Conditions: <span style="color:var(--primary); font-weight:600;">${conditionString}</span>. Quantum forecast is monitoring local AQI carefully based on this profile.`;
+
+            // Insert into page before the "Add Person" button
+            chipsContainer.insertBefore(newChip, openModalBtn);
+            
+            // Reattach click events so the new chip works
+            attachChipListeners();
+
+            // Simulate clicking the new chip to show it off
+            newChip.click();
+
+            // Reset modal & close
+            newMemberNameInput.value = '';
+            document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
+            modal.classList.add('hidden');
         });
 
-        // City Forecast Selector Logic
+        // --- City Forecast Selector Logic ---
         const cityForecasts = {
             'bengaluru': `
                 <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
