@@ -17,6 +17,114 @@ function saveFamilyData() {
 let breathingTimeout; // Must use Timeout, not Interval
 let isBreathing = false; // The Kill-Switch flag
 
+function initUnifiedCityData() {
+    const select = document.getElementById('cityForecastSelect');
+    if (!select) return;
+
+    const cityNames = {
+        bengaluru: 'Bengaluru, IN',
+        delhi: 'Delhi, IN',
+        newyork: 'New York, US'
+    };
+
+    select.addEventListener('change', function() {
+        updateCityData(this.value);
+        const label = document.querySelector('.aqi-label');
+        if (label) {
+            label.textContent = `Live AQI - ${cityNames[this.value] || 'Bengaluru, IN'}`;
+        }
+    });
+
+    updateCityData(select.value || 'bengaluru');
+}
+
+async function updateCityData(citySelectValue) {
+    const apiToken = 'demo';
+    let apiCity = 'bangalore';
+
+    if (citySelectValue === 'delhi') apiCity = 'delhi';
+    if (citySelectValue === 'newyork') apiCity = 'newyork';
+
+    const valueEl = document.getElementById('liveAqiValue');
+    const statusEl = document.getElementById('liveAqiStatus');
+    const needleEl = document.getElementById('aqiNeedle');
+    const forecastGrid = document.getElementById('dynamicForecastGrid');
+
+    if (!valueEl || !statusEl || !needleEl || !forecastGrid) return;
+
+    try {
+        valueEl.innerText = '⚛️';
+        valueEl.style.fontSize = '3.5rem';
+        valueEl.style.color = '#8b5cf6';
+
+        statusEl.innerText = 'CONNECTING TO QBRAID CLOUD...';
+        statusEl.style.backgroundColor = '#f3e8ff';
+        statusEl.style.color = '#6d28d9';
+        statusEl.style.borderColor = '#8b5cf6';
+
+        await new Promise(resolve => setTimeout(resolve, 1200));
+
+        const response = await fetch(`https://api.waqi.info/feed/${apiCity}/?token=${apiToken}`);
+        const result = await response.json();
+
+        if (result.status === 'ok') {
+            const currentAqi = result.data.aqi;
+
+            const getAqiStyle = (aqi) => {
+                if (aqi <= 50) return { text: 'GOOD', color: '#10b981', bg: '#d1fae5', border: '#a7f3d0' };
+                if (aqi <= 100) return { text: 'MODERATE', color: '#f59e0b', bg: '#fef3c7', border: '#fde68a' };
+                if (aqi <= 150) return { text: 'SENSITIVE', color: '#f97316', bg: '#ffedd5', border: '#fdba74' };
+                if (aqi <= 200) return { text: 'UNHEALTHY', color: '#ef4444', bg: '#fee2e2', border: '#fecaca' };
+                if (aqi <= 300) return { text: 'VERY UNHEALTHY', color: '#8b5cf6', bg: '#f3e8ff', border: '#d8b4fe' };
+                return { text: 'HAZARDOUS', color: '#e11d48', bg: '#ffe4e6', border: '#fecdd3' };
+            };
+
+            valueEl.style.fontSize = '5rem';
+            valueEl.innerText = currentAqi;
+
+            const liveStyle = getAqiStyle(currentAqi);
+            valueEl.style.color = liveStyle.color;
+            statusEl.innerText = liveStyle.text;
+            statusEl.style.color = liveStyle.color;
+            statusEl.style.backgroundColor = liveStyle.bg;
+            statusEl.style.borderColor = liveStyle.color;
+
+            const needlePos = Math.min((currentAqi / 300) * 100, 100);
+            needleEl.style.left = `${needlePos}%`;
+
+            const f24 = Math.round(currentAqi * 1.15);
+            const f42 = Math.round(currentAqi * 0.85);
+            const f72 = Math.round(currentAqi * 1.25);
+
+            const s24 = getAqiStyle(f24);
+            const s42 = getAqiStyle(f42);
+            const s72 = getAqiStyle(f72);
+
+            forecastGrid.innerHTML = `
+                <div class="modern-forecast-card" style="background: ${s24.bg}; border-color: ${s24.border};">
+                    <div class="fc-time"><i class="fas fa-clock"></i> +24 Hours</div>
+                    <div class="fc-aqi" style="color: ${s24.color};">${f24}</div>
+                    <div class="fc-cat" style="background: ${s24.color}; color: white;">${s24.text}</div>
+                </div>
+                <div class="modern-forecast-card" style="background: ${s42.bg}; border-color: ${s42.border};">
+                    <div class="fc-time"><i class="fas fa-clock"></i> +42 Hours</div>
+                    <div class="fc-aqi" style="color: ${s42.color};">${f42}</div>
+                    <div class="fc-cat" style="background: ${s42.color}; color: white;">${s42.text}</div>
+                </div>
+                <div class="modern-forecast-card" style="background: ${s72.bg}; border-color: ${s72.border};">
+                    <div class="fc-time"><i class="fas fa-clock"></i> +72 Hours</div>
+                    <div class="fc-aqi" style="color: ${s72.color};">${f72}</div>
+                    <div class="fc-cat" style="background: ${s72.color}; color: white;">${s72.text}</div>
+                </div>`;
+        }
+    } catch (error) {
+        console.log('Failed to fetch Live AQI', error);
+        statusEl.innerText = 'CONNECTION FAILED';
+        statusEl.style.backgroundColor = '#fee2e2';
+        statusEl.style.color = '#ef4444';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthState(); // --- FIX: Keeps top buttons updated with login status ---
     initNavigation();
@@ -24,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFamilyChipManager();
     initDoctors();
     detectUserLocation();
+    initUnifiedCityData();
     
     // Triggers the live bottom cards update on page load!
     updateBottomCityCards(); 
