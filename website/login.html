@@ -47,6 +47,9 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden-field { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease; margin-bottom: 0 !important; }
         .show-field { max-height: 100px; opacity: 1; margin-bottom: 1.2rem !important; }
+
+        /* Error Box Styling */
+        .error-box { display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1.5rem; text-align: left; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -81,6 +84,11 @@
         <div class="glass-card" id="authCard">
             <h2 id="authTitle" style="color: var(--white); margin-top: 0; margin-bottom: 0.3rem; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;">Log in</h2>
             <p id="authSubtitle" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 2rem;">Access your quantum computing profile.</p>
+
+            <div id="errorBox" class="error-box">
+                <i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i>
+                <span id="errorMessageText">An error occurred.</span>
+            </div>
 
             <form id="authForm">
                 <div id="nameFieldContainer" class="hidden-field" style="text-align: left;">
@@ -161,10 +169,28 @@
         const googleBtn = document.getElementById('googleBtn');
         const googleBtnText = document.getElementById('googleBtnText');
         const googleSpinner = document.getElementById('googleSpinner');
+        
+        // Error Box Elements
+        const errorBox = document.getElementById('errorBox');
+        const errorMessageText = document.getElementById('errorMessageText');
+
+        function displayError(errorCode) {
+            errorBox.style.display = "block";
+            if (errorCode.includes('invalid-credential') || errorCode.includes('wrong-password') || errorCode.includes('user-not-found')) {
+                errorMessageText.textContent = "Incorrect email or password. Please try again.";
+            } else if (errorCode.includes('email-already-in-use')) {
+                errorMessageText.textContent = "This email is already registered. Please log in.";
+            } else if (errorCode.includes('weak-password')) {
+                errorMessageText.textContent = "Your password must be at least 6 characters long.";
+            } else {
+                errorMessageText.textContent = "An error occurred. Please try again.";
+            }
+        }
 
         toggleAuthMode.addEventListener('click', function(event) {
             event.preventDefault(); 
             isLoginMode = !isLoginMode; 
+            errorBox.style.display = "none"; // Clear error on toggle
 
             if (isLoginMode) {
                 authTitle.textContent = "Log in";
@@ -189,20 +215,28 @@
 
         document.getElementById('authForm').addEventListener('submit', function(event) {
             event.preventDefault(); 
+            errorBox.style.display = "none"; // Hide any old errors
             lockUI(btn, btnText, spinner, isLoginMode ? "Authenticating..." : "Creating Account...");
 
             if (isLoginMode) {
                 signInWithEmailAndPassword(auth, email.value, pass.value)
                     .then(() => window.location.href = 'index.html')
-                    .catch((error) => { alert("Error: " + error.message); unlockUI(); });
+                    .catch((error) => {
+                        displayError(error.code);
+                        unlockUI();
+                    });
             } else {
                 createUserWithEmailAndPassword(auth, email.value, pass.value)
                     .then(() => window.location.href = 'index.html')
-                    .catch((error) => { alert("Error: " + error.message); unlockUI(); });
+                    .catch((error) => {
+                        displayError(error.code);
+                        unlockUI();
+                    });
             }
         });
 
         googleBtn.addEventListener('click', () => {
+            errorBox.style.display = "none";
             googleBtn.disabled = true;
             googleBtnText.style.display = "none";
             googleSpinner.style.display = "block";
@@ -210,7 +244,7 @@
             signInWithPopup(auth, googleProvider)
                 .then(() => window.location.href = 'index.html')
                 .catch((error) => {
-                    alert("Google Sign-In Error: " + error.message);
+                    displayError(error.code || "google-error");
                     googleBtn.disabled = false;
                     googleBtnText.style.display = "inline";
                     googleSpinner.style.display = "none";
