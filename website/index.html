@@ -33,7 +33,7 @@
         }
         .city-selector-dropdown:focus { border-color: var(--primary); }
 
-        /* === 🩺 NEW: MODERN DOCTOR CARDS === */
+        /* === 🩺 MODERN DOCTOR CARDS === */
         .doctor-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
         .modern-doc-card {
             background: #ffffff; border-radius: 16px; padding: 1.8rem;
@@ -69,6 +69,10 @@
             font-size: 0.9rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;
         }
         .doc-rating { color: #f59e0b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
+        
+        /* Interactive Breathing Cards */
+        .breathe-card { cursor: pointer; transition: transform 0.3s ease; }
+        .breathe-card:hover { transform: scale(1.05); border-color: var(--primary); }
     </style>
 </head>
 <body>
@@ -225,15 +229,17 @@
             </div>
 
             <div class="breathe-grid">
-                <div class="breathe-card">
+                <div class="breathe-card" onclick="alert('🧘 4-7-8 Breathing Technique:\n\n1. Inhale quietly through your nose for 4 seconds.\n2. Hold your breath for 7 seconds.\n3. Exhale completely through your mouth for 8 seconds.\n\nRepeat this cycle 4 times to relax completely.')">
                     <div class="breathe-visual"><div class="breath-circle relax">Relax</div></div>
                     <h3>4-7-8 Breathing</h3><p>Perfect for reducing stress and anxiety when staying indoors.</p>
                 </div>
-                <div class="breathe-card">
+                
+                <div class="breathe-card" onclick="alert('🔲 Box Breathing Technique:\n\n1. Inhale for 4 seconds.\n2. Hold full lungs for 4 seconds.\n3. Exhale for 4 seconds.\n4. Hold empty lungs for 4 seconds.\n\nRepeat for 2 minutes to clear your lungs and improve focus.')">
                     <div class="breathe-visual"><div class="breath-circle cleanse">Cleanse</div></div>
                     <h3>Box Breathing</h3><p>Clear your lungs and improve focus with structured intervals.</p>
                 </div>
-                <div class="breathe-card">
+                
+                <div class="breathe-card" onclick="alert('⚡ Power Breathing:\n\n1. Take 30 deep, fast breaths (in through nose, out through mouth).\n2. After the last exhale, hold your breath for 1 minute.\n3. Take a deep recovery breath and hold for 15 seconds.\n\nBoosts oxygen circulation rapidly.')">
                     <div class="breathe-visual"><div class="breath-circle active">Active</div></div>
                     <h3>Power Breathing</h3><p>Boost your oxygen levels before heading out into clean air.</p>
                 </div>
@@ -264,7 +270,7 @@
                     </div>
                     <div class="doc-footer">
                         <div class="doc-rating"><i class="fas fa-star"></i> 4.9 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(120)</span></div>
-                        <button class="btn btn-primary btn-sm">Book Consult</button>
+                        <button class="btn btn-primary btn-sm" onclick="alert('✅ Booking Request Initiated!\n\nOur support team will contact you shortly to confirm your consultation with Dr. Sarah Chen.')">Book Consult</button>
                     </div>
                 </div>
 
@@ -282,7 +288,7 @@
                     </div>
                     <div class="doc-footer">
                         <div class="doc-rating"><i class="fas fa-star"></i> 4.8 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(85)</span></div>
-                        <button class="btn btn-primary btn-sm">Book Consult</button>
+                        <button class="btn btn-primary btn-sm" onclick="alert('✅ Booking Request Initiated!\n\nOur support team will contact you shortly to confirm your consultation with Dr. Marcus Rao.')">Book Consult</button>
                     </div>
                 </div>
 
@@ -300,7 +306,7 @@
                     </div>
                     <div class="doc-footer">
                         <div class="doc-rating"><i class="fas fa-star"></i> 5.0 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(200+)</span></div>
-                        <button class="btn btn-primary btn-sm">Book Consult</button>
+                        <button class="btn btn-primary btn-sm" onclick="alert('✅ Booking Request Initiated!\n\nOur support team will contact you shortly to confirm your consultation with Dr. Elena Patel.')">Book Consult</button>
                     </div>
                 </div>
             </div>
@@ -374,7 +380,6 @@
     </div>
 
     <script>
-        // --- Modal & Dynamic Chip Logic ---
         const modal = document.getElementById('addPersonModal');
         const openModalBtn = document.getElementById('openModalBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -388,21 +393,16 @@
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
         cancelModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-        // Initial Family Data
         const familyData = {
             'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
             'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
             'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> Shift in AQI may cause mild discomfort. Keep air purifiers running.'
         };
 
-        // Function to make chips clickable
         function attachChipListeners() {
-            const allChips = document.querySelectorAll('.people-chips .chip:not(#openModalBtn)');
-            allChips.forEach(chip => {
-                // Remove existing listener to avoid duplicates
+            document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
                 chip.replaceWith(chip.cloneNode(true));
             });
-            // Re-select and attach
             document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(chip => {
                 chip.addEventListener('click', function() {
                     document.querySelectorAll('.people-chips .chip:not(#openModalBtn)').forEach(c => c.classList.remove('active'));
@@ -412,31 +412,19 @@
             });
         }
         
-        // Attach initial listeners
         attachChipListeners();
 
-        // DYNAMIC ADD MEMBER
         saveMemberBtn.addEventListener('click', () => {
             const name = newMemberNameInput.value.trim();
-            if (!name) {
-                alert("Please enter a name.");
-                return;
-            }
-
-            // Collect checked conditions
+            if (!name) { alert("Please enter a name."); return; }
             const checkboxes = document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]:checked');
             let conditions = [];
             checkboxes.forEach(cb => conditions.push(cb.parentElement.textContent.trim()));
-
-            // Generate unique ID
             const profileId = 'profile-' + Date.now();
-
-            // Create new chip element
             const newChip = document.createElement('div');
             newChip.className = 'chip';
             newChip.setAttribute('data-profile', profileId);
             
-            // Choose icon based on conditions
             let icon = '<i class="fas fa-user"></i>';
             if (conditions.includes('Young Children')) icon = '<i class="fas fa-child"></i>';
             else if (conditions.includes('Works Outside')) icon = '<i class="fas fa-hard-hat"></i>';
@@ -445,26 +433,18 @@
             let tagText = conditions.length > 0 ? ` (${conditions[0]})` : '';
             newChip.innerHTML = `${icon} ${name}${tagText}`;
 
-            // Add data to dictionary
             let conditionString = conditions.length > 0 ? conditions.join(', ') : 'No specific conditions';
             familyData[profileId] = `<strong>${name}:</strong> Tracked Conditions: <span style="color:var(--primary); font-weight:600;">${conditionString}</span>. Quantum forecast is monitoring local AQI carefully based on this profile.`;
 
-            // Insert into page before the "Add Person" button
             chipsContainer.insertBefore(newChip, openModalBtn);
-            
-            // Reattach click events so the new chip works
             attachChipListeners();
-
-            // Simulate clicking the new chip to show it off
             newChip.click();
 
-            // Reset modal & close
             newMemberNameInput.value = '';
             document.querySelectorAll('#conditionCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
             modal.classList.add('hidden');
         });
 
-        // --- City Forecast Selector Logic ---
         const cityForecasts = {
             'bengaluru': `
                 <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
@@ -485,10 +465,7 @@
 
         const citySelect = document.getElementById('cityForecastSelect');
         const forecastGrid = document.getElementById('dynamicForecastGrid');
-
-        citySelect.addEventListener('change', function() {
-            forecastGrid.innerHTML = cityForecasts[this.value];
-        });
+        citySelect.addEventListener('change', function() { forecastGrid.innerHTML = cityForecasts[this.value]; });
     </script>
 
     <script type="module">
