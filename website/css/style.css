@@ -29,6 +29,7 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
 }
 
 body {
@@ -37,6 +38,8 @@ body {
     color: var(--dark);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; /* Safeguard against horizontal scroll */
+    overflow-y: auto;   /* Forces vertical scrolling to be available */
 }
 
 /* === Navbar === */
