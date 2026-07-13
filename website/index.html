@@ -9,23 +9,30 @@
     <link rel="stylesheet" href="css/style.css">
     
     <style>
+        /* === Modal Scroll Fix === */
+        .modal-overlay {
+            padding: 1rem;
+        }
         .modal-content {
-            max-height: 85vh; /* Prevents modal from getting too tall */
-            overflow-y: auto; /* Adds a scrollbar inside the modal if needed */
+            max-height: 90vh; /* Limits height to 90% of screen */
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-body {
+            overflow-y: auto; /* Adds a scrollbar specifically to the content */
+            padding-right: 10px; /* Gives room for scrollbar */
         }
         
+        /* === Forecast Grid & Chips Fix === */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
-
-        /* Makes the chips look clickable */
         .chip { transition: all 0.2s; user-select: none; }
         .chip:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        /* Family Details Box */
         .family-details-box {
             margin-top: 1.5rem;
             padding: 1.2rem;
@@ -35,6 +42,25 @@
             font-size: 0.95rem;
             color: #334155;
             transition: all 0.3s ease;
+        }
+
+        /* === City Selector Styling === */
+        .city-selector-dropdown {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            background-color: var(--light);
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .city-selector-dropdown:focus {
+            border-color: var(--primary);
         }
     </style>
 </head>
@@ -89,8 +115,18 @@
                 <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
             </div>
             <div class="forecast-box">
-                <div class="controls">
-                    <div class="control-group" style="grid-column: span 3;">
+                
+                <div class="controls" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="control-group" style="flex: 1; min-width: 200px;">
+                        <label><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> Forecast Location</label>
+                        <select id="cityForecastSelect" class="city-selector-dropdown">
+                            <option value="bengaluru">Bengaluru, IN (Current)</option>
+                            <option value="delhi">Delhi, IN</option>
+                            <option value="newyork">New York, US</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group" style="flex: 2; min-width: 300px;">
                         <label>Active Health Profiles</label>
                         <div class="people-chips" id="familyChipsContainer">
                             <div class="chip active" data-profile="my-profile"><i class="fas fa-user"></i> My Profile</div>
@@ -110,7 +146,7 @@
                     <div><strong>Quantum Advantage Active:</strong> Processing 10,000+ atmospheric variables to forecast localized air quality with 94% accuracy.</div>
                 </div>
 
-                <div class="forecast-grid">
+                <div class="forecast-grid" id="dynamicForecastGrid">
                     <div class="forecast-card good">
                         <div class="forecast-time">+24 Hours</div>
                         <div class="forecast-aqi">45</div>
@@ -254,21 +290,6 @@
                         <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
                     </div>
                 </div>
-
-                <div class="doc-card">
-                    <div class="doc-top">
-                        <div class="doc-avatar">EP</div>
-                        <div class="doc-info">
-                            <h4>Dr. Elena Patel</h4>
-                            <span>20 yrs experience</span>
-                        </div>
-                    </div>
-                    <div class="doc-spec">Allergy & Immunology</div>
-                    <div class="doc-meta"><i class="fas fa-star"></i> 5.0 (200+ reviews)</div>
-                    <div class="doc-actions">
-                        <button class="btn btn-primary btn-sm btn-full">Book Consult</button>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -313,6 +334,7 @@
                 <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Add Family Member</h3>
                 <button class="close-btn" id="closeModalBtn">&times;</button>
             </div>
+            
             <div class="modal-body">
                 <div class="form-group"><label>Name</label><input type="text" placeholder="e.g., Grandma"></div>
                 <div class="form-group" style="margin-bottom: 0;">
@@ -321,9 +343,12 @@
                         <label><input type="checkbox" value="asthma"> Asthma</label>
                         <label><input type="checkbox" value="copd"> COPD / Emphysema</label>
                         <label><input type="checkbox" value="allergies"> Severe Allergies</label>
+                        <label><input type="checkbox" value="heart"> Heart Condition</label>
+                        <label><input type="checkbox" value="diabetes"> Diabetes</label>
                     </div>
                 </div>
             </div>
+            
             <div class="modal-footer">
                 <button class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
                 <button class="btn btn-primary" onclick="alert('Member added successfully!'); document.getElementById('addPersonModal').classList.add('hidden');">Save Member</button>
@@ -338,26 +363,47 @@
         document.getElementById('closeModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
         document.getElementById('cancelModalBtn').addEventListener('click', () => modal.classList.add('hidden'));
 
-        // Family Chips Interactive Logic
+        // Family Chips Logic
         const familyData = {
             'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
-            'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs (112) is a trigger. Ensure inhaler is available and keep windows closed.',
-            'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> The +42 hr AQI shift may cause mild discomfort. Keep indoor air purifiers running.'
+            'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
+            'grandpa': '<strong>Grandpa (COPD):</strong> <span style="color: #f59e0b;">Caution.</span> Shift in AQI may cause mild discomfort. Keep air purifiers running.'
         };
-
         const chips = document.querySelectorAll('.people-chips .chip:not(#openModalBtn)');
         const detailsBox = document.getElementById('familyDetailsBox');
 
         chips.forEach(chip => {
             chip.addEventListener('click', function() {
-                // Remove active class from all
                 chips.forEach(c => c.classList.remove('active'));
-                // Add active to clicked
                 this.classList.add('active');
-                // Update text
-                const profileId = this.getAttribute('data-profile');
-                detailsBox.innerHTML = familyData[profileId];
+                detailsBox.innerHTML = familyData[this.getAttribute('data-profile')];
             });
+        });
+
+        // City Forecast Selector Logic
+        const cityForecasts = {
+            'bengaluru': `
+                <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
+                <div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div>
+                <div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>
+            `,
+            'delhi': `
+                <div class="forecast-card poor"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">156</div><div class="forecast-cat poor">Unhealthy</div></div>
+                <div class="forecast-card poor"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">170</div><div class="forecast-cat poor">Unhealthy</div></div>
+                <div class="forecast-card poor" style="border-color: #7f1d1d;"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">210</div><div class="forecast-cat poor" style="background: #7f1d1d; color: white;">Hazardous</div></div>
+            `,
+            'newyork': `
+                <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">28</div><div class="forecast-cat good">Good</div></div>
+                <div class="forecast-card good"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">35</div><div class="forecast-cat good">Good</div></div>
+                <div class="forecast-card good"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">42</div><div class="forecast-cat good">Good</div></div>
+            `
+        };
+
+        const citySelect = document.getElementById('cityForecastSelect');
+        const forecastGrid = document.getElementById('dynamicForecastGrid');
+
+        citySelect.addEventListener('change', function() {
+            forecastGrid.innerHTML = cityForecasts[this.value];
         });
     </script>
 
@@ -377,13 +423,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        
         const loginButton = document.getElementById('navLoginBtn');
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("User is successfully logged in!"); // To help you debug
-                // Aggressively change the button to Log Out
+            if (user && loginButton) {
                 loginButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Log Out';
                 loginButton.style.backgroundColor = "transparent";
                 loginButton.style.border = "1px solid var(--danger)";
@@ -392,12 +435,8 @@
                 
                 loginButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    signOut(auth).then(() => { 
-                        window.location.reload(); 
-                    });
+                    signOut(auth).then(() => { window.location.reload(); });
                 });
-            } else {
-                console.log("No user detected.");
             }
         });
     </script>
