@@ -33,46 +33,96 @@
         }
         .city-selector-dropdown:focus { border-color: var(--primary); }
 
-        /* === 🩺 MODERN DOCTOR CARDS === */
-        .doctor-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .modern-doc-card {
-            background: #ffffff; border-radius: 16px; padding: 1.8rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.3s ease;
-            border: 1px solid #f1f5f9; display: flex; flex-direction: column;
-            gap: 1.2rem; position: relative; overflow: hidden;
+        /* === 🧘 ANIMATED BREATHING EXERCISES === */
+        .modern-breathe-card {
+            background: #ffffff; border-radius: 24px; padding: 2rem;
+            text-align: center; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+            border: 1px solid rgba(226, 232, 240, 0.8); transition: all 0.4s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 1rem;
         }
-        .modern-doc-card:hover {
-            transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            border-color: #d946ef;
+        .modern-breathe-card:hover {
+            transform: translateY(-8px); box-shadow: 0 20px 40px -12px rgba(14, 165, 233, 0.25);
+            border-color: rgba(14, 165, 233, 0.3);
         }
-        .modern-doc-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-            background: linear-gradient(90deg, #d946ef, #8b5cf6);
-        }
-        .doc-header { display: flex; align-items: center; gap: 1rem; }
-        .doc-avatar-modern {
-            width: 65px; height: 65px; background: linear-gradient(135deg, #f3e8ff, #e0e7ff);
-            color: #7c3aed; font-size: 1.4rem; font-weight: 800; border-radius: 50%;
+        .breathe-circle-modern {
+            width: 120px; height: 120px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            color: white; font-weight: 700; font-size: 1.2rem;
+            transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin: 1.5rem 0; position: relative;
         }
-        .doc-title-area h4 { margin: 0 0 0.3rem 0; font-size: 1.2rem; color: #0f172a; }
-        .doc-title-area span { font-size: 0.85rem; color: #64748b; font-weight: 500; }
-        .doc-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
-        .doc-badge {
-            background: #f1f5f9; color: #475569; font-size: 0.75rem;
-            padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 600;
+        /* Gradients */
+        .bg-relax { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+        .bg-cleanse { background: linear-gradient(135deg, #10b981, #3b82f6); }
+        .bg-active { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+
+        /* Keyframes for Exact Breathing Rhythms */
+        @keyframes anim-478 {
+            0% { transform: scale(1); }
+            21% { transform: scale(1.5); } /* Inhale 4s */
+            57% { transform: scale(1.5); } /* Hold 7s */
+            100% { transform: scale(1); }  /* Exhale 8s */
         }
-        .doc-badge.highlight { background: #fdf4ff; color: #c026d3; }
-        .doc-footer {
-            display: flex; align-items: center; justify-content: space-between;
-            font-size: 0.9rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0;
+        @keyframes anim-box {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.4); } /* Inhale 4s */
+            50% { transform: scale(1.4); } /* Hold 4s */
+            75% { transform: scale(1); }   /* Exhale 4s */
+            100% { transform: scale(1); }  /* Hold empty 4s */
         }
-        .doc-rating { color: #f59e0b; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; }
-        
-        /* Interactive Breathing Cards */
-        .breathe-card { cursor: pointer; transition: transform 0.3s ease; }
-        .breathe-card:hover { transform: scale(1.05); border-color: var(--primary); }
+        @keyframes anim-power {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); } /* Fast Inhale */
+            100% { transform: scale(1); }  /* Fast Exhale */
+        }
+
+        /* Animation Trigger Classes */
+        .run-478 { animation: anim-478 19s infinite linear; }
+        .run-box { animation: anim-box 16s infinite linear; }
+        .run-power { animation: anim-power 2s infinite ease-in-out; }
+
+        .breathe-btn {
+            padding: 0.8rem 1.5rem; border-radius: 50px; border: none;
+            background: #f1f5f9; color: #475569; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .breathe-btn:hover { background: #e2e8f0; }
+        .breathe-btn.active { background: #10b981; color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+
+        /* === 🩺 ULTRA-MODERN DOCTOR CARDS === */
+        .doctor-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
+        .ultra-doc-card {
+            background: #ffffff; border-radius: 24px; padding: 2rem;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); border: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex; flex-direction: column; gap: 1.5rem; position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .ultra-doc-card:hover {
+            transform: translateY(-12px); box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.25); border-color: rgba(217, 70, 239, 0.3);
+        }
+        .ultra-doc-header { display: flex; align-items: center; gap: 1.2rem; }
+        .ultra-avatar {
+            width: 70px; height: 70px; background: linear-gradient(135deg, #fdf4ff, #e0e7ff);
+            color: #8b5cf6; font-size: 1.5rem; font-weight: 800; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px rgba(139, 92, 246, 0.2);
+        }
+        .ultra-doc-info h4 { margin: 0 0 0.4rem 0; font-size: 1.3rem; color: #1e293b; letter-spacing: -0.5px; }
+        .ultra-doc-info p { margin: 0; font-size: 0.9rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .ultra-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .ultra-badge { background: #f8fafc; color: #334155; font-size: 0.8rem; padding: 0.4rem 1rem; border-radius: 8px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .ultra-badge.primary { background: linear-gradient(90deg, rgba(217, 70, 239, 0.1), rgba(139, 92, 246, 0.1)); color: #a21caf; border: 1px solid rgba(217, 70, 239, 0.2); }
+        .ultra-footer { display: flex; flex-direction: column; gap: 1.2rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9; }
+        .ultra-stats { display: flex; justify-content: space-between; align-items: center; }
+        .ultra-rating { display: flex; align-items: center; gap: 6px; font-weight: 700; color: #0f172a; font-size: 1.1rem; }
+        .ultra-rating i { color: #f59e0b; }
+        .ultra-reviews { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+        .ultra-btn {
+            width: 100%; padding: 1rem; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, #c026d3, #8b5cf6); color: white; font-weight: 600;
+            font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        .ultra-btn:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5); filter: brightness(1.1); }
     </style>
 </head>
 <body>
@@ -126,7 +176,6 @@
                 <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
             </div>
             <div class="forecast-box">
-                
                 <div class="controls" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
                     <div class="control-group" style="flex: 1; min-width: 200px;">
                         <label><i class="fas fa-map-marker-alt" style="color: var(--primary);"></i> Forecast Location</label>
@@ -158,21 +207,9 @@
                 </div>
 
                 <div class="forecast-grid" id="dynamicForecastGrid">
-                    <div class="forecast-card good">
-                        <div class="forecast-time">+24 Hours</div>
-                        <div class="forecast-aqi">45</div>
-                        <div class="forecast-cat good">Good</div>
-                    </div>
-                    <div class="forecast-card moderate">
-                        <div class="forecast-time">+42 Hours</div>
-                        <div class="forecast-aqi">85</div>
-                        <div class="forecast-cat moderate">Moderate</div>
-                    </div>
-                    <div class="forecast-card poor">
-                        <div class="forecast-time">+72 Hours</div>
-                        <div class="forecast-aqi">112</div>
-                        <div class="forecast-cat poor">Unhealthy</div>
-                    </div>
+                    <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
+                    <div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div>
+                    <div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>
                 </div>
             </div>
         </div>
@@ -214,34 +251,54 @@
             </div>
             
             <div class="health-grid" style="margin-bottom: 4rem;">
-                <div class="health-item"><div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div>
-                    <h3>Outdoor Exercise</h3><p>Safe for all groups. Great time for a run.</p>
-                </div>
-                <div class="health-item"><div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div>
-                    <h3>Kids & Elderly</h3><p>Monitor closely. Limit extreme exertion.</p>
-                </div>
-                <div class="health-item"><div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div>
-                    <h3>Asthma Risk</h3><p>Elevated pollen levels detected.</p>
-                </div>
-                <div class="health-item"><div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div>
-                    <h3>Ventilation</h3><p>Safe to open windows and circulate air.</p>
-                </div>
+                <div class="health-item"><div class="health-icon" style="background: #d1fae5; color: var(--success);"><i class="fas fa-running"></i></div><h3>Outdoor Exercise</h3><p>Safe for all groups. Great time for a run.</p></div>
+                <div class="health-item"><div class="health-icon" style="background: #fef3c7; color: var(--warning);"><i class="fas fa-baby"></i></div><h3>Kids & Elderly</h3><p>Monitor closely. Limit extreme exertion.</p></div>
+                <div class="health-item"><div class="health-icon" style="background: #fee2e2; color: var(--danger);"><i class="fas fa-lungs-virus"></i></div><h3>Asthma Risk</h3><p>Elevated pollen levels detected.</p></div>
+                <div class="health-item"><div class="health-icon" style="background: #e0e7ff; color: var(--primary);"><i class="fas fa-home"></i></div><h3>Ventilation</h3><p>Safe to open windows and circulate air.</p></div>
             </div>
 
-            <div class="breathe-grid">
-                <div class="breathe-card" onclick="alert('🧘 4-7-8 Breathing Technique:\n\n1. Inhale quietly through your nose for 4 seconds.\n2. Hold your breath for 7 seconds.\n3. Exhale completely through your mouth for 8 seconds.\n\nRepeat this cycle 4 times to relax completely.')">
-                    <div class="breathe-visual"><div class="breath-circle relax">Relax</div></div>
-                    <h3>4-7-8 Breathing</h3><p>Perfect for reducing stress and anxiety when staying indoors.</p>
+            <div class="forecast-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                
+                <div class="modern-breathe-card">
+                    <h3 style="margin: 0; color: #1e293b;">4-7-8 Breathing</h3>
+                    <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Perfect for reducing stress.</p>
+                    
+                    <div class="breathe-circle-modern bg-relax" id="circle-relax">
+                        <span id="text-relax">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.8rem; color: #94a3b8; font-style: italic; margin-bottom: 0.5rem;">Inhale (4s) - Hold (7s) - Exhale (8s)</p>
+                    <button class="breathe-btn" id="btn-relax" onclick="toggleBreathing('relax', 'run-478')">
+                        <i class="fas fa-play"></i> Start Exercise
+                    </button>
                 </div>
                 
-                <div class="breathe-card" onclick="alert('🔲 Box Breathing Technique:\n\n1. Inhale for 4 seconds.\n2. Hold full lungs for 4 seconds.\n3. Exhale for 4 seconds.\n4. Hold empty lungs for 4 seconds.\n\nRepeat for 2 minutes to clear your lungs and improve focus.')">
-                    <div class="breathe-visual"><div class="breath-circle cleanse">Cleanse</div></div>
-                    <h3>Box Breathing</h3><p>Clear your lungs and improve focus with structured intervals.</p>
+                <div class="modern-breathe-card">
+                    <h3 style="margin: 0; color: #1e293b;">Box Breathing</h3>
+                    <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Clear lungs and improve focus.</p>
+                    
+                    <div class="breathe-circle-modern bg-cleanse" id="circle-box">
+                        <span id="text-box">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.8rem; color: #94a3b8; font-style: italic; margin-bottom: 0.5rem;">Inhale (4s) - Hold (4s) - Exhale (4s)</p>
+                    <button class="breathe-btn" id="btn-box" onclick="toggleBreathing('box', 'run-box')">
+                        <i class="fas fa-play"></i> Start Exercise
+                    </button>
                 </div>
                 
-                <div class="breathe-card" onclick="alert('⚡ Power Breathing:\n\n1. Take 30 deep, fast breaths (in through nose, out through mouth).\n2. After the last exhale, hold your breath for 1 minute.\n3. Take a deep recovery breath and hold for 15 seconds.\n\nBoosts oxygen circulation rapidly.')">
-                    <div class="breathe-visual"><div class="breath-circle active">Active</div></div>
-                    <h3>Power Breathing</h3><p>Boost your oxygen levels before heading out into clean air.</p>
+                <div class="modern-breathe-card">
+                    <h3 style="margin: 0; color: #1e293b;">Power Breathing</h3>
+                    <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Rapid boost of oxygen.</p>
+                    
+                    <div class="breathe-circle-modern bg-active" id="circle-power">
+                        <span id="text-power">Ready</span>
+                    </div>
+                    
+                    <p style="font-size: 0.8rem; color: #94a3b8; font-style: italic; margin-bottom: 0.5rem;">Fast Inhale & Exhale Rhythm</p>
+                    <button class="breathe-btn" id="btn-power" onclick="toggleBreathing('power', 'run-power')">
+                        <i class="fas fa-play"></i> Start Exercise
+                    </button>
                 </div>
             </div>
         </div>
@@ -256,57 +313,39 @@
             </div>
             
             <div class="doctor-list">
-                <div class="modern-doc-card">
-                    <div class="doc-header">
-                        <div class="doc-avatar-modern">SC</div>
-                        <div class="doc-title-area">
+                <div class="ultra-doc-card">
+                    <div class="ultra-doc-header">
+                        <div class="ultra-avatar">SC</div>
+                        <div class="ultra-doc-info">
                             <h4>Dr. Sarah Chen</h4>
-                            <span>15 yrs experience</span>
+                            <p><i class="fas fa-stethoscope"></i> 15 Years Experience</p>
                         </div>
                     </div>
-                    <div class="doc-badges">
-                        <span class="doc-badge highlight">Asthma Specialist</span>
-                        <span class="doc-badge">Pediatrics</span>
-                    </div>
-                    <div class="doc-footer">
-                        <div class="doc-rating"><i class="fas fa-star"></i> 4.9 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(120)</span></div>
-                        <button class="btn btn-primary btn-sm" onclick="alert('✅ Booking Request Initiated!\n\nOur support team will contact you shortly to confirm your consultation with Dr. Sarah Chen.')">Book Consult</button>
+                    <div class="ultra-badges"><span class="ultra-badge primary">Asthma Specialist</span><span class="ultra-badge">Pediatrics</span></div>
+                    <div class="ultra-footer">
+                        <div class="ultra-stats">
+                            <div class="ultra-rating"><i class="fas fa-star"></i> 4.9 <span class="ultra-reviews">(120+)</span></div>
+                            <div style="color: #10b981; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;"><i class="fas fa-video"></i> Available Today</div>
+                        </div>
+                        <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Sarah Chen.')"><i class="fas fa-calendar-check"></i> Book Appointment</button>
                     </div>
                 </div>
 
-                <div class="modern-doc-card">
-                    <div class="doc-header">
-                        <div class="doc-avatar-modern">MR</div>
-                        <div class="doc-title-area">
+                <div class="ultra-doc-card">
+                    <div class="ultra-doc-header">
+                        <div class="ultra-avatar">MR</div>
+                        <div class="ultra-doc-info">
                             <h4>Dr. Marcus Rao</h4>
-                            <span>12 yrs experience</span>
+                            <p><i class="fas fa-stethoscope"></i> 12 Years Experience</p>
                         </div>
                     </div>
-                    <div class="doc-badges">
-                        <span class="doc-badge highlight">Pulmonology</span>
-                        <span class="doc-badge">COPD</span>
-                    </div>
-                    <div class="doc-footer">
-                        <div class="doc-rating"><i class="fas fa-star"></i> 4.8 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(85)</span></div>
-                        <button class="btn btn-primary btn-sm" onclick="alert('✅ Booking Request Initiated!\n\nOur support team will contact you shortly to confirm your consultation with Dr. Marcus Rao.')">Book Consult</button>
-                    </div>
-                </div>
-
-                <div class="modern-doc-card">
-                    <div class="doc-header">
-                        <div class="doc-avatar-modern">EP</div>
-                        <div class="doc-title-area">
-                            <h4>Dr. Elena Patel</h4>
-                            <span>20 yrs experience</span>
+                    <div class="ultra-badges"><span class="ultra-badge primary">Pulmonology</span><span class="ultra-badge">COPD</span></div>
+                    <div class="ultra-footer">
+                        <div class="ultra-stats">
+                            <div class="ultra-rating"><i class="fas fa-star"></i> 4.8 <span class="ultra-reviews">(85+)</span></div>
+                            <div style="color: #10b981; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 4px;"><i class="fas fa-video"></i> Available Today</div>
                         </div>
-                    </div>
-                    <div class="doc-badges">
-                        <span class="doc-badge highlight">Allergy & Immunology</span>
-                        <span class="doc-badge">Adults</span>
-                    </div>
-                    <div class="doc-footer">
-                        <div class="doc-rating"><i class="fas fa-star"></i> 5.0 <span style="color:#94a3b8; font-weight:500; font-size:0.8rem;">(200+)</span></div>
-                        <button class="btn btn-primary btn-sm" onclick="alert('✅ Booking Request Initiated!\n\nOur support team will contact you shortly to confirm your consultation with Dr. Elena Patel.')">Book Consult</button>
+                        <button class="ultra-btn" onclick="alert('✅ Appointment Request Initiated!\n\nOur support team will contact you shortly to confirm your booking with Dr. Marcus Rao.')"><i class="fas fa-calendar-check"></i> Book Appointment</button>
                     </div>
                 </div>
             </div>
@@ -380,6 +419,7 @@
     </div>
 
     <script>
+        // Modal Logic
         const modal = document.getElementById('addPersonModal');
         const openModalBtn = document.getElementById('openModalBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -393,6 +433,7 @@
         closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
         cancelModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
+        // Dynamic Chips
         const familyData = {
             'my-profile': '<strong>My Profile:</strong> No underlying respiratory conditions. Current AQI is safe for normal outdoor activities.',
             'sarah': '<strong>Sarah (Asthma):</strong> <span style="color: #ef4444;">Warning!</span> Forecasted AQI at +72 hrs is a trigger. Ensure inhaler is available.',
@@ -445,27 +486,34 @@
             modal.classList.add('hidden');
         });
 
+        // City Selector Logic
         const cityForecasts = {
-            'bengaluru': `
-                <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div>
-                <div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div>
-                <div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>
-            `,
-            'delhi': `
-                <div class="forecast-card poor"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">156</div><div class="forecast-cat poor">Unhealthy</div></div>
-                <div class="forecast-card poor"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">170</div><div class="forecast-cat poor">Unhealthy</div></div>
-                <div class="forecast-card poor" style="border-color: #7f1d1d;"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">210</div><div class="forecast-cat poor" style="background: #7f1d1d; color: white;">Hazardous</div></div>
-            `,
-            'newyork': `
-                <div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">28</div><div class="forecast-cat good">Good</div></div>
-                <div class="forecast-card good"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">35</div><div class="forecast-cat good">Good</div></div>
-                <div class="forecast-card good"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">42</div><div class="forecast-cat good">Good</div></div>
-            `
+            'bengaluru': `<div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">45</div><div class="forecast-cat good">Good</div></div><div class="forecast-card moderate"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">85</div><div class="forecast-cat moderate">Moderate</div></div><div class="forecast-card poor"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">112</div><div class="forecast-cat poor">Unhealthy</div></div>`,
+            'delhi': `<div class="forecast-card poor"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">156</div><div class="forecast-cat poor">Unhealthy</div></div><div class="forecast-card poor"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">170</div><div class="forecast-cat poor">Unhealthy</div></div><div class="forecast-card poor" style="border-color: #7f1d1d;"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">210</div><div class="forecast-cat poor" style="background: #7f1d1d; color: white;">Hazardous</div></div>`,
+            'newyork': `<div class="forecast-card good"><div class="forecast-time">+24 Hours</div><div class="forecast-aqi">28</div><div class="forecast-cat good">Good</div></div><div class="forecast-card good"><div class="forecast-time">+42 Hours</div><div class="forecast-aqi">35</div><div class="forecast-cat good">Good</div></div><div class="forecast-card good"><div class="forecast-time">+72 Hours</div><div class="forecast-aqi">42</div><div class="forecast-cat good">Good</div></div>`
         };
+        document.getElementById('cityForecastSelect').addEventListener('change', function() { document.getElementById('dynamicForecastGrid').innerHTML = cityForecasts[this.value]; });
 
-        const citySelect = document.getElementById('cityForecastSelect');
-        const forecastGrid = document.getElementById('dynamicForecastGrid');
-        citySelect.addEventListener('change', function() { forecastGrid.innerHTML = cityForecasts[this.value]; });
+        // 🧘 NEW: ANIMATED BREATHING LOGIC
+        function toggleBreathing(type, animClass) {
+            const btn = document.getElementById(`btn-${type}`);
+            const circle = document.getElementById(`circle-${type}`);
+            const text = document.getElementById(`text-${type}`);
+
+            if (circle.classList.contains(animClass)) {
+                // Stop Animation
+                circle.classList.remove(animClass);
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-play"></i> Start Exercise';
+                text.textContent = 'Ready';
+            } else {
+                // Start Animation
+                circle.classList.add(animClass);
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop Exercise';
+                text.textContent = 'Breathe';
+            }
+        }
     </script>
 
     <script type="module">

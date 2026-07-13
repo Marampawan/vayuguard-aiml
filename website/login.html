@@ -9,12 +9,14 @@
     
     <style>
         body { margin: 0; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; align-items: center; min-height: 100vh; background-color: #030008; font-family: 'Inter', sans-serif; }
-        .space-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 30%, #1d0743 0%, #030008 70%); z-index: -3; }
-        .stars { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)), radial-gradient(1.5px 1.5px at 80px 70px, #eee, rgba(0,0,0,0)), radial-gradient(2px 2px at 150px 160px, #ddd, rgba(0,0,0,0)), radial-gradient(1.5px 1.5px at 290px 40px, #fff, rgba(0,0,0,0)), radial-gradient(2px 2px at 330px 80px, #eee, rgba(0,0,0,0)); background-repeat: repeat; background-size: 400px 400px; animation: twinkle 5s infinite alternate; z-index: -2; opacity: 0.5; }
-        .glowing-orb { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -1; animation: floatOrb 15s infinite ease-in-out alternate; }
-        .orb-magenta { width: 45vw; height: 45vw; background: rgba(217, 70, 239, 0.12); top: -20%; left: 20%; }
-        .orb-purple { width: 50vw; height: 50vw; background: rgba(124, 58, 237, 0.15); bottom: -10%; right: -10%; animation-delay: -5s; animation-duration: 20s; }
-        @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 0.7; } }
+        
+        /* === NEW: Quantum Particle Canvas Background === */
+        #quantum-dust { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3; background: radial-gradient(circle at 50% 30%, #140530 0%, #030008 80%); }
+        
+        .glowing-orb { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -2; animation: floatOrb 15s infinite ease-in-out alternate; }
+        .orb-magenta { width: 45vw; height: 45vw; background: rgba(217, 70, 239, 0.08); top: -20%; left: 20%; }
+        .orb-purple { width: 50vw; height: 50vw; background: rgba(124, 58, 237, 0.12); bottom: -10%; right: -10%; animation-delay: -5s; animation-duration: 20s; }
+        
         @keyframes floatOrb { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 5%) scale(1.1); } 100% { transform: translate(-2%, 8%) scale(0.9); } }
 
         .q-navbar { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4rem; box-sizing: border-box; z-index: 20; }
@@ -31,7 +33,7 @@
         .hero-heading h1 { color: white; font-size: 3.5rem; font-weight: 800; line-height: 1.1; margin: 0; letter-spacing: -1px; }
         .hero-heading h1 span { background: linear-gradient(90deg, #d946ef, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .glass-card { background: rgba(15, 7, 28, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); padding: 2.5rem 3rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05); width: 100%; max-width: 420px; text-align: center; transition: height 0.3s ease; }
+        .glass-card { background: rgba(15, 7, 28, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); padding: 2.5rem 3rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05); width: 100%; max-width: 420px; text-align: center; transition: height 0.3s ease; }
         .modern-input { width: 100%; padding: 0.9rem 1.2rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.5); color: white; font-family: 'Inter', sans-serif; transition: all 0.3s ease; outline: none; box-sizing: border-box; }
         .modern-input:focus { border-color: #d946ef; box-shadow: 0 0 15px rgba(217, 70, 239, 0.2); background: rgba(0,0,0,0.7); }
         .btn-submit { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; border-radius: 8px; padding: 1rem; font-weight: 600; font-size: 1rem; background: linear-gradient(90deg, #c026d3, #db2777); border: none; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3); }
@@ -51,8 +53,8 @@
 </head>
 <body>
 
-    <div class="space-bg"></div>
-    <div class="stars"></div>
+    <canvas id="quantum-dust"></canvas>
+    
     <div class="glowing-orb orb-magenta"></div>
     <div class="glowing-orb orb-purple"></div>
 
@@ -124,6 +126,72 @@
             </p>
         </div>
     </div>
+
+    <script>
+        const canvas = document.getElementById('quantum-dust');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        // qBraid style neon colors
+        const colors = ['#d946ef', '#8b5cf6', '#c026d3', '#e879f9', '#a78bfa'];
+
+        for (let i = 0; i < 150; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 2 + 0.5,
+                dx: (Math.random() - 0.5) * 0.4,
+                dy: (Math.random() - 0.5) * 0.4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                alpha: Math.random(),
+                da: (Math.random() - 0.5) * 0.02
+            });
+        }
+
+        // Helper to convert HEX to RGB for transparency (alpha)
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `${r}, ${g}, ${b}`;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                p.x += p.dx;
+                p.y += p.dy;
+                p.alpha += p.da;
+                
+                // Reverse pulse direction
+                if (p.alpha <= 0.1 || p.alpha >= 1) p.da *= -1;
+                
+                // Wrap around screen
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${hexToRgb(p.color)}, ${p.alpha})`;
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = p.color;
+                ctx.fill();
+            });
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
