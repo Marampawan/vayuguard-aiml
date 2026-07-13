@@ -7,7 +7,7 @@ import sys
 import json
 import joblib
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import pandas as pd
 import numpy as np
@@ -75,6 +75,15 @@ class ForecastRequest(BaseModel):
 class HealthRiskRequest(BaseModel):
     forecast_aqi: float
     user_profile: Dict[str, bool]
+
+
+class ExposureRequest(BaseModel):
+    timestamp: datetime
+    aqi_level: str
+    duration: str
+    symptoms: List[str] = []
+    notes: Optional[str] = None
+    user_id: Optional[str] = None
 
 @app.get("/health")
 def health():
@@ -190,6 +199,46 @@ def health_risk(req: HealthRiskRequest):
         "advisory": advices[risk],
         "precautions": precautions
     }
+
+
+@app.post("/exposure", status_code=201)
+def log_exposure(req: ExposureRequest):
+    """Persist a user exposure log to data/processed/exposure_logs.json.
+    The file is created if it does not exist and kept as a JSON array.
+    """
+    # Resolve the repository-level data/processed directory
+    out_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed"))
+    try:
+        os.makedirs(out_dir, exist_ok=True)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Could not create data directory")
+
+    out_file = os.path.join(out_dir, "exposure_logs.json")
+
+    # Read existing logs (if any)
+    try:
+        if os.path.exists(out_file):
+            with open(out_file, "r", encoding="utf-8") as f:
+                logs = json.load(f)
+                if not isinstance(logs, list):
+                    logs = []
+        else:
+            logs = []
+    except Exception:
+        logs = []
+
+    entry = req.dict()
+    entry["received_at"] = datetime.now().isoformat()
+
+    logs.append(entry)
+
+    try:
+        with open(out_file, "w", encoding="utf-8") as f:
+            json.dump(logs, f, ensure_ascii=False, indent=2)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Failed to save exposure log")
+
+    return {"status": "saved", "path": out_file, "entry": entry}
 
 if __name__ == "__main__":
     import uvicorn

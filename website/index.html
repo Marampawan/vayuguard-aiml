@@ -573,7 +573,137 @@
         </div>
     </div>
 
+    <!-- Exposure Log Modal -->
+    <div class="modal-overlay hidden" id="exposureModal">
+        <div class="modal-content" style="max-width:640px; margin:2rem auto;">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-list" style="color: var(--primary);"></i> Log AQI Exposure</h3>
+                <button class="close-btn" id="closeExposureModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="exposureForm">
+                    <div class="form-group">
+                        <label>Date & Time of Exposure</label>
+                        <input type="datetime-local" class="form-control" required id="expDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estimated AQI Range</label>
+                        <select class="form-control" required id="expAqi">
+                            <option value="" disabled selected>Select the AQI level...</option>
+                            <option value="moderate">51 - 100 (Moderate)</option>
+                            <option value="sensitive">101 - 150 (Sensitive)</option>
+                            <option value="unhealthy">151 - 200 (Unhealthy)</option>
+                            <option value="very-unhealthy">201 - 300 (Very Unhealthy)</option>
+                            <option value="hazardous">301+ (Hazardous)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Duration of Exposure</label>
+                        <select class="form-control" required id="expDuration">
+                            <option value="under-15">Under 15 minutes</option>
+                            <option value="15-60">15 minutes to 1 hour</option>
+                            <option value="1-4-hours">1 to 4 hours</option>
+                            <option value="over-4">Over 4 hours</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Symptoms Experienced</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-label"><input type="checkbox" value="cough"> Coughing</label>
+                            <label class="checkbox-label"><input type="checkbox" value="wheezing"> Wheezing / Shortness of breath</label>
+                            <label class="checkbox-label"><input type="checkbox" value="eyes"> Irritated Eyes</label>
+                            <label class="checkbox-label"><input type="checkbox" value="headache"> Headache</label>
+                            <label class="checkbox-label"><input type="checkbox" value="fatigue"> Fatigue</label>
+                            <label class="checkbox-label"><input type="checkbox" value="none"> No visible symptoms</label>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:1rem;">
+                        <button type="button" class="btn btn-ghost" id="cancelExposure">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="submitExposure">Save Exposure Log</button>
+                    </div>
+                </form>
+                <div id="exposureFeedback" style="margin-top:1rem; display:none; font-weight:700;"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Exposure modal wiring
+        const exposureModal = document.getElementById('exposureModal');
+        const closeExposureModal = document.getElementById('closeExposureModal');
+        const cancelExposure = document.getElementById('cancelExposure');
+        const exposureForm = document.getElementById('exposureForm');
+        const exposureFeedback = document.getElementById('exposureFeedback');
+
+        // Open exposure modal via keyboard shortcut (E) for quick logging
+        window.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'e') exposureModal.classList.remove('hidden'); });
+
+        closeExposureModal.addEventListener('click', () => exposureModal.classList.add('hidden'));
+        cancelExposure.addEventListener('click', () => exposureModal.classList.add('hidden'));
+
+        function collectSymptoms() {
+            const checked = Array.from(document.querySelectorAll('#exposureModal input[type="checkbox"]:checked'));
+            return checked.map(c => c.value);
+        }
+
+        async function postExposure(payload) {
+            // Try primary path first, then fallback
+            const candidates = ['/api/exposure', '/exposure'];
+            let lastErr;
+            for (const url of candidates) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                    });
+                    if (res.ok) return await res.json();
+                    lastErr = await res.text();
+                } catch (err) { lastErr = err; }
+            }
+            throw new Error(lastErr || 'Network error');
+        }
+
+        exposureForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            exposureFeedback.style.display = 'none';
+
+            const date = document.getElementById('expDate').value;
+            const aqi = document.getElementById('expAqi').value;
+            const duration = document.getElementById('expDuration').value;
+            const symptoms = collectSymptoms();
+
+            if (!date || !aqi || !duration) {
+                exposureFeedback.style.display = 'block'; exposureFeedback.style.color = '#ef4444';
+                exposureFeedback.innerText = 'Please complete all required fields.'; return;
+            }
+
+            const payload = {
+                timestamp: new Date(date).toISOString(),
+                aqi_level: aqi,
+                duration: duration,
+                symptoms: symptoms,
+                user_id: null
+            };
+
+            const submitBtn = document.getElementById('submitExposure');
+            submitBtn.disabled = true; submitBtn.innerText = 'Saving...';
+
+            try {
+                const result = await postExposure(payload);
+                exposureFeedback.style.display = 'block'; exposureFeedback.style.color = '#10b981';
+                exposureFeedback.innerText = 'Exposure logged — saved locally on server.';
+                submitBtn.innerText = 'Saved';
+                setTimeout(() => { exposureModal.classList.add('hidden'); submitBtn.disabled = false; submitBtn.innerText = 'Save Exposure Log'; }, 1200);
+            } catch (err) {
+                exposureFeedback.style.display = 'block'; exposureFeedback.style.color = '#ef4444';
+                exposureFeedback.innerText = 'Failed to save exposure. Try again later.';
+                submitBtn.disabled = false; submitBtn.innerText = 'Save Exposure Log';
+                console.error('Exposure save failed', err);
+            }
+        });
         // Modal & Dynamic Chips Logic
         const modal = document.getElementById('addPersonModal');
         const openModalBtn = document.getElementById('openModalBtn');
