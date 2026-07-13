@@ -20,17 +20,6 @@
         .city-selector-dropdown { width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; border-radius: 50px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); background-color: var(--light); cursor: pointer; outline: none; transition: border-color 0.2s; }
         .city-selector-dropdown:focus { border-color: var(--primary); }
 
-        /* === 🔮 NEW: ULTRA-MODERN QUANTUM FORECAST === */
-        .modern-forecast-wrapper { background: #ffffff; border-radius: 24px; padding: 2.5rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); border: 1px solid rgba(226, 232, 240, 0.8); margin-top: 2rem; }
-        .modern-quantum-note { background: linear-gradient(90deg, rgba(217, 70, 239, 0.05), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 16px; padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1.2rem; color: #475569; font-size: 0.95rem; margin: 1.5rem 0; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.05); }
-        .modern-quantum-note i { font-size: 2rem; background: linear-gradient(135deg, #d946ef, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .modern-forecast-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-        .modern-forecast-card { border-radius: 20px; padding: 2rem 1.5rem; text-align: center; border: 2px solid transparent; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; }
-        .modern-forecast-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
-        .fc-time { font-size: 0.85rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .fc-aqi { font-size: 4.5rem; font-weight: 800; line-height: 1; margin-bottom: 1rem; letter-spacing: -2px; }
-        .fc-cat { display: inline-block; padding: 0.5rem 1.2rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-
         /* === 🩺 ULTRA-MODERN DOCTOR CARDS === */
         .ultra-doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
         .ultra-doc-card {
@@ -195,6 +184,7 @@
                 <h2>Quantum AQI Forecast</h2>
                 <p>Plan your day with hyper-accurate predictions tailored to your family's health profiles.</p>
             </div>
+            
             <div class="modern-forecast-wrapper">
                 <div class="controls" style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
                     <div class="control-group" style="flex: 1; min-width: 200px;">
@@ -651,7 +641,7 @@
             modal.classList.add('hidden');
         });
 
-        // 🔮 NEW: MODERN CITY FORECAST LOGIC
+        // City Selector Logic
         const cityForecasts = {
             'bengaluru': `<div class="modern-forecast-card" style="background: #ecfdf5; border-color: #a7f3d0;"><div class="fc-time"><i class="fas fa-clock"></i> +24 Hours</div><div class="fc-aqi" style="color: #059669;">45</div><div class="fc-cat" style="background: #10b981; color: white;">Good</div></div><div class="modern-forecast-card" style="background: #fffbeb; border-color: #fde68a;"><div class="fc-time"><i class="fas fa-clock"></i> +42 Hours</div><div class="fc-aqi" style="color: #d97706;">85</div><div class="fc-cat" style="background: #f59e0b; color: white;">Moderate</div></div><div class="modern-forecast-card" style="background: #fef2f2; border-color: #fecaca;"><div class="fc-time"><i class="fas fa-clock"></i> +72 Hours</div><div class="fc-aqi" style="color: #dc2626;">112</div><div class="fc-cat" style="background: #ef4444; color: white;">Unhealthy</div></div>`,
             'delhi': `<div class="modern-forecast-card" style="background: #fef2f2; border-color: #fecaca;"><div class="fc-time"><i class="fas fa-clock"></i> +24 Hours</div><div class="fc-aqi" style="color: #dc2626;">156</div><div class="fc-cat" style="background: #ef4444; color: white;">Unhealthy</div></div><div class="modern-forecast-card" style="background: #fef2f2; border-color: #fecaca;"><div class="fc-time"><i class="fas fa-clock"></i> +42 Hours</div><div class="fc-aqi" style="color: #dc2626;">170</div><div class="fc-cat" style="background: #ef4444; color: white;">Unhealthy</div></div><div class="modern-forecast-card" style="background: #fff1f2; border-color: #fecdd3;"><div class="fc-time"><i class="fas fa-clock"></i> +72 Hours</div><div class="fc-aqi" style="color: #e11d48;">210</div><div class="fc-cat" style="background: #e11d48; color: white;">Hazardous</div></div>`,
