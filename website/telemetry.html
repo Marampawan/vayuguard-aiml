@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Telemetry & Map — VayuGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #f8fafc; }
+        .page-header { text-align: center; margin: 6rem auto 3rem auto; }
+        .page-header h2 { font-size: 2.5rem; color: #1e293b; margin-bottom: 0.5rem; }
+        .page-header p { color: #64748b; font-size: 1.1rem; }
+        .telemetry-container { display: flex; gap: 2rem; flex-wrap: wrap; max-width: 1200px; margin: 0 auto 4rem auto; padding: 0 20px; }
+        
+        /* Map Styling */
+        #map { flex: 2; min-width: 300px; height: 500px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; z-index: 1; }
+        
+        /* Grid Styling */
+        .pollutants-panel { flex: 1; min-width: 300px; background: #ffffff; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+        .pollutants-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1.5rem; }
+        .sensor-box { background: #f8fafc; padding: 1.2rem 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: transform 0.2s; }
+        .sensor-box:hover { transform: translateY(-3px); border-color: #e2e8f0; }
+        .sensor-label { font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .sensor-value { font-size: 1.8rem; font-weight: 800; }
+        .sensor-missing { font-size: 0.8rem; color: #94a3b8; font-weight: 500; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand" style="text-decoration: none;">
+            <i class="fas fa-shield-virus"></i> VayuGuard
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Forecast</a>
+            <a href="telemetry.html" class="active">Telemetry Map</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h2><i class="fas fa-satellite-dish" style="color: #8b5cf6;"></i> Global Telemetry Node</h2>
+        <p>Real-time atmospheric mapping and localized raw sensor data.</p>
+    </div>
+
+    <div class="telemetry-container">
+        <div id="map"></div>
+
+        <div class="pollutants-panel">
+            <h4 style="margin: 0; color: #1e293b; font-size: 1.3rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem;">
+                <i class="fas fa-microchip" style="color: #3b82f6;"></i> Local Sensor Readings
+            </h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.8rem;">Data fetched from nearest active station based on your IP address. Note: Not all physical stations contain every gas sensor.</p>
+            
+            <div class="pollutants-grid">
+                <div class="sensor-box">
+                    <div class="sensor-label">PM 2.5</div>
+                    <div id="val-pm25" class="sensor-value" style="color: #ef4444;">--</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-label">PM 10</div>
+                    <div id="val-pm10" class="sensor-value" style="color: #f97316;">--</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-label">Ozone (O₃)</div>
+                    <div id="val-o3" class="sensor-value" style="color: #3b82f6;">--</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-label">Nitrogen (NO₂)</div>
+                    <div id="val-no2" class="sensor-value" style="color: #8b5cf6;">--</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-label">Sulfur (SO₂)</div>
+                    <div id="val-so2" class="sensor-value" style="color: #eab308;">--</div>
+                </div>
+                <div class="sensor-box">
+                    <div class="sensor-label">Carbon (CO)</div>
+                    <div id="val-co" class="sensor-value" style="color: #14b8a6;">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18
+        }).addTo(map);
+
+        async function fetchLocalTelemetry() {
+            const apiToken = 'demo';
+            try {
+                const response = await fetch(`https://api.waqi.info/feed/here/?token=${apiToken}`);
+                const result = await response.json();
+
+                if (result.status === 'ok') {
+                    const data = result.data;
+                    const lat = data.city.geo[0];
+                    const lon = data.city.geo[1];
+                    
+                    map.setView([lat, lon], 12);
+                    
+                    const aqi = data.aqi;
+                    let markerColor = '#10b981';
+                    if (aqi > 50) markerColor = '#f59e0b';
+                    if (aqi > 100) markerColor = '#f97316';
+                    if (aqi > 150) markerColor = '#ef4444';
+                    if (aqi > 200) markerColor = '#8b5cf6';
+
+                    const customIcon = L.divIcon({
+                        className: 'custom-pin',
+                        html: `<div style="background-color: ${markerColor}; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-family: sans-serif;">${aqi}</div>`,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 20]
+                    });
+
+                    L.marker([lat, lon], { icon: customIcon }).addTo(map)
+                        .bindPopup(`<b>${data.city.name}</b><br>Current AQI: ${aqi}`)
+                        .openPopup();
+
+                    const iaqi = data.iaqi;
+                    
+                    const updateSensor = (id, key) => {
+                        const el = document.getElementById(id);
+                        if (iaqi && iaqi[key]) {
+                            el.innerText = iaqi[key].v;
+                        } else {
+                            el.innerHTML = '<span class="sensor-missing">No Sensor</span>';
+                            el.style.color = '#94a3b8';
+                        }
+                    };
+
+                    updateSensor('val-pm25', 'pm25');
+                    updateSensor('val-pm10', 'pm10');
+                    updateSensor('val-o3', 'o3');
+                    updateSensor('val-no2', 'no2');
+                    updateSensor('val-so2', 'so2');
+                    updateSensor('val-co', 'co');
+                }
+            } catch (error) {
+                console.error('Telemetry fetch failed', error);
+            }
+        }
+
+        fetchLocalTelemetry();
+    </script>
+</body>
+</html>
