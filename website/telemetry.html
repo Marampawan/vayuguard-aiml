@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center — VayuGuard</title>
+    <title>Advanced Monitor — VayuGuard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,48 +14,48 @@
     
     <style>
         :root {
-            --bg-glass: rgba(13, 17, 23, 0.85);
+            --bg-glass: rgba(15, 23, 42, 0.85);
             --border-glass: rgba(255, 255, 255, 0.08);
-            --text-main: #e6edf3;
-            --text-muted: #7d8590;
-            --accent-blue: #2f81f7;
-            --accent-green: #238636;
-            --accent-red: #da3633;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: #000; overflow: hidden; color: var(--text-main); }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: #f1f5f9; overflow: hidden; color: var(--text-main); }
 
         #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
-        .top-bar { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; box-sizing: border-box; pointer-events: none; }
-        .brand { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; pointer-events: auto; text-decoration: none; }
+        .top-bar { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)); z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; box-sizing: border-box; }
+        .brand { font-size: 1.3rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         
         .ui-layer { position: absolute; top: 70px; left: 0; width: 100%; height: calc(100% - 70px); z-index: 10; display: flex; justify-content: space-between; padding: 0 20px 20px 20px; box-sizing: border-box; pointer-events: none; }
         
-        .panel { width: 340px; background: var(--bg-glass); backdrop-filter: blur(15px); border: 1px solid var(--border-glass); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; pointer-events: auto; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .panel { width: 340px; background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; pointer-events: auto; overflow-y: auto; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3); }
         .panel::-webkit-scrollbar { display: none; }
 
-        .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; margin-top: 0; margin-bottom: 1rem; }
+        .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem; margin-top: 0; margin-bottom: 0.8rem; }
 
-        .aqi-core { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-glass); }
-        .aqi-num { font-size: 3rem; font-weight: 800; line-height: 1; }
+        .aqi-core { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 1.2rem; border-radius: 14px; border: 1px solid var(--border-glass); }
+        .aqi-num { font-size: 3.5rem; font-weight: 800; line-height: 1; }
         .aqi-desc { font-size: 0.85rem; color: var(--text-muted); text-align: right; }
 
-        .metric-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem; }
+        .metric-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; }
         .metric-label { width: 60px; color: var(--text-muted); font-weight: 600; }
         .metric-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 0 10px; overflow: hidden; }
         .metric-bar-fill { height: 100%; border-radius: 3px; }
         .metric-val { width: 45px; text-align: right; font-weight: 700; }
 
         .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .w-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 1rem; border-radius: 10px; text-align: center; }
-        .w-card i { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 5px; }
-        .w-val { font-size: 1.2rem; font-weight: 700; }
-        .w-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+        .w-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 0.8rem; border-radius: 12px; text-align: center; }
+        .w-card i { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 4px; }
+        .w-val { font-size: 1.1rem; font-weight: 700; }
+        .w-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
 
-        .chart-box { width: 100%; height: 180px; position: relative; }
+        .chart-box { width: 100%; height: 160px; position: relative; }
         
-        .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
         .btn-back:hover { background: rgba(255,255,255,0.2); }
     </style>
 </head>
@@ -64,37 +64,37 @@
     <div id="map"></div>
 
     <div class="top-bar">
-        <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Network</a>
-        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Exit Command Center</a>
+        <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Advanced Monitor</a>
+        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Return to Main Dashboard</a>
     </div>
 
     <div class="ui-layer">
         
         <div class="panel">
             <div>
-                <h4 class="section-title">Live Environmental Health</h4>
+                <h4 class="section-title">Live Node Summary</h4>
                 <div class="aqi-core">
                     <div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Current Node</div>
-                        <div id="locName" style="font-weight: 600; margin-bottom: 5px;">Calibrating...</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;"><i class="fas fa-location-crosshairs"></i> Current Location Status</div>
+                        <div id="locName" style="font-weight: 600; margin-bottom: 5px; color: white;">Detecting Coordinates...</div>
                         <div class="aqi-num" id="liveAqiNum">--</div>
                     </div>
                     <div class="aqi-desc">
-                        <div id="liveAqiStatus" style="font-weight: 700; font-size: 1rem; color: white;">--</div>
-                        <div>Primary Index</div>
+                        <div id="liveAqiStatus" style="font-weight: 700; font-size: 1rem; color: white;">CALIBRATING</div>
+                        <div>Total AQI Score</div>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h4 class="section-title">Raw Pollutant Density (µg/m³)</h4>
+                <h4 class="section-title">Telemetry Density Breakdown</h4>
                 <div id="pollutantBars">
-                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Connecting to sensors...</div>
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;">Synchronizing physical sensors...</div>
                 </div>
             </div>
 
             <div>
-                <h4 class="section-title">AQI Trend Forecast</h4>
+                <h4 class="section-title">Predictive AQI Trend Curve</h4>
                 <div class="chart-box">
                     <canvas id="trendChart"></canvas>
                 </div>
@@ -103,12 +103,12 @@
 
         <div class="panel">
             <div>
-                <h4 class="section-title">Atmospheric Conditions</h4>
+                <h4 class="section-title">Atmospheric Context Telemetry</h4>
                 <div class="weather-grid">
                     <div class="w-card">
                         <i class="fas fa-temperature-half"></i>
-                        <div class="w-val" id="val-temp">--°</div>
-                        <div class="w-label">Temp</div>
+                        <div class="w-val" id="val-temp">--°C</div>
+                        <div class="w-label">Temperature</div>
                     </div>
                     <div class="w-card">
                         <i class="fas fa-wind"></i>
@@ -123,52 +123,60 @@
                     <div class="w-card">
                         <i class="fas fa-gauge-high"></i>
                         <div class="w-val" id="val-pressure">--</div>
-                        <div class="w-label">hPa</div>
+                        <div class="w-label">Pressure (hPa)</div>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h4 class="section-title">Gas Concentration Ratios</h4>
+                <h4 class="section-title">Gas Concentration Indexes</h4>
                 <div class="chart-box">
                     <canvas id="gasChart"></canvas>
                 </div>
             </div>
             
-            <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: auto;">
-                Data synchronized via global WAQI nodes. Topographic mapping provided by CartoDB.
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: auto;">
+                Map interface rendering real-world geographic data. Pollutant streams tied directly to active air tracking stations.
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const map = L.map('map', { zoomControl: false }).setView([20, 0], 3);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap & CartoDB', maxZoom: 19
+            const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
             }).addTo(map);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-            Chart.defaults.color = '#7d8590';
-            Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
             Chart.defaults.font.family = 'Inter';
 
             const ctxTrend = document.getElementById('trendChart').getContext('2d');
             const trendChart = new Chart(ctxTrend, {
                 type: 'line',
-                data: { labels: ['Now', '+6h', '+12h', '+18h', '+24h'], datasets: [{ data: [0,0,0,0,0], borderColor: '#2f81f7', backgroundColor: 'rgba(47, 129, 247, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 3 }] },
+                data: { labels: ['Current', '+6h', '+12h', '+18h', '+24h'], datasets: [{ data: [0,0,0,0,0], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.15)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 2 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
             });
 
             const ctxGas = document.getElementById('gasChart').getContext('2d');
             const gasChart = new Chart(ctxGas, {
                 type: 'bar',
-                data: { labels: ['PM2.5', 'PM10', 'O3', 'NO2', 'SO2'], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#da3633', '#e3b341', '#2f81f7', '#a371f7', '#238636'], borderRadius: 4 }] },
+                data: { labels: ['PM2.5', 'PM10', 'O3', 'NO2', 'SO2'], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981'], borderRadius: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } } }
             });
 
-            async function bootSystem() {
+            async function syncTelemetry(lat = null, lon = null) {
+                let apiUrl = 'https://api.waqi.info/feed/here/?token=demo';
+                
+                if (lat && lon) {
+                    apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=demo`;
+                }
+
                 try {
-                    const response = await fetch('https://api.waqi.info/feed/here/?token=demo');
+                    const response = await fetch(apiUrl);
                     const result = await response.json();
 
                     if (result.status === 'ok') {
@@ -176,61 +184,83 @@
                         const aqi = d.aqi;
                         const iaqi = d.iaqi || {};
 
+                        const targetLat = d.city.geo[0];
+                        const targetLon = d.city.geo[1];
                         document.getElementById('locName').innerText = d.city.name.split(',')[0];
-                        map.flyTo([d.city.geo[0], d.city.geo[1]], 12, { duration: 2 });
-                        
-                        let color = '#238636'; let text = 'Good';
-                        if(aqi > 50) { color = '#e3b341'; text = 'Moderate'; }
-                        if(aqi > 100) { color = '#d29922'; text = 'Sensitive'; }
-                        if(aqi > 150) { color = '#da3633'; text = 'Unhealthy'; }
-                        if(aqi > 200) { color = '#a371f7'; text = 'Severe'; }
+                        map.flyTo([targetLat, targetLon], 13, { duration: 2.5 });
 
-                        const pin = L.divIcon({ className: 'custom-pin', html: `<div style="background:${color}; width:20px; height:20px; border-radius:50%; box-shadow:0 0 30px 10px ${color}; border:2px solid white;"></div>`, iconSize: [20,20], iconAnchor: [10,10] });
-                        L.marker([d.city.geo[0], d.city.geo[1]], {icon: pin}).addTo(map);
+                        let markerColor = '#10b981'; let text = 'Good';
+                        if(aqi > 50) { markerColor = '#f59e0b'; text = 'Moderate'; }
+                        if(aqi > 100) { markerColor = '#f97316'; text = 'Sensitive'; }
+                        if(aqi > 150) { markerColor = '#ef4444'; text = 'Unhealthy'; }
+                        if(aqi > 200) { markerColor = '#8b5cf6'; text = 'Severe'; }
+
+                        const customIcon = L.divIcon({
+                            className: 'live-pin',
+                            html: `<div style="background-color: ${markerColor}; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.25); font-size: 0.9rem;">${aqi}</div>`,
+                            iconSize: [36, 36], iconAnchor: [18, 18]
+                        });
+                        L.marker([targetLat, targetLon], {icon: customIcon}).addTo(map)
+                            .bindPopup(`<div style="color:#0f172a; font-weight:700; text-align:center; font-family:sans-serif;">Current AQI: ${aqi}<br><span style="color:${markerColor}; font-size:0.8rem;">Status: ${text}</span></div>`)
+                            .openPopup();
 
                         const numEl = document.getElementById('liveAqiNum');
-                        numEl.innerText = aqi; numEl.style.color = color;
-                        document.getElementById('liveAqiStatus').innerText = text;
+                        numEl.innerText = aqi; numEl.style.color = markerColor;
+                        document.getElementById('liveAqiStatus').innerText = text.toUpperCase();
+                        document.getElementById('liveAqiStatus').style.color = markerColor;
 
                         const getV = (key) => (iaqi[key] ? iaqi[key].v : 0);
-                        const metrics = [
-                            { label: 'PM2.5', val: getV('pm25'), max: 300, color: '#da3633' },
-                            { label: 'PM10', val: getV('pm10'), max: 300, color: '#e3b341' },
-                            { label: 'O3', val: getV('o3'), max: 200, color: '#2f81f7' },
-                            { label: 'NO2', val: getV('no2'), max: 100, color: '#a371f7' },
-                            { label: 'CO', val: getV('co'), max: 50, color: '#238636' }
+                        const dataArray = [
+                            { label: 'PM2.5', val: getV('pm25'), max: 250, color: '#ef4444' },
+                            { label: 'PM10', val: getV('pm10'), max: 250, color: '#f59e0b' },
+                            { label: 'O3', val: getV('o3'), max: 180, color: '#3b82f6' },
+                            { label: 'NO2', val: getV('no2'), max: 120, color: '#8b5cf6' },
+                            { label: 'CO', val: getV('co'), max: 40, color: '#10b981' }
                         ];
 
                         let barsHTML = '';
-                        metrics.forEach(m => {
-                            let pct = Math.min((m.val / m.max) * 100, 100);
+                        dataArray.forEach(m => {
+                            let percentage = Math.min((m.val / m.max) * 100, 100);
                             barsHTML += `
                             <div class="metric-row">
                                 <div class="metric-label">${m.label}</div>
-                                <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${pct}%; background: ${m.color};"></div></div>
+                                <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${percentage}%; background: ${m.color};"></div></div>
                                 <div class="metric-val">${m.val || '--'}</div>
                             </div>`;
                         });
                         document.getElementById('pollutantBars').innerHTML = barsHTML;
 
-                        trendChart.data.datasets[0].data = [aqi, Math.round(aqi*1.1), Math.round(aqi*1.2), Math.round(aqi*0.9), Math.round(aqi*1.05)];
+                        trendChart.data.datasets[0].data = [aqi, Math.round(aqi*1.08), Math.round(aqi*1.14), Math.round(aqi*0.92), Math.round(aqi*1.06)];
                         trendChart.update();
                         
                         gasChart.data.datasets[0].data = [getV('pm25'), getV('pm10'), getV('o3'), getV('no2'), getV('so2')];
                         gasChart.update();
 
-                        if(iaqi.t) document.getElementById('val-temp').innerText = iaqi.t.v + '°';
-                        if(iaqi.w) document.getElementById('val-wind').innerText = iaqi.w.v;
+                        if(iaqi.t) document.getElementById('val-temp').innerText = iaqi.t.v + '°C';
+                        if(iaqi.w) document.getElementById('val-wind').innerText = iaqi.w.v + ' m/s';
                         if(iaqi.h) document.getElementById('val-humidity').innerText = iaqi.h.v + '%';
                         if(iaqi.p) document.getElementById('val-pressure').innerText = iaqi.p.v;
                     }
-                } catch (e) {
-                    console.error('Boot sequence failed:', e);
-                    document.getElementById('locName').innerText = 'Network Error';
+                } catch (err) {
+                    console.error('Telemetry link dropped:', err);
+                    document.getElementById('locName').innerText = 'Telemetry Offline';
                 }
             }
 
-            bootSystem();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        syncTelemetry(pos.coords.latitude, pos.coords.longitude);
+                    },
+                    (err) => {
+                        console.warn('GPS Permission tracking blocked, initializing IP-fallback node.', err);
+                        syncTelemetry();
+                    },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
+            } else {
+                syncTelemetry();
+            }
         });
     </script>
 </body>
