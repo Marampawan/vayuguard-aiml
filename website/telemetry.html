@@ -357,7 +357,8 @@
             }
 
 
-            // 5. Live Autocomplete & Search Logic
+            // 5. Live Autocomplete & Search Logic (legacy implementation retained below for reference)
+            /*
             const searchInput = document.getElementById('citySearchInput');
             const searchBtn = document.getElementById('citySearchBtn');
             const dropdown = document.getElementById('searchDropdown');
@@ -466,6 +467,91 @@
                 }
             }
         });
+            */
+
+            // 5. Live Autocomplete & Search Logic
+            const searchInput = document.getElementById('citySearchInput');
+            const searchBtn = document.getElementById('citySearchBtn');
+            const dropdown = document.getElementById('searchDropdown');
+            let searchTimeout = null;
+
+            // 🛑 CRITICAL: Put your real WAQI token here!
+            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                clearTimeout(searchTimeout);
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            // 🇮🇳 THE FIX: Secretly append " India" to force Indian hardware nodes to the top
+                            const searchQuery = query + " India";
+                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${searchQuery}`);
+                            const data = await res.json();
+                            
+                            if (data.status === 'ok' && data.data.length > 0) {
+                                dropdown.innerHTML = '';
+                                
+                                data.data.slice(0, 5).forEach(station => {
+                                    const item = document.createElement('div');
+                                    item.className = 'search-item';
+                                    
+                                    // Show the full physical station name so you know exactly which street sensor it is
+                                    const stationName = station.station.name;
+                                    item.innerHTML = `
+                                        <span style="font-weight: 600; font-size: 0.8rem;">${stationName}</span> 
+                                        <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi || '--'}</span>
+                                    `;
+                                    
+                                    // When a recommendation is clicked
+                                    item.addEventListener('click', () => {
+                                        searchInput.value = stationName.split(',')[0];
+                                        dropdown.style.display = 'none';
+                                        document.getElementById('locName').innerText = "Rerouting...";
+                                        
+                                        // 🛑 THE FIX: WAQI requires an '@' symbol before UID numbers!
+                                        if (station.uid) {
+                                            syncTelemetry(null, null, '@' + station.uid);
+                                        } else {
+                                            syncTelemetry(null, null, stationName.split(',')[0]);
+                                        }
+                                    });
+                                    dropdown.appendChild(item);
+                                });
+                                dropdown.style.display = 'flex';
+                            } else {
+                                dropdown.style.display = 'none';
+                            }
+                        } catch (err) {
+                            console.error("Autocomplete fetch failed", err);
+                        }
+                    }, 300);
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            // Hide dropdown if you click anywhere else on the screen
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.search-wrapper')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            // Trigger main search button for manual typing
+            searchBtn.addEventListener('click', () => {
+                const city = searchInput.value.trim();
+                if(city) {
+                    dropdown.style.display = 'none';
+                    document.getElementById('locName').innerText = "Rerouting...";
+                    syncTelemetry(null, null, city); 
+                }
+            });
+
+            searchInput.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') searchBtn.click();
+            });
     </script>
 </body>
 </html>
