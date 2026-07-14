@@ -382,8 +382,17 @@
                             if (data.status === 'ok' && data.data.length > 0) {
                                 dropdown.innerHTML = '';
                                 
-                                // Show top 5 matching cities/stations
-                                data.data.slice(0, 5).forEach(station => {
+                                // 🇮🇳 INDIAN NODE FILTER
+                                // Scan the global results and pull out only stations containing "India"
+                                let indianStations = data.data.filter(station => 
+                                    station.station.name.toLowerCase().includes('india')
+                                );
+
+                                // If Indian stations are found, use them. Otherwise, fallback to global.
+                                let finalResults = indianStations.length > 0 ? indianStations : data.data;
+
+                                // Show top 5 matching cities/stations from the filtered list
+                                finalResults.slice(0, 5).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
                                     
