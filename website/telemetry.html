@@ -249,19 +249,24 @@
                 }
             }
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        syncTelemetry(pos.coords.latitude, pos.coords.longitude);
-                    },
-                    (err) => {
-                        console.warn('GPS Permission tracking blocked, initializing IP-fallback node.', err);
-                        syncTelemetry();
-                    },
-                    { enableHighAccuracy: true, timeout: 8000 }
-                );
+            const forceBengaluru = false;
+
+            if (forceBengaluru) {
+                console.log('Calibrating Node to Bengaluru...');
+                syncTelemetry(12.9716, 77.5946);
             } else {
-                syncTelemetry();
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => syncTelemetry(pos.coords.latitude, pos.coords.longitude),
+                        (err) => {
+                            console.warn('GPS permission blocked, using IP-based fallback.', err);
+                            syncTelemetry();
+                        },
+                        { enableHighAccuracy: true, timeout: 8000 }
+                    );
+                } else {
+                    syncTelemetry();
+                }
             }
         });
     </script>
