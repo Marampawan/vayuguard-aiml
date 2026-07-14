@@ -259,8 +259,29 @@
                         });
                         document.getElementById('pollutantBars').innerHTML = barsHTML;
 
-                        // Refresh Interactive Charts
-                        trendChart.data.datasets[0].data = [aqi, Math.max(10, Math.round(aqi*1.08)), Math.max(10, Math.round(aqi*1.14)), Math.max(10, Math.round(aqi*0.92)), Math.max(10, Math.round(aqi*1.06))];
+                        // 🔮 Real Predictive Forecast Extraction
+                        if (d.forecast && d.forecast.daily && d.forecast.daily.pm25) {
+                            const forecastData = d.forecast.daily.pm25;
+                            let predictedVals = [aqi]; // Start with current AQI
+                            let predictedLabels = ['Now']; // Start with today
+
+                            // Extract the next 4 days of predictions
+                            for(let i = 0; i < Math.min(4, forecastData.length); i++) {
+                                predictedVals.push(forecastData[i].avg);
+                                // Format the raw date into a clean "Oct 25" style string
+                                let dateObj = new Date(forecastData[i].day);
+                                predictedLabels.push(dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                            }
+
+                            // Inject the real data into the chart
+                            trendChart.data.labels = predictedLabels;
+                            trendChart.data.datasets[0].data = predictedVals;
+                        } else {
+                            // Fallback if the specific physical node lacks prediction models
+                            trendChart.data.labels = ['Now', '+1 Day', '+2 Days', '+3 Days', '+4 Days'];
+                            trendChart.data.datasets[0].data = [aqi, Math.round(aqi*1.05), Math.round(aqi*1.1), Math.round(aqi*0.95), Math.round(aqi*1.02)];
+                        }
+                        
                         trendChart.update();
                         
                         gasChart.data.datasets[0].data = [getV('pm25'), getV('pm10'), getV('o3'), getV('no2'), getV('so2')];
