@@ -169,10 +169,12 @@
             });
 
             async function syncTelemetry(lat = null, lon = null) {
-                let apiUrl = 'https://api.waqi.info/feed/here/?token=demo';
+                const myWaqiToken = "PASTE_YOUR_NEW_TOKEN_HERE";
+                
+                let apiUrl = `https://api.waqi.info/feed/here/?token=${myWaqiToken}`;
                 
                 if (lat && lon) {
-                    apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=demo`;
+                    apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${myWaqiToken}`;
                 }
 
                 try {
