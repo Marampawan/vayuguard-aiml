@@ -54,6 +54,13 @@
         .w-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
 
         .chart-box { width: 100%; height: 160px; position: relative; }
+
+        /* Search Bar Styles */
+        .search-container { display: flex; gap: 8px; margin-left: auto; margin-right: 20px; pointer-events: auto; }
+        .search-input { background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white; padding: 8px 15px; border-radius: 8px; outline: none; font-family: 'Inter'; font-size: 0.85rem; width: 220px; transition: 0.3s; }
+        .search-input:focus { background: rgba(255,255,255,0.15); border-color: var(--accent-blue); }
+        .search-btn { background: var(--accent-blue); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .search-btn:hover { background: #2563eb; }
         
         .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
         .btn-back:hover { background: rgba(255,255,255,0.2); }
@@ -65,6 +72,12 @@
 
     <div class="top-bar">
         <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Advanced Monitor</a>
+        
+        <div class="search-container">
+            <input type="text" id="citySearchInput" class="search-input" placeholder="Override Node (e.g. Bengaluru)">
+            <button id="citySearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+
         <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Return to Main Dashboard</a>
     </div>
 
@@ -168,13 +181,17 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } } }
             });
 
-            async function syncTelemetry(lat = null, lon = null) {
-                const myWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
+            async function syncTelemetry(lat = null, lon = null, cityName = null) {
                 
-                let apiUrl = `https://api.waqi.info/feed/here/?token=${myWaqiToken}`;
+                // 🛑 PASTE YOUR REAL WAQI TOKEN HERE (otherwise Search might fail)
+                const myWaqiToken = "demo"; 
                 
-                if (lat && lon) {
-                    apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${myWaqiToken}`;
+                let apiUrl = `https://api.waqi.info/feed/here/?token=${myWaqiToken}`; // Fallback
+                
+                if (cityName) {
+                    apiUrl = `https://api.waqi.info/feed/${cityName}/?token=${myWaqiToken}`; // Manual Search Override
+                } else if (lat && lon) {
+                    apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${myWaqiToken}`; // GPS Override
                 }
 
                 try {
@@ -186,17 +203,25 @@
                         const aqi = d.aqi;
                         const iaqi = d.iaqi || {};
 
+                        // Map Calibration
                         const targetLat = d.city.geo[0];
                         const targetLon = d.city.geo[1];
                         document.getElementById('locName').innerText = d.city.name.split(',')[0];
-                        map.flyTo([targetLat, targetLon], 13, { duration: 2.5 });
+                        map.flyTo([targetLat, targetLon], 12, { duration: 2.0 });
 
-                        let markerColor = '#10b981'; let text = 'Good';
-                        if(aqi > 50) { markerColor = '#f59e0b'; text = 'Moderate'; }
-                        if(aqi > 100) { markerColor = '#f97316'; text = 'Sensitive'; }
-                        if(aqi > 150) { markerColor = '#ef4444'; text = 'Unhealthy'; }
-                        if(aqi > 200) { markerColor = '#8b5cf6'; text = 'Severe'; }
+                        // Clear old pins before adding a new one
+                        map.eachLayer((layer) => {
+                            if (layer instanceof L.Marker) map.removeLayer(layer);
+                        });
 
+                        // Status Mapping
+                        let markerColor = "#10b981"; let text = "Good";
+                        if(aqi > 50) { markerColor = "#f59e0b"; text = "Moderate"; }
+                        if(aqi > 100) { markerColor = "#f97316"; text = "Sensitive"; }
+                        if(aqi > 150) { markerColor = "#ef4444"; text = "Unhealthy"; }
+                        if(aqi > 200) { markerColor = "#8b5cf6"; text = "Severe"; }
+
+                        // Standard Vibrant Pin Drop
                         const customIcon = L.divIcon({
                             className: 'live-pin',
                             html: `<div style="background-color: ${markerColor}; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.25); font-size: 0.9rem;">${aqi}</div>`,
@@ -206,11 +231,13 @@
                             .bindPopup(`<div style="color:#0f172a; font-weight:700; text-align:center; font-family:sans-serif;">Current AQI: ${aqi}<br><span style="color:${markerColor}; font-size:0.8rem;">Status: ${text}</span></div>`)
                             .openPopup();
 
+                        // HUD UI updates
                         const numEl = document.getElementById('liveAqiNum');
                         numEl.innerText = aqi; numEl.style.color = markerColor;
                         document.getElementById('liveAqiStatus').innerText = text.toUpperCase();
                         document.getElementById('liveAqiStatus').style.color = markerColor;
 
+                        // Calculate Pollutant Progress Bars
                         const getV = (key) => (iaqi[key] ? iaqi[key].v : 0);
                         const dataArray = [
                             { label: 'PM2.5', val: getV('pm25'), max: 250, color: '#ef4444' },
@@ -232,22 +259,38 @@
                         });
                         document.getElementById('pollutantBars').innerHTML = barsHTML;
 
-                        trendChart.data.datasets[0].data = [aqi, Math.round(aqi*1.08), Math.round(aqi*1.14), Math.round(aqi*0.92), Math.round(aqi*1.06)];
+                        // Refresh Interactive Charts
+                        trendChart.data.datasets[0].data = [aqi, Math.max(10, Math.round(aqi*1.08)), Math.max(10, Math.round(aqi*1.14)), Math.max(10, Math.round(aqi*0.92)), Math.max(10, Math.round(aqi*1.06))];
                         trendChart.update();
                         
                         gasChart.data.datasets[0].data = [getV('pm25'), getV('pm10'), getV('o3'), getV('no2'), getV('so2')];
                         gasChart.update();
 
-                        if(iaqi.t) document.getElementById('val-temp').innerText = iaqi.t.v + '°C';
-                        if(iaqi.w) document.getElementById('val-wind').innerText = iaqi.w.v + ' m/s';
-                        if(iaqi.h) document.getElementById('val-humidity').innerText = iaqi.h.v + '%';
+                        // Refresh Atmospheric Conditions Box
+                        if(iaqi.t) document.getElementById('val-temp').innerText = iaqi.t.v + "°C";
+                        if(iaqi.w) document.getElementById('val-wind').innerText = iaqi.w.v + " m/s";
+                        if(iaqi.h) document.getElementById('val-humidity').innerText = iaqi.h.v + "%";
                         if(iaqi.p) document.getElementById('val-pressure').innerText = iaqi.p.v;
+                    } else {
+                        alert("Could not find that location. Try a different city name!");
                     }
                 } catch (err) {
-                    console.error('Telemetry link dropped:', err);
-                    document.getElementById('locName').innerText = 'Telemetry Offline';
+                    console.error("Telemetry link dropped:", err);
+                    document.getElementById('locName').innerText = "Telemetry Offline";
                 }
             }
+
+            document.getElementById('citySearchBtn').addEventListener('click', () => {
+                const city = document.getElementById('citySearchInput').value.trim();
+                if(city) {
+                    document.getElementById('locName').innerText = 'Rerouting...';
+                    syncTelemetry(null, null, city);
+                }
+            });
+
+            document.getElementById('citySearchInput').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') document.getElementById('citySearchBtn').click();
+            });
 
             const forceBengaluru = false;
 
