@@ -85,6 +85,19 @@ async function updateCityData(citySelectValue) {
         if (result.status === 'ok') {
             const currentAqi = result.data.aqi;
 
+            // --- EXTRACT INDIVIDUAL POLLUTANTS (iaqi) ---
+            const iaqi = result.data.iaqi;
+            
+            // Helper function: Some sensors don't report every gas. If missing, show "--"
+            const safeGet = (param) => (iaqi && iaqi[param]) ? iaqi[param].v : '--';
+            
+            document.getElementById('val-pm25').innerText = safeGet('pm25');
+            document.getElementById('val-pm10').innerText = safeGet('pm10');
+            document.getElementById('val-o3').innerText = safeGet('o3');
+            document.getElementById('val-no2').innerText = safeGet('no2');
+            document.getElementById('val-so2').innerText = safeGet('so2');
+            document.getElementById('val-co').innerText = safeGet('co');
+
             const getAqiStyle = (aqi) => {
                 if (aqi <= 50) return { text: 'GOOD', color: '#10b981', bg: '#d1fae5', border: '#a7f3d0' };
                 if (aqi <= 100) return { text: 'MODERATE', color: '#f59e0b', bg: '#fef3c7', border: '#fde68a' };

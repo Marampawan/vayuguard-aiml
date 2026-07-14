@@ -145,6 +145,40 @@
             </div>
         </div>
         <div class="hero-visual">
+            <div id="pollutantsGrid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; background: #ffffff; padding: 1.5rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; min-width: 300px; flex: 1;">
+                <h4 style="grid-column: span 2; margin: 0 0 1rem 0; color: #1e293b; font-size: 1.2rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;"><i class="fas fa-wind" style="color: #3b82f6;"></i> Raw Pollutant Telemetry</h4>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">PM 2.5</div>
+                    <div id="val-pm25" style="font-size: 1.5rem; font-weight: 800; color: #ef4444;">--</div>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">PM 10</div>
+                    <div id="val-pm10" style="font-size: 1.5rem; font-weight: 800; color: #f97316;">--</div>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">Ozone (O₃)</div>
+                    <div id="val-o3" style="font-size: 1.5rem; font-weight: 800; color: #3b82f6;">--</div>
+                </div>
+                
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">Nitrogen (NO₂)</div>
+                    <div id="val-no2" style="font-size: 1.5rem; font-weight: 800; color: #8b5cf6;">--</div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">Sulfur (SO₂)</div>
+                    <div id="val-so2" style="font-size: 1.5rem; font-weight: 800; color: #eab308;">--</div>
+                </div>
+
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 0.8rem; color: #64748b; font-weight: 700;">Carbon (CO)</div>
+                    <div id="val-co" style="font-size: 1.5rem; font-weight: 800; color: #14b8a6;">--</div>
+                </div>
+            </div>
+
             <div class="aqi-card" style="text-align: center; padding: 2.5rem 2rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.5);">
                 <div class="aqi-label" style="color: #475569; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;">Live AQI - Bengaluru, IN</div>
                 
