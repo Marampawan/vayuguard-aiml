@@ -55,12 +55,64 @@
 
         .chart-box { width: 100%; height: 160px; position: relative; }
 
-        /* Search Bar Styles */
+        /* Search Bar & Autocomplete Enhancements */
         .search-container { display: flex; gap: 8px; margin-left: auto; margin-right: 20px; pointer-events: auto; }
-        .search-input { background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white; padding: 8px 15px; border-radius: 8px; outline: none; font-family: 'Inter'; font-size: 0.85rem; width: 220px; transition: 0.3s; }
-        .search-input:focus { background: rgba(255,255,255,0.15); border-color: var(--accent-blue); }
-        .search-btn { background: var(--accent-blue); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .search-wrapper { position: relative; display: flex; align-items: center; }
+        
+        .search-input { 
+            background: rgba(15, 23, 42, 0.7); 
+            border: 2px solid var(--border-glass); 
+            color: #ffffff; /* Bright white text for clarity */
+            padding: 9px 16px; 
+            border-radius: 8px; 
+            outline: none; 
+            font-family: 'Inter'; 
+            font-size: 0.9rem; 
+            width: 250px; 
+            transition: all 0.3s ease; 
+        }
+        
+        /* 🎨 Bright glowing border when you click to type */
+        .search-input:focus { 
+            background: rgba(15, 23, 42, 0.95); 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+        .search-input::placeholder { color: #64748b; }
+        
+        .search-btn { background: var(--accent-blue); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         .search-btn:hover { background: #2563eb; }
+
+        /* The Live Recommendation Menu */
+        .search-dropdown {
+            position: absolute;
+            top: 115%;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .search-item {
+            padding: 12px 15px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .search-item:last-child { border-bottom: none; }
+        .search-item:hover { background: rgba(59, 130, 246, 0.2); color: #ffffff; }
         
         .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
         .btn-back:hover { background: rgba(255,255,255,0.2); }
@@ -74,7 +126,10 @@
         <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Advanced Monitor</a>
         
         <div class="search-container">
-            <input type="text" id="citySearchInput" class="search-input" placeholder="Override Node (e.g. Bengaluru)">
+            <div class="search-wrapper">
+                <input type="text" id="citySearchInput" class="search-input" placeholder="Type city (e.g. Delhi)..." autocomplete="off">
+                <div id="searchDropdown" class="search-dropdown"></div>
+            </div>
             <button id="citySearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
         </div>
 
@@ -301,16 +356,85 @@
                 }
             }
 
-            document.getElementById('citySearchBtn').addEventListener('click', () => {
-                const city = document.getElementById('citySearchInput').value.trim();
-                if(city) {
-                    document.getElementById('locName').innerText = 'Rerouting...';
-                    syncTelemetry(null, null, city);
+
+            // 5. Live Autocomplete & Search Logic
+            const searchInput = document.getElementById('citySearchInput');
+            const searchBtn = document.getElementById('citySearchBtn');
+            const dropdown = document.getElementById('searchDropdown');
+            let searchTimeout = null;
+
+            // 🛑 CRITICAL: Put your real WAQI token here so the search works!
+            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8"; 
+
+            // Listen for every keystroke
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                clearTimeout(searchTimeout); // Prevent spamming the API
+                
+                if (query.length >= 2) {
+                    // Wait 300ms after typing stops before fetching (Debounce)
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${query}`);
+                            const data = await res.json();
+                            
+                            if (data.status === 'ok' && data.data.length > 0) {
+                                dropdown.innerHTML = '';
+                                
+                                // Show top 5 matching cities/stations
+                                data.data.slice(0, 5).forEach(station => {
+                                    const item = document.createElement('div');
+                                    item.className = 'search-item';
+                                    
+                                    // Parse name and AQI
+                                    const cleanName = station.station.name.split(',')[0];
+                                    item.innerHTML = `
+                                        <span style="font-weight: 600;">${cleanName}</span> 
+                                        <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi || '--'}</span>
+                                    `;
+                                    
+                                    // When a recommendation is clicked
+                                    item.addEventListener('click', () => {
+                                        searchInput.value = cleanName; 
+                                        dropdown.style.display = 'none';
+                                        document.getElementById('locName').innerText = "Rerouting...";
+                                        syncTelemetry(null, null, station.uid || cleanName); // Search by exact UID or name
+                                    });
+                                    dropdown.appendChild(item);
+                                });
+                                dropdown.style.display = 'flex';
+                            } else {
+                                dropdown.style.display = 'none';
+                            }
+                        } catch (err) {
+                            console.error("Autocomplete fetch failed", err);
+                        }
+                    }, 300);
+                } else {
+                    dropdown.style.display = 'none'; // Hide if less than 2 letters
                 }
             });
 
-            document.getElementById('citySearchInput').addEventListener('keypress', (e) => {
-                if(e.key === 'Enter') document.getElementById('citySearchBtn').click();
+            // Hide dropdown if you click anywhere else on the screen
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.search-wrapper')) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            // Trigger main search button
+            searchBtn.addEventListener('click', () => {
+                const city = searchInput.value.trim();
+                if(city) {
+                    dropdown.style.display = 'none';
+                    document.getElementById('locName').innerText = "Rerouting...";
+                    syncTelemetry(null, null, city); 
+                }
+            });
+
+            searchInput.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') searchBtn.click();
             });
 
             const forceBengaluru = false;
