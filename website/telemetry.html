@@ -486,19 +486,20 @@
                     searchTimeout = setTimeout(async () => {
                         try {
                             // 🇮🇳 THE FIX: Secretly append " India" to force Indian hardware nodes to the top
-                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${query} India`);
+                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${query}`);
                             const data = await res.json();
                             
                             if (data.status === 'ok' && data.data.length > 0) {
                                 dropdown.innerHTML = '';
                                 
-                                // --- THE SMART PARSER ---
-                                // Only keep Indian stations, derive city names, and remove duplicates.
-                                // 1. Smarter filter: Checks both the station name AND the internal URL for "India"
-                                let indianStations = data.data.filter(s =>
-                                    (s.station.name && s.station.name.toLowerCase().includes('india')) ||
-                                    (s.station.url && s.station.url.toLowerCase().includes('india'))
-                                );
+                                // --- THE SMART PARSER 2.0 ---
+                                let indianStations = data.data.filter(s => {
+                                    // Completely ignore broken or offline sensors.
+                                    const isOnline = s.aqi !== '-' && s.aqi !== null && s.aqi !== undefined;
+                                    const isIndian = (s.station.name && s.station.name.toLowerCase().includes('india')) ||
+                                        (s.station.url && s.station.url.toLowerCase().includes('india'));
+                                    return isOnline && isIndian;
+                                });
 
                                 const seenCities = new Set();
                                 const cleanResults = [];
@@ -513,7 +514,7 @@
                                         cleanResults.push(station);
                                     }
                                 }
-                                cleanResults.slice(0, 5).forEach(station => {
+                                cleanResults.slice(0, 8).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
                                     
@@ -521,7 +522,7 @@
                                     const stationName = station.cleanCityName;
                                     item.innerHTML = `
                                         <span style="font-weight: 600; font-size: 0.85rem;">${stationName}</span>
-                                        <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi || '--'}</span>
+                                        <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi}</span>
                                     `;
                                     
                                     // When a recommendation is clicked
