@@ -505,9 +505,20 @@
                                     if (cityName && !seenCities.has(cityName)) {
                                         seenCities.add(cityName);
                                         station.cleanCityName = cityName;
+
+                                        // Prioritize Indian stations while retaining other matches.
+                                        const rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
+                                        const indianKeywords = [
+                                            'india', 'delhi', 'maharashtra', 'karnataka', 'telangana',
+                                            'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh',
+                                            'west bengal', 'kerala', 'andhra pradesh', 'punjab',
+                                            'haryana', 'bihar'
+                                        ];
+                                        station.priorityScore = indianKeywords.some(keyword => rawDataString.includes(keyword)) ? 10 : 0;
                                         cleanResults.push(station);
                                     }
                                 }
+                                cleanResults.sort((a, b) => b.priorityScore - a.priorityScore);
                                 cleanResults.slice(0, 8).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
