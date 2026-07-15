@@ -133,6 +133,21 @@
             width: 100%;
             top: 110%;
         }
+
+        /* Modern glass treatment for dashboard panels and search controls. */
+        .modern-panel {
+            background: rgba(30, 41, 59, 0.7) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .modern-text {
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
@@ -142,7 +157,7 @@
     <div class="top-bar">
         <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Advanced Monitor</a>
         
-        <div class="search-container">
+        <div class="search-container modern-panel">
             <div class="search-wrapper">
                 <input type="text" id="citySearchInput" class="search-input" placeholder="Type city (e.g. Delhi)..." autocomplete="off">
                 <div id="searchDropdown" class="search-dropdown"></div>
@@ -155,7 +170,7 @@
 
     <div class="ui-layer">
         
-        <div class="panel">
+        <div class="panel modern-panel">
             <div>
                 <h4 class="section-title">Live Node Summary</h4>
                 <div class="aqi-core">
@@ -186,7 +201,7 @@
             </div>
         </div>
 
-        <div class="panel">
+        <div class="panel modern-panel">
             <div>
                 <h4 class="section-title">Atmospheric Context Telemetry</h4>
                 <div class="weather-grid">
@@ -229,9 +244,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
+            // Modern, minimalist dark map layer (Swiggy/Uber style)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
             }).addTo(map);
             L.control.zoom({ position: 'bottomright' }).addTo(map);
 
