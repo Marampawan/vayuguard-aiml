@@ -486,24 +486,18 @@
                     searchTimeout = setTimeout(async () => {
                         try {
                             // 🇮🇳 THE FIX: Secretly append " India" to force Indian hardware nodes to the top
-                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${query}`);
+                            const safeQuery = encodeURIComponent(query);
+                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${safeQuery}`);
                             const data = await res.json();
                             
                             if (data.status === 'ok' && data.data.length > 0) {
                                 dropdown.innerHTML = '';
                                 
                                 // --- THE SMART PARSER 2.0 ---
-                                let indianStations = data.data.filter(s => {
-                                    // Completely ignore broken or offline sensors.
-                                    const isOnline = s.aqi !== '-' && s.aqi !== null && s.aqi !== undefined;
-                                    const isIndian = (s.station.name && s.station.name.toLowerCase().includes('india')) ||
-                                        (s.station.url && s.station.url.toLowerCase().includes('india'));
-                                    return isOnline && isIndian;
-                                });
-
-                                const seenCities = new Set();
-                                const cleanResults = [];
-                                for (const station of indianStations) {
+                                let seenCities = new Set();
+                                let cleanResults = [];
+                                for (let station of data.data) {
+                                    if (station.aqi === '-' || station.aqi === null) continue;
                                     const parts = station.station.name.split(',');
                                     let cityName = parts.length >= 3 ? parts[parts.length - 2].trim() : parts[0].trim();
                                     if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
