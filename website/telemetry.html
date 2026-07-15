@@ -476,7 +476,7 @@
             let searchTimeout = null;
 
             // 🛑 CRITICAL: Put your real WAQI token here!
-            const globalWaqiToken = "YOUR_PRODUCTION_TOKEN_HERE";
+            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
 
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
@@ -494,9 +494,15 @@
                                 
                                 // --- THE SMART PARSER ---
                                 // Only keep Indian stations, derive city names, and remove duplicates.
+                                // 1. Smarter filter: Checks both the station name AND the internal URL for "India"
+                                let indianStations = data.data.filter(s =>
+                                    (s.station.name && s.station.name.toLowerCase().includes('india')) ||
+                                    (s.station.url && s.station.url.toLowerCase().includes('india'))
+                                );
+
                                 const seenCities = new Set();
                                 const cleanResults = [];
-                                for (const station of data.data.filter(s => s.station.name.toLowerCase().includes('india'))) {
+                                for (const station of indianStations) {
                                     const parts = station.station.name.split(',');
                                     let cityName = parts.length >= 3 ? parts[parts.length - 2].trim() : parts[0].trim();
                                     if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
