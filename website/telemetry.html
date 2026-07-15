@@ -116,6 +116,23 @@
         
         .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
         .btn-back:hover { background: rgba(255,255,255,0.2); }
+
+        /* Keep the search controls centered and above dashboard panels. */
+        .search-wrapper {
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 9999 !important;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        #searchDropdown {
+            z-index: 10000 !important;
+            position: absolute;
+            width: 100%;
+            top: 110%;
+        }
     </style>
 </head>
 <body>
