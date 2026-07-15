@@ -57,7 +57,38 @@
 
         /* Search Bar & Autocomplete Enhancements */
         .search-container { display: flex; gap: 8px; margin-left: auto; margin-right: 20px; pointer-events: auto; }
-        .search-wrapper { position: relative; display: flex; align-items: center; }
+        /* Force search bar to dead-center and give it a glass style. */
+        .search-wrapper {
+            position: absolute !important;
+            top: 25px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 9999 !important;
+            width: 100%;
+            max-width: 450px;
+            background: rgba(15, 23, 42, 0.7) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border-radius: 30px !important;
+            padding: 5px 10px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        #searchDropdown {
+            z-index: 10000 !important;
+            position: absolute;
+            width: 100%;
+            top: 115% !important;
+            left: 0;
+            background: rgba(15, 23, 42, 0.85) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+            overflow: hidden;
+        }
         
         .search-input { 
             background: rgba(15, 23, 42, 0.7); 
@@ -117,23 +148,6 @@
         .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
         .btn-back:hover { background: rgba(255,255,255,0.2); }
 
-        /* Keep the search controls centered and above dashboard panels. */
-        .search-wrapper {
-            position: absolute !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            z-index: 9999 !important;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        #searchDropdown {
-            z-index: 10000 !important;
-            position: absolute;
-            width: 100%;
-            top: 110%;
-        }
-
         /* Modern glass treatment for dashboard panels and search controls. */
         .modern-panel {
             background: rgba(30, 41, 59, 0.7) !important;
@@ -149,14 +163,22 @@
             letter-spacing: 0.5px;
         }
 
-        /* THE MODERN FROSTED GLASS UI */
+        /* The starry-night frosted glass panels. */
         .glass-sidebar {
-            background: rgba(15, 23, 42, 0.45) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
+            background-color: rgba(15, 23, 42, 0.5) !important;
+            background-image:
+                radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1.5px 1.5px at 35% 65%, rgba(255,255,255,0.5), transparent),
+                radial-gradient(2px 2px at 75% 15%, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 85% 85%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1.5px 1.5px at 45% 95%, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 95% 45%, rgba(255,255,255,0.6), transparent) !important;
+            background-size: 150px 150px !important;
+            backdrop-filter: blur(14px) !important;
+            -webkit-backdrop-filter: blur(14px) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
             border-radius: 24px !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
         }
 
         .glass-inner-card {
