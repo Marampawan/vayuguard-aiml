@@ -469,6 +469,7 @@
         });
             */
 
+            /*
             // 5. Live Autocomplete & Search Logic
             const searchInput = document.getElementById('citySearchInput');
             const searchBtn = document.getElementById('citySearchBtn');
@@ -531,7 +532,128 @@
                                     `;
                                     
                                     // When a recommendation is clicked
+                                    */
+
+            // 5. Live Autocomplete & Search Logic
+            const searchInput = document.getElementById('citySearchInput');
+            const searchBtn = document.getElementById('citySearchBtn');
+            const dropdown = document.getElementById('searchDropdown');
+            let searchTimeout = null;
+
+            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8"; 
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                clearTimeout(searchTimeout);
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            const safeQuery = encodeURIComponent(query);
+                            
+                            // THE FIX: Double-fetch to bypass server cutoff limits!
+                            const [resIndia, resRaw] = await Promise.all([
+                                fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${safeQuery}%20India`),
+                                fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${safeQuery}`)
+                            ]);
+                            
+                            const dataIndia = await resIndia.json();
+                            const dataRaw = await resRaw.json();
+                            
+                            // Combine all results securely
+                            let combinedStations = [];
+                            if (dataIndia.status === 'ok') combinedStations.push(...dataIndia.data);
+                            if (dataRaw.status === 'ok') combinedStations.push(...dataRaw.data);
+                            
+                            if (combinedStations.length > 0) {
+                                dropdown.innerHTML = '';
+                                
+                                let seenCities = new Set();
+                                let cleanResults = [];
+                                
+                                // Expanded net to catch all Indian nodes
+                                const indianKeywords = ['india', 'delhi', 'maharashtra', 'karnataka', 'telangana', 'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh', 'west bengal', 'kerala', 'andhra pradesh', 'punjab', 'haryana', 'bihar', 'hyderabad', 'bengaluru', 'mumbai', 'chennai', 'kolkata'];
+
+                                for (let station of combinedStations) {
+                                    if (station.aqi === '-' || station.aqi === null) continue;
+                                    
+                                    let parts = station.station.name.split(',');
+                                    let cityName = parts.length >= 3 ? parts[parts.length - 2].trim() : parts[0].trim();
+                                    
+                                    if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
+                                    if (cityName.includes('-')) cityName = cityName.split('-')[0].trim();
+                                    
+                                    if (!seenCities.has(cityName) && cityName.length > 0) {
+                                        seenCities.add(cityName);
+                                        station.cleanCityName = cityName;
+                                        
+                                        let rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
+                                        
+                                        // Priority scoring
+                                        station.priorityScore = indianKeywords.some(kw => rawDataString.includes(kw)) ? 10 : 0;
+                                        
+                                        cleanResults.push(station);
+                                    }
+                                }
+
+                                // Force priority 10 (India) to the absolute top
+                                cleanResults.sort((a, b) => b.priorityScore - a.priorityScore);
+
+                                cleanResults.slice(0, 8).forEach(station => {
+                                    const item = document.createElement('div');
+                                    item.className = 'search-item';
+                                    
+                                    item.innerHTML = `
+                                        <span style="font-weight: 600; font-size: 0.85rem;">${station.cleanCityName}</span> 
+                                        <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi}</span>
+                                    `;
+                                    
                                     item.addEventListener('click', () => {
+                                        searchInput.value = station.cleanCityName; 
+                                        dropdown.style.display = 'none';
+                                        document.getElementById('locName').innerText = "Rerouting...";
+                                        
+                                        if (station.uid) {
+                                            syncTelemetry(null, null, '@' + station.uid);
+                                        } else {
+                                            syncTelemetry(null, null, station.cleanCityName);
+                                        }
+                                    });
+                                    dropdown.appendChild(item);
+                                });
+                                
+                                dropdown.style.display = cleanResults.length > 0 ? 'flex' : 'none';
+                            } else {
+                                dropdown.style.display = 'none';
+                            }
+                        } catch (err) {
+                            console.error("Autocomplete fetch failed", err);
+                        }
+                    }, 300);
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if(!e.target.closest('.search-wrapper')) dropdown.style.display = 'none';
+            });
+
+            searchBtn.addEventListener('click', () => {
+                const city = searchInput.value.trim();
+                if(city) {
+                    dropdown.style.display = 'none';
+                    document.getElementById('locName').innerText = "Rerouting...";
+                    syncTelemetry(null, null, city); 
+                }
+            });
+
+            searchInput.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') searchBtn.click();
+            });
+
+            /*
+            tem.addEventListener('click', () => {
                                         searchInput.value = station.cleanCityName;
                                         dropdown.style.display = 'none';
                                         document.getElementById('locName').innerText = "Rerouting...";
@@ -578,6 +700,7 @@
             searchInput.addEventListener('keypress', (e) => {
                 if(e.key === 'Enter') searchBtn.click();
             });
+            */
         }); // Close window.onload or DOMContentLoaded if you have one open
     </script>
 </body>
