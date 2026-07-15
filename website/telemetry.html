@@ -365,7 +365,7 @@
             let searchTimeout = null;
 
             // 🛑 CRITICAL: Put your real WAQI token here so the search works!
-            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8"; 
+            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
 
             // Listen for every keystroke
             searchInput.addEventListener('input', (e) => {
@@ -476,7 +476,7 @@
             let searchTimeout = null;
 
             // 🛑 CRITICAL: Put your real WAQI token here!
-            const globalWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
+            const globalWaqiToken = "YOUR_PRODUCTION_TOKEN_HERE";
 
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
@@ -486,27 +486,41 @@
                     searchTimeout = setTimeout(async () => {
                         try {
                             // 🇮🇳 THE FIX: Secretly append " India" to force Indian hardware nodes to the top
-                            const searchQuery = query + " India";
-                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${searchQuery}`);
+                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${query} India`);
                             const data = await res.json();
                             
                             if (data.status === 'ok' && data.data.length > 0) {
                                 dropdown.innerHTML = '';
                                 
-                                data.data.slice(0, 5).forEach(station => {
+                                // --- THE SMART PARSER ---
+                                // Only keep Indian stations, derive city names, and remove duplicates.
+                                const seenCities = new Set();
+                                const cleanResults = [];
+                                for (const station of data.data.filter(s => s.station.name.toLowerCase().includes('india'))) {
+                                    const parts = station.station.name.split(',');
+                                    let cityName = parts.length >= 3 ? parts[parts.length - 2].trim() : parts[0].trim();
+                                    if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
+                                    if (cityName.includes('-')) cityName = cityName.split('-')[0].trim();
+                                    if (cityName && !seenCities.has(cityName)) {
+                                        seenCities.add(cityName);
+                                        station.cleanCityName = cityName;
+                                        cleanResults.push(station);
+                                    }
+                                }
+                                cleanResults.slice(0, 5).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
                                     
                                     // Show the full physical station name so you know exactly which street sensor it is
-                                    const stationName = station.station.name;
+                                    const stationName = station.cleanCityName;
                                     item.innerHTML = `
-                                        <span style="font-weight: 600; font-size: 0.8rem;">${stationName}</span> 
+                                        <span style="font-weight: 600; font-size: 0.85rem;">${stationName}</span>
                                         <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi || '--'}</span>
                                     `;
                                     
                                     // When a recommendation is clicked
                                     item.addEventListener('click', () => {
-                                        searchInput.value = stationName.split(',')[0];
+                                        searchInput.value = station.cleanCityName;
                                         dropdown.style.display = 'none';
                                         document.getElementById('locName').innerText = "Rerouting...";
                                         
@@ -514,12 +528,12 @@
                                         if (station.uid) {
                                             syncTelemetry(null, null, '@' + station.uid);
                                         } else {
-                                            syncTelemetry(null, null, stationName.split(',')[0]);
+                                            syncTelemetry(null, null, station.cleanCityName);
                                         }
                                     });
                                     dropdown.appendChild(item);
                                 });
-                                dropdown.style.display = 'flex';
+                                dropdown.style.display = cleanResults.length > 0 ? 'flex' : 'none';
                             } else {
                                 dropdown.style.display = 'none';
                             }
