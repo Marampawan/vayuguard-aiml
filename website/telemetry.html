@@ -148,6 +148,23 @@
             font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             letter-spacing: 0.5px;
         }
+
+        /* THE MODERN FROSTED GLASS UI */
+        .glass-sidebar {
+            background: rgba(15, 23, 42, 0.45) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .glass-inner-card {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 16px !important;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -170,7 +187,7 @@
 
     <div class="ui-layer">
         
-        <div class="panel modern-panel">
+        <div class="panel modern-panel glass-sidebar">
             <div>
                 <h4 class="section-title">Live Node Summary</h4>
                 <div class="aqi-core">
@@ -201,7 +218,7 @@
             </div>
         </div>
 
-        <div class="panel modern-panel">
+        <div class="panel modern-panel glass-sidebar">
             <div>
                 <h4 class="section-title">Atmospheric Context Telemetry</h4>
                 <div class="weather-grid">
@@ -245,7 +262,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
             // Modern, minimalist dark map layer (Swiggy/Uber style)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
                 subdomains: 'abcd',
                 maxZoom: 20
