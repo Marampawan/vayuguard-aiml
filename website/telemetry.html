@@ -551,21 +551,10 @@
                         try {
                             const safeQuery = encodeURIComponent(query);
                             
-                            // THE FIX: Double-fetch to bypass server cutoff limits!
-                            const [resIndia, resRaw] = await Promise.all([
-                                fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${safeQuery}%20India`),
-                                fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${safeQuery}`)
-                            ]);
+                            const res = await fetch(`https://api.waqi.info/search/?token=${globalWaqiToken}&keyword=${safeQuery}`);
+                            const data = await res.json();
                             
-                            const dataIndia = await resIndia.json();
-                            const dataRaw = await resRaw.json();
-                            
-                            // Combine all results securely
-                            let combinedStations = [];
-                            if (dataIndia.status === 'ok') combinedStations.push(...dataIndia.data);
-                            if (dataRaw.status === 'ok') combinedStations.push(...dataRaw.data);
-                            
-                            if (combinedStations.length > 0) {
+                            if (data.status === 'ok' && data.data.length > 0) {
                                 dropdown.innerHTML = '';
                                 
                                 let seenCities = new Set();
@@ -574,7 +563,7 @@
                                 // Expanded net to catch all Indian nodes
                                 const indianKeywords = ['india', 'delhi', 'maharashtra', 'karnataka', 'telangana', 'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh', 'west bengal', 'kerala', 'andhra pradesh', 'punjab', 'haryana', 'bihar', 'hyderabad', 'bengaluru', 'mumbai', 'chennai', 'kolkata'];
 
-                                for (let station of combinedStations) {
+                                for (let station of data.data) {
                                     const parts = station.station.name.split(',');
                                     let cityName = '';
                                     
