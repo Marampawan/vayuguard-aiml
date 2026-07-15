@@ -191,19 +191,17 @@
 </head>
 <body>
 
+    <div class="search-wrapper">
+        <input type="text" id="citySearchInput" class="search-input" placeholder="Type city (e.g. Delhi)..." autocomplete="off">
+        <button id="citySearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
+        <div id="searchDropdown" class="search-dropdown"></div>
+    </div>
+
     <div id="map"></div>
 
     <div class="top-bar">
         <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Advanced Monitor</a>
         
-        <div class="search-container modern-panel">
-            <div class="search-wrapper">
-                <input type="text" id="citySearchInput" class="search-input" placeholder="Type city (e.g. Delhi)..." autocomplete="off">
-                <div id="searchDropdown" class="search-dropdown"></div>
-            </div>
-            <button id="citySearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
-        </div>
-
         <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Return to Main Dashboard</a>
     </div>
 
