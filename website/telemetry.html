@@ -575,10 +575,19 @@
                                 const indianKeywords = ['india', 'delhi', 'maharashtra', 'karnataka', 'telangana', 'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh', 'west bengal', 'kerala', 'andhra pradesh', 'punjab', 'haryana', 'bihar', 'hyderabad', 'bengaluru', 'mumbai', 'chennai', 'kolkata'];
 
                                 for (let station of combinedStations) {
-                                    if (station.aqi === '-' || station.aqi === null) continue;
+                                    const parts = station.station.name.split(',');
+                                    let cityName = '';
                                     
-                                    let parts = station.station.name.split(',');
-                                    let cityName = parts.length >= 3 ? parts[parts.length - 2].trim() : parts[0].trim();
+                                    // Support "Station, City, Country", "Station, India", and shorter forms.
+                                    if (parts.length >= 3) {
+                                        cityName = parts[parts.length - 2].trim();
+                                    } else if (parts.length === 2) {
+                                        cityName = parts[1].trim().toLowerCase() === 'india'
+                                            ? parts[0].trim()
+                                            : parts[1].trim();
+                                    } else {
+                                        cityName = parts[0].trim();
+                                    }
                                     
                                     if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
                                     if (cityName.includes('-')) cityName = cityName.split('-')[0].trim();
@@ -587,10 +596,12 @@
                                         seenCities.add(cityName);
                                         station.cleanCityName = cityName;
                                         
-                                        let rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
+                                        const rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
+                                        const isOffline = station.aqi === '-' || station.aqi === null;
                                         
-                                        // Priority scoring
-                                        station.priorityScore = indianKeywords.some(kw => rawDataString.includes(kw)) ? 10 : 0;
+                                        // Online India = 10; offline India = 5; online foreign = 0; offline foreign = -5.
+                                        station.priorityScore = indianKeywords.some(keyword => rawDataString.includes(keyword)) ? 10 : 0;
+                                        if (isOffline) station.priorityScore -= 5;
                                         
                                         cleanResults.push(station);
                                     }
@@ -603,9 +614,13 @@
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
                                     
+                                    const isOffline = station.aqi === '-' || station.aqi === null;
+                                    const aqiText = isOffline ? 'Offline' : station.aqi;
+                                    const aqiColor = isOffline ? '#ef4444' : '#94a3b8';
+
                                     item.innerHTML = `
                                         <span style="font-weight: 600; font-size: 0.85rem;">${station.cleanCityName}</span> 
-                                        <span style="color:#94a3b8; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${station.aqi}</span>
+                                        <span style="color:${aqiColor}; font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">AQI: ${aqiText}</span>
                                     `;
                                     
                                     item.addEventListener('click', () => {
