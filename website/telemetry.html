@@ -279,11 +279,43 @@
             background: rgba(255, 255, 255, 0.1) !important;
             border-color: rgba(255, 255, 255, 0.3) !important;
         }
+
+        /* 🗂️ TAB ARCHITECTURE SYSTEM STYLES */
+        .tab-navigation-bar {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            z-index: 12;
+            display: flex !important;
+            gap: 10px !important;
+            width: 95% !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 6px !important;
+            border-radius: 12px !important;
+            transform: translateX(-50%);
+        }
+
+        .tab-link { flex: 1; background: transparent !important; border: none !important; color: #94a3b8 !important; padding: 10px 20px !important; font-weight: 600 !important; font-size: 0.9rem !important; cursor: pointer; border-radius: 8px !important; transition: all 0.3s ease; }
+        .tab-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.03) !important; }
+        .active-tab { background: rgba(255, 255, 255, 0.1) !important; color: #ffffff !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; }
+
+        .tab-content { display: none !important; position: absolute; top: 125px; left: 0; width: 100%; height: calc(100% - 125px); z-index: 10; overflow-y: auto; box-sizing: border-box; }
+        .view-active { display: block !important; }
+        #live-tracking-view { overflow: hidden; }
+        #live-tracking-view .ui-layer { top: 0; height: 100%; }
+
+        .forecast-page-wrapper { width: 95% !important; max-width: 1400px !important; margin: 0 auto !important; padding: 30px !important; box-sizing: border-box; }
+        .forecast-grid-container { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important; gap: 20px !important; }
+        .forecast-page-card { padding: 20px !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 12px !important; }
+        .f-day { font-size: 1.1rem !important; font-weight: 700 !important; color: #f8fafc !important; }
+        .f-icon { font-size: 2rem !important; }
+        .f-temp { font-size: 1rem !important; color: #ffffff !important; font-weight: 600 !important; }
+        .f-metrics { width: 100% !important; border-top: 1px solid rgba(255,255,255,0.08) !important; padding-top: 12px !important; display: flex !important; flex-direction: column !important; gap: 6px !important; font-size: 0.8rem !important; color: #cbd5e1 !important; }
+        .f-metrics div { display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
-
-    <div id="map"></div>
 
     <div class="top-bar header-container">
         <h1 class="logo-title">VayuGuard Advanced Monitor</h1>
@@ -294,40 +326,17 @@
             <div id="searchDropdown"></div>
         </div>
 
-        <button id="advancedMonitorBtn" class="modern-btn glass-inner-card">📊 Advanced Monitor</button>
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
-    <div id="advancedForecastPanel" class="forecast-banner glass-sidebar hidden-panel">
-        <div class="forecast-header">
-            <h3 class="modern-text">7-Day Atmospheric &amp; AQI Projections</h3>
-        </div>
-        <div class="forecast-scroll-container">
-            <div class="forecast-card glass-inner-card">
-                <span class="forecast-day">Mon</span>
-                <div class="forecast-icon">☀️</div>
-                <span class="forecast-temp">31°C / 24°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: 45</span>
-                <div class="forecast-details"><span>🌅 05:42</span><span>🌇 18:38</span><span>💨 14 km/h</span></div>
-            </div>
-            <div class="forecast-card glass-inner-card">
-                <span class="forecast-day">Tue</span>
-                <div class="forecast-icon">⛅</div>
-                <span class="forecast-temp">30°C / 23°C</span>
-                <span class="forecast-aqi-badge aqi-moderate">AQI: 72</span>
-                <div class="forecast-details"><span>🌅 05:43</span><span>🌇 18:37</span><span>💨 12 km/h</span></div>
-            </div>
-            <div class="forecast-card glass-inner-card">
-                <span class="forecast-day">Wed</span>
-                <div class="forecast-icon">🌧️</div>
-                <span class="forecast-temp">28°C / 22°C</span>
-                <span class="forecast-aqi-badge aqi-poor">AQI: 110</span>
-                <div class="forecast-details"><span>🌅 05:43</span><span>🌇 18:37</span><span>💨 18 km/h</span></div>
-            </div>
-        </div>
+    <div class="tab-navigation-bar glass-inner-card">
+        <button class="tab-link active-tab" onclick="switchTab(event, 'live-tracking-view')">🌐 Live Tracking Map</button>
+        <button class="tab-link" onclick="switchTab(event, 'forecast-7-view')">📅 Forecast 7 Projections</button>
     </div>
 
-    <div class="ui-layer">
+    <div id="live-tracking-view" class="tab-content view-active">
+        <div id="map"></div>
+        <div class="ui-layer">
         
         <div class="panel modern-panel glass-sidebar">
             <div>
@@ -398,22 +407,50 @@
                 Map interface rendering real-world geographic data. Pollutant streams tied directly to active air tracking stations.
             </div>
         </div>
+        </div>
+    </div>
+
+    <div id="forecast-7-view" class="tab-content">
+        <div class="forecast-page-wrapper glass-sidebar">
+            <h2 class="modern-text">7-Day Advanced Atmospheric &amp; AQI Analysis</h2>
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 25px;">Predictive telemetry arrays modeled over the next 168 hours.</p>
+            <div class="forecast-grid-container">
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: 45</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:42 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:38 PM</strong></div><div><span>💨 Wind Speed:</span><strong>14 km/h</strong></div></div>
+                </div>
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">30°C / 23°C</span><span class="forecast-aqi-badge aqi-moderate">AQI: 72</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind Speed:</span><strong>12 km/h</strong></div></div>
+                </div>
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 110</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind Speed:</span><strong>18 km/h</strong></div></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        // 🗂️ Structural Tab Switching Function
+        function switchTab(evt, tabId) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) tabContents[i].classList.remove('view-active');
+
+            const tabLinks = document.getElementsByClassName('tab-link');
+            for (let i = 0; i < tabLinks.length; i++) tabLinks[i].classList.remove('active-tab');
+
+            document.getElementById(tabId).classList.add('view-active');
+            evt.currentTarget.classList.add('active-tab');
+
+            if (tabId === 'live-tracking-view' && window.telemetryMap) {
+                setTimeout(() => window.telemetryMap.invalidateSize(), 100);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            // 📊 Advanced Monitor Panel Toggle Logic
-            const advancedBtn = document.getElementById('advancedMonitorBtn');
-            const forecastPanel = document.getElementById('advancedForecastPanel');
-
-            advancedBtn.addEventListener('click', () => {
-                forecastPanel.classList.toggle('show-panel');
-                advancedBtn.style.background = forecastPanel.classList.contains('show-panel')
-                    ? 'rgba(255, 255, 255, 0.15)'
-                    : 'rgba(255, 255, 255, 0.03)';
-            });
-
             const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
+            window.telemetryMap = map;
             // Modern, minimalist dark map layer (Swiggy/Uber style)
             L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
