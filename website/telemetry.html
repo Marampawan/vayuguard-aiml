@@ -326,6 +326,39 @@
         .tab-icon { font-size: 1.1rem; }
         .forecast-page-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; }
         .live-pulse-badge { background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* 🎯 CENTERED WEATHER HEADER FORMAT */
+        .centered-forecast-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            width: 100% !important;
+            margin-bottom: 30px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding-bottom: 20px !important;
+        }
+
+        .user-location-badge-inline {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-top: 12px !important;
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(56, 189, 248, 0.3) !important;
+            padding: 6px 16px !important;
+            border-radius: 30px !important;
+        }
+
+        /* 🧘 INTERNAL TAB TABLE BOX ENHANCEMENTS */
+        .tabbed-jokes-table-wrapper {
+            margin-top: 25px !important;
+            width: 100% !important;
+            background: rgba(15, 23, 42, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 16px !important;
+            box-sizing: border-box !important;
+        }
         /* 📊 THE CLEAN FORECAST CONTAINER OVERHAUL */
         .forecast-grid-container { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; gap: 20px !important; width: 100% !important; padding: 10px 0 !important; box-sizing: border-box !important; }
         .forecast-page-card { background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; padding: 24px 16px !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 14px !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease !important; white-space: normal !important; word-break: break-word !important; }
@@ -467,19 +500,26 @@
         </div>
     </div>
 
+    <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
     <div id="forecast-7-view" class="tab-content">
         <div class="forecast-section-spacer"></div>
+
         <div class="forecast-page-wrapper glass-sidebar">
-            <div class="forecast-page-header">
-                <div>
-                    <h2 class="modern-text" style="margin: 0; color: #f8fafc;">7-Day Advanced Atmospheric &amp; AQI Projections</h2>
+            <!-- 🎯 CENTERED MAIN FORECAST HEADER ELEMENT -->
+            <div class="forecast-page-header centered-forecast-header">
+                <h2 class="modern-text">7-Day Advanced Atmospheric &amp; AQI Projections</h2>
+                <div style="margin-top: 8px;">
                     <span class="live-pulse-badge">Predictive Array Active</span>
                 </div>
-                <div class="user-location-badge">
+                
+                <!-- 📍 Live Location Reference Display Tag -->
+                <div class="user-location-badge-inline">
                     <span class="pin-icon">📍</span>
-                    <span id="user-live-city">Detecting Location...</span>
+                    <span id="user-live-city">DETECTING LOCAL STATION...</span>
                 </div>
             </div>
+            
+            <!-- 📊 The 7 Projections Card Columns Array Grid -->
             <div class="forecast-grid-container">
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: 45</span>
@@ -510,30 +550,62 @@
                     <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind:</span><strong>13 km/h</strong></div></div>
                 </div>
             </div>
+
+            <!-- 🛑 VERTICAL SEPARATOR FOR SPACIOUS BREAK -->
+            <div style="height: 45px; width: 100%;"></div>
+
+            <!-- 🧘 NEAT JOKES TABLE ARRAY TIED DIRECTLY INSIDE FORECAST TAB WRAPPER -->
+            <div class="tabbed-jokes-table-wrapper unique-table-container">
+                <div class="widget-header">
+                    <div class="header-left">
+                        <span class="breathing-dot"></span>
+                        <h3 class="modern-text" style="margin: 0; color: #ffffff; letter-spacing: 0.5px;">🧘 Mindful Break: Quantum Logs &amp; Emojis</h3>
+                    </div>
+                    <span class="widget-pill status-glow">System Frictionless</span>
+                </div>
+                
+                <div class="table-scroll-wrapper">
+                    <table class="modern-jokes-data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">Matrix</th>
+                                <th style="width: 120px;">Category</th>
+                                <th>Atmospheric Telemetry &amp; Quantum Log Chuckles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="joke-center-emoji">⚛️✨</td>
+                                <td class="joke-tag-cell"><span class="j-tag j-blue">QuantumState</span></td>
+                                <td class="joke-phrase-text">"Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!"</td>
+                            </tr>
+                            <tr>
+                                <td class="joke-center-emoji">💨🌀</td>
+                                <td class="joke-tag-cell"><span class="j-tag j-purple">Simulation</span></td>
+                                <td class="joke-phrase-text">"I asked the qBraid simulator for today's wind speed. It told me it's simultaneously a category 5 hurricane and a total calm until I open my window."</td>
+                            </tr>
+                            <tr>
+                                <td class="joke-center-emoji">☀️🧠</td>
+                                <td class="joke-tag-cell"><span class="j-tag j-yellow">Superposition</span></td>
+                                <td class="joke-phrase-text">"Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!"</td>
+                            </tr>
+                            <tr>
+                                <td class="joke-center-emoji">🌡️🛡️</td>
+                                <td class="joke-tag-cell"><span class="j-tag j-green">Hardware</span></td>
+                                <td class="joke-phrase-text">"What’s a quantum computer's favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!"</td>
+                            </tr>
+                            <tr>
+                                <td class="joke-center-emoji">📍🌌</td>
+                                <td class="joke-tag-cell"><span class="j-tag j-cyan">Localization</span></td>
+                                <td class="joke-phrase-text">"My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="global-footer-widget unique-table-container">
-        <div class="widget-header">
-            <div class="header-left">
-                <span class="breathing-dot"></span>
-                <h3 class="modern-text" style="margin: 0; color: #ffffff; letter-spacing: 0.5px;">🧘 Mindful Break: Quantum Logs &amp; Emojis</h3>
-            </div>
-            <span class="widget-pill status-glow">System Frictionless</span>
-        </div>
-        <div class="table-scroll-wrapper">
-            <table class="modern-jokes-data-table">
-                <thead><tr><th style="width: 80px; text-align: center;">Matrix</th><th style="width: 120px;">Category</th><th>Atmospheric Telemetry &amp; Quantum Log Chuckles</th></tr></thead>
-                <tbody>
-                    <tr><td class="joke-center-emoji">⚛️✨</td><td class="joke-tag-cell"><span class="j-tag j-blue">QuantumState</span></td><td class="joke-phrase-text">“Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!”</td></tr>
-                    <tr><td class="joke-center-emoji">💨🌀</td><td class="joke-tag-cell"><span class="j-tag j-purple">Simulation</span></td><td class="joke-phrase-text">“I asked the qBraid simulator for today’s wind speed. It told me it’s simultaneously a category 5 hurricane and a total calm until I open my window.”</td></tr>
-                    <tr><td class="joke-center-emoji">☀️🧠</td><td class="joke-tag-cell"><span class="j-tag j-yellow">Superposition</span></td><td class="joke-phrase-text">“Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!”</td></tr>
-                    <tr><td class="joke-center-emoji">🌡️🛡️</td><td class="joke-tag-cell"><span class="j-tag j-green">Hardware</span></td><td class="joke-phrase-text">“What’s a quantum computer’s favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!”</td></tr>
-                    <tr><td class="joke-center-emoji">📍🌌</td><td class="joke-tag-cell"><span class="j-tag j-cyan">Localization</span></td><td class="joke-phrase-text">“My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!”</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
     <script>
         // 🗂️ Structural Tab Switching Function
