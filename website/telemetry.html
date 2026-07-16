@@ -319,125 +319,79 @@
         #live-tracking-view { overflow: hidden; }
         #live-tracking-view .ui-layer { top: 0; height: 100%; }
 
-        /* 🌌 COMPLETE TAB WRAPPER LOCK: FORCE PERFECT ABSOLUTE CENTERING */
+        /* 🔓 MASTER BLOCK RESET - PREVENTS INTERNAL COLLAPSING */
         #forecast-7-view {
-            display: none; /* Controlled by active tab toggle */
+            display: none; /* Controlled by active tab switch */
             width: 100% !important;
-            max-width: 1400px !important;
-            margin: 0 auto !important; /* Forces total layout symmetry on the screen axis */
-            padding: 40px 24px !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important; /* Centers the tab on the screen */
+            padding: 30px 15px !important;
             box-sizing: border-box !important;
             
-            /* The Layout Fix: Forces all inner children to stay dead-center horizontally */
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important; 
-            justify-content: center !important;
-            gap: 50px !important; /* Perfect spacious layout separation */
+            /* The Fix: Forces it to act as a normal flat page layer */
+            float: none !important;
+            clear: both !important;
+            position: relative !important;
         }
 
         #forecast-7-view.active-tab {
-            display: flex !important;
+            display: block !important; /* Switch from flex to standard block stacking */
         }
 
-        /* 🟦 UPPER FORECAST WRAPPER PANEL */
+        /* 🟦 PART 1: UPPER GRID BOX MODULE */
         .forecast-main-section-part {
+            display: block !important;
             width: 100% !important;
-            max-width: 1200px !important; /* Elegant modern width boundary */
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important; /* Centered content framework */
+            margin: 0 auto 50px auto !important; /* Creates clear vertical space at the bottom */
+            text-align: center !important;
             box-sizing: border-box !important;
         }
 
-        /* 🎯 PRECISELY CENTERED TEXT HEADERS */
-        .centered-forecast-header {
-            text-align: center !important;
-            width: 100% !important;
-            margin-bottom: 35px !important;
-        }
-
-        .centered-forecast-header h2 {
-            font-size: 1.8rem !important;
-            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%) !important; /* Premium metallic gradient text */
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            letter-spacing: 0.5px !important;
-            margin: 0 !important;
-        }
-
-        /* 📊 ULTRA MODERN GRID: FULLY FLAT CONSTRAINED CENTERED DECK */
+        /* 📊 THE AUTOMATIC GRID MATRIX */
         .forecast-grid-container {
             display: grid !important;
-            /* Ensures perfect flex-wrapping cards that dynamically adapt while remaining centered */
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important; 
-            gap: 16px !important; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            gap: 16px !important;
             width: 100% !important;
-            max-width: 1200px !important;
-            justify-content: center !important; /* Aligns grid cells center-wise */
-            align-content: center !important;
+            margin: 25px auto !important;
             box-sizing: border-box !important;
         }
 
-        /* 🃏 PREMIUM DEEP DARK FORECAST CARD RE-DESIGN */
+        /* 🃏 INDEPENDENT DEEP SLATE CARD SETS */
         .forecast-page-card.glass-inner-card {
-            background: rgba(13, 20, 38, 0.85) !important; /* Deep Premium Slate Dark base tone */
-            border: 1px solid rgba(56, 189, 248, 0.15) !important; /* Subtle cyberpunk neon accent */
+            background: rgba(13, 20, 38, 0.95) !important;
+            border: 1px solid rgba(56, 189, 248, 0.2) !important;
             border-radius: 16px !important;
             padding: 20px 14px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            text-align: center !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important;
-        }
-
-        .forecast-page-card.glass-inner-card:hover {
-            transform: translateY(-5px) !important;
-            border-color: rgba(56, 189, 248, 0.4) !important;
-            box-shadow: 0 15px 35px rgba(56, 189, 248, 0.15) !important;
-        }
-
-        /* 🟩 BOTTOM JOKES COMPARTMENT: MATCHING DEEP CYBER WIDGET PANEL */
-        .jokes-standalone-section-part.unique-widget-panel {
-            width: 100% !important;
-            max-width: 1200px !important; /* Perfectly mirrors upper layout parameters */
-            padding: 28px !important;
-            background: rgba(13, 20, 38, 0.85) !important; /* Matching deep dark backdrop */
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.6) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
             box-sizing: border-box !important;
         }
 
-        /* Flat Database Row Configurations */
+        /* 🟩 PART 2: THE STANDALONE JOKES CONTAINER (BREATHING SEPARATED PANEL) */
+        .jokes-standalone-section-part.unique-widget-panel {
+            display: block !important;
+            clear: both !important; /* Explicitly forces this element below the grid */
+            width: 100% !important;
+            margin: 40px auto 20px auto !important;
+            padding: 24px !important;
+            background: rgba(13, 20, 38, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+            box-sizing: border-box !important;
+        }
+
+        .table-flat-wrapper {
+            display: block !important;
+            width: 100% !important;
+            overflow: visible !important;
+        }
+
         .modern-jokes-data-table {
             width: 100% !important;
             border-collapse: separate !important;
-            border-spacing: 0 10px !important; /* Clean vertical spacer index for rows */
+            border-spacing: 0 8px !important;
         }
-
-        .modern-jokes-data-table tbody tr {
-            background: rgba(21, 32, 59, 0.5) !important; /* Deep inner card contrast rows */
-            border-radius: 10px !important;
-            transition: background 0.2s ease !important;
-        }
-
-        .modern-jokes-data-table tbody tr:hover {
-            background: rgba(56, 189, 248, 0.06) !important;
-        }
-
-        .modern-jokes-data-table td {
-            padding: 18px 20px !important;
-            color: #cbd5e1 !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.03) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
-            white-space: normal !important; /* No horizontal line leaking */
-        }
-
-        .modern-jokes-data-table td:first-child { border-left: 1px solid rgba(255, 255, 255, 0.03) !important; border-radius: 12px 0 0 12px !important; }
-        .modern-jokes-data-table td:last-child { border-right: 1px solid rgba(255, 255, 255, 0.03) !important; border-radius: 0 12px 12px 0 !important; }
     </style>
 </head>
 <body>
