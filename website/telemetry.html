@@ -27,7 +27,7 @@
 
         #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
-        .top-bar { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)); z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; box-sizing: border-box; }
+        .top-bar { position: absolute; top: 0; left: 0; z-index: 10; }
         .brand { font-size: 1.3rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         
         .ui-layer { position: absolute; top: 70px; left: 0; width: 100%; height: calc(100% - 70px); z-index: 10; display: flex; justify-content: space-between; padding: 0 20px 20px 20px; box-sizing: border-box; pointer-events: none; }
@@ -356,6 +356,11 @@
                         const d = result.data;
                         const aqi = d.aqi;
                         const iaqi = d.iaqi || {};
+                        const formatTelemetryNumber = (value) => {
+                            const numericValue = parseFloat(value);
+                            return Number.isFinite(numericValue) ? numericValue.toFixed(1) : '--';
+                        };
+                        const cleanAqi = formatTelemetryNumber(aqi);
 
                         // Map Calibration
                         const targetLat = d.city.geo[0];
@@ -378,25 +383,21 @@
                         // Standard Vibrant Pin Drop
                         const customIcon = L.divIcon({
                             className: 'live-pin',
-                            html: `<div style="background-color: ${markerColor}; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.25); font-size: 0.9rem;">${aqi}</div>`,
+                            html: `<div style="background-color: ${markerColor}; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.25); font-size: 0.9rem;">${cleanAqi}</div>`,
                             iconSize: [36, 36], iconAnchor: [18, 18]
                         });
                         L.marker([targetLat, targetLon], {icon: customIcon}).addTo(map)
-                            .bindPopup(`<div style="color:#0f172a; font-weight:700; text-align:center; font-family:sans-serif;">Current AQI: ${aqi}<br><span style="color:${markerColor}; font-size:0.8rem;">Status: ${text}</span></div>`)
+                            .bindPopup(`<div style="color:#0f172a; font-weight:700; text-align:center; font-family:sans-serif;">Current AQI: ${cleanAqi}<br><span style="color:${markerColor}; font-size:0.8rem;">Status: ${text}</span></div>`)
                             .openPopup();
 
                         // HUD UI updates
                         const numEl = document.getElementById('liveAqiNum');
-                        numEl.innerText = aqi; numEl.style.color = markerColor;
+                        numEl.innerText = cleanAqi; numEl.style.color = markerColor;
                         document.getElementById('liveAqiStatus').innerText = text.toUpperCase();
                         document.getElementById('liveAqiStatus').style.color = markerColor;
 
                         // Calculate Pollutant Progress Bars
                         const getV = (key) => (iaqi[key] ? iaqi[key].v : 0);
-                        const formatTelemetryNumber = (value) => {
-                            const numericValue = parseFloat(value);
-                            return Number.isFinite(numericValue) ? numericValue.toFixed(1) : '--';
-                        };
                         const dataArray = [
                             { label: 'PM2.5', val: getV('pm25'), max: 250, color: '#ef4444' },
                             { label: 'PM10', val: getV('pm10'), max: 250, color: '#f59e0b' },
