@@ -27,7 +27,7 @@
 
         #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
-        .top-bar { position: absolute; top: 0; left: 0; z-index: 10; }
+        .top-bar { position: relative; z-index: 20; }
         .brand { font-size: 1.3rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         
         .ui-layer { position: absolute; top: 70px; left: 0; width: 100%; height: calc(100% - 70px); z-index: 10; display: flex; justify-content: space-between; padding: 0 20px 20px 20px; box-sizing: border-box; pointer-events: none; }
@@ -79,38 +79,39 @@
 
         .search-wrapper {
             position: relative !important;
-            flex: 1 !important;
-            max-width: 450px !important;
-            margin: 0 auto !important;
-            background: rgba(15, 23, 42, 0.7) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            margin: 25px auto 10px auto !important;
+            width: 90% !important;
+            max-width: 500px !important;
+            z-index: 9999999 !important;
+            overflow: visible !important;
+            background: rgba(15, 23, 42, 0.85) !important;
+            border: 1px solid rgba(56, 189, 248, 0.4) !important;
             border-radius: 30px !important;
-            padding: 5px 10px !important;
+            padding: 6px 14px !important;
             display: flex !important;
             align-items: center !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
         }
 
         #searchDropdown {
             position: absolute !important;
             width: 100% !important;
-            top: 105% !important;
+            top: 115% !important;
             left: 0 !important;
-            z-index: 9999999 !important;
-            background: rgba(13, 20, 38, 0.95) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(56, 189, 248, 0.4) !important;
+            z-index: 99999999 !important;
+            background: #0f172a !important;
+            border: 2px solid #38bdf8 !important;
             border-radius: 16px !important;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.1) !important;
-            max-height: 350px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9) !important;
+            max-height: 280px !important;
             overflow-y: auto !important;
+            padding: 8px 0 !important;
             display: none;
         }
 
         .header-container, .search-wrapper { overflow: visible !important; }
+        #searchDropdown div, .autocomplete-item { padding: 12px 16px !important; color: #ffffff !important; font-size: 0.95rem !important; font-weight: 600 !important; cursor: pointer !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; background: transparent !important; transition: all 0.2s ease !important; }
+        #searchDropdown div:hover, .autocomplete-item:hover { background: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; padding-left: 22px !important; }
         
         .search-input, #citySearchInput {
             background: rgba(15, 23, 42, 0.7); 
@@ -286,9 +287,7 @@
 
         /* 🗂️ TAB ARCHITECTURE SYSTEM STYLES */
         .tab-navigation-bar {
-            position: absolute;
-            top: 70px;
-            left: 50%;
+            position: relative;
             z-index: 12;
             display: flex !important;
             gap: 10px !important;
@@ -297,14 +296,13 @@
             margin: 0 auto !important;
             padding: 6px !important;
             border-radius: 12px !important;
-            transform: translateX(-50%);
         }
 
         .tab-link { flex: 1; background: transparent !important; border: none !important; color: #94a3b8 !important; padding: 10px 20px !important; font-weight: 600 !important; font-size: 0.9rem !important; cursor: pointer; border-radius: 8px !important; transition: all 0.3s ease; }
         .tab-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.03) !important; }
         .active-tab { background: rgba(255, 255, 255, 0.1) !important; color: #ffffff !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; }
 
-        .tab-content { display: none !important; position: absolute; top: 125px; left: 0; width: 100%; height: calc(100% - 125px); z-index: 10; overflow-y: auto; box-sizing: border-box; }
+        .tab-content { display: none !important; position: absolute; top: 285px; left: 0; width: 100%; height: calc(100% - 285px); z-index: 10; overflow-y: auto; box-sizing: border-box; }
         .view-active { display: block !important; }
         #live-tracking-view { overflow: hidden; }
         #live-tracking-view .ui-layer { top: 0; height: 100%; }
@@ -349,14 +347,13 @@
 
     <div class="top-bar header-container">
         <h1 class="logo-title">VayuGuard Advanced Monitor</h1>
-
-        <div class="search-wrapper">
-            <input type="text" id="citySearchInput" placeholder="Type city (e.g. Bangalore)...">
-            <button id="citySearchBtn">Search</button>
-            <div id="searchDropdown"></div>
-        </div>
-
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
+    </div>
+
+    <div class="search-wrapper">
+        <input type="text" id="citySearchInput" placeholder="Search for a city (e.g., Delhi, Mumbai)..." style="background: transparent; border: none; color: #fff; width: 85%; outline: none; font-size: 1rem;">
+        <button id="citySearchBtn" style="background: transparent; border: none; cursor: pointer; font-size: 1.2rem;">🔍</button>
+        <div id="searchDropdown"></div>
     </div>
 
     <div class="tab-navigation-bar modern-dark-tabs">
@@ -956,7 +953,9 @@
 
                                 cleanResults.slice(0, 8).forEach(station => {
                                     const item = document.createElement('div');
-                                    item.className = 'search-item';
+                                    item.className = 'search-item autocomplete-item';
+                                    item.style.color = '#ffffff';
+                                    item.style.padding = '12px';
                                     
                                     const isOffline = station.aqi === '-' || station.aqi === null;
                                     const aqiText = isOffline ? 'Offline' : station.aqi;
