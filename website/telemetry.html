@@ -468,6 +468,51 @@
             white-space: normal !important; /* Force lines of text to wrap vertically instead of stretching out */
         }
 
+        /* 🛑 STOPS SIDEWAYS SCROLLING COMPLETELY */
+        .forecast-page-wrapper {
+            display: block !important;
+            width: 100% !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+            overflow: visible !important;
+        }
+
+        /* 📊 FLAT WRAPPING FORECAST GRID BUILD */
+        .forecast-grid-container {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
+            gap: 20px !important; 
+            width: 100% !important;
+            margin: 20px auto !important;
+            box-sizing: border-box !important;
+            overflow: visible !important;
+        }
+
+        /* 🧘 JOKES TABLE HOVER DECK AT THE ABSOLUTE DEEP BASE */
+        .tabbed-jokes-table-wrapper.unique-table-container {
+            display: block !important;
+            clear: both !important; /* Forces it cleanly underneath the cards layout */
+            margin: 60px auto 20px auto !important; 
+            width: 100% !important;
+            background: rgba(9, 15, 29, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
+            overflow: visible !important;
+        }
+
+        .modern-jokes-data-table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 8px !important;
+        }
+
+        .modern-jokes-data-table tbody tr {
+            background: rgba(15, 23, 42, 0.6) !important;
+        }
+
         .forecast-page-card { background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; padding: 24px 16px !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 14px !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease !important; white-space: normal !important; word-break: break-word !important; }
         .forecast-page-card:hover { transform: translateY(-5px) !important; border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 35px rgba(56, 189, 248, 0.15) !important; }
         .f-day { font-size: 1rem !important; font-weight: 700 !important; color: #f8fafc !important; letter-spacing: 0.5px; }
@@ -633,9 +678,15 @@
     
     <div class="forecast-page-wrapper">
         
-        <div class="centered-forecast-header" style="text-align: center; margin-bottom: 30px;">
-            <h2 class="modern-text" style="color: #ffffff; margin: 0;">7-Day Advanced Atmospheric & AQI Projections</h2>
-            <span class="live-pulse-badge" style="display:inline-block; margin-top:8px;">Predictive Array Active</span>
+        <div class="centered-forecast-header" style="text-align: center; margin-bottom: 35px; width: 100%;">
+            <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.8rem;">7-Day Advanced Atmospheric & AQI Projections</h2>
+            <div style="margin-top: 8px;">
+                <span class="live-pulse-badge">Predictive Array Active</span>
+            </div>
+            <div class="user-location-badge-inline" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
+                <span class="pin-icon">📍</span>
+                <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">DETECTING LOCAL STATION...</span>
+            </div>
         </div>
 
         <div class="forecast-grid-container">
@@ -649,40 +700,43 @@
         </div>
 
         <div class="tabbed-jokes-table-wrapper unique-table-container">
-            <div class="widget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 class="modern-text" style="margin: 0; color: #ffffff;">🧘 Mindful Break: Fun Logs & Emojis</h3>
-                <span class="widget-pill" style="color: #38bdf8; font-size: 0.75rem;">Flat Mode Active</span>
+            <div class="widget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
+                <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
+                    <span class="breathing-dot"></span>
+                    <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1.1rem; letter-spacing: 0.5px;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+                </div>
+                <span class="widget-pill" style="color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">FLAT MODE</span>
             </div>
             
-            <div class="table-flat-wrapper">
+            <div class="table-flat-wrapper" style="width: 100%; overflow: visible;">
                 <table class="modern-jokes-data-table">
                     <thead>
                         <tr>
-                            <th style="width: 80px; text-align: center; color: #94a3b8;">Mood</th>
-                            <th style="width: 120px; color: #94a3b8;">Category</th>
-                            <th style="color: #94a3b8;">The Daily Chuckle Log</th>
+                            <th style="width: 80px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px;">Mood</th>
+                            <th style="width: 120px; color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px;">Category</th>
+                            <th style="color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px;">The Daily Chuckle Log</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="joke-center-emoji">Tomato🍅</td>
-                            <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
-                            <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🍅</td>
+                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-blue">Classic</span></td>
+                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"Why did the tomato blush? Because it saw the salad dressing!"</td>
                         </tr>
                         <tr>
-                            <td class="joke-center-emoji">Bicycle🚲</td>
-                            <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
-                            <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🚲</td>
+                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-purple">Random</span></td>
+                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
                         </tr>
                         <tr>
-                            <td class="joke-center-emoji">Dino🦖</td>
-                            <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
-                            <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
+                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🦖</td>
+                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-yellow">Dad Joke</span></td>
+                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
                         </tr>
                         <tr>
-                            <td class="joke-center-emoji">Potato🥔</td>
-                            <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
-                            <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
+                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🥔</td>
+                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-green">Food</span></td>
+                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1371,55 +1425,6 @@
     </script>
 
 <!-- Main Tab Panel Ends Here -->
-</div>
-
-<!-- 🛋️ EXTRA SEPARATION BUFFER BLOCK -->
-<div style="clear: both; height: 40px; width: 100%;"></div>
-
-<!-- 🧘 RANDOM EVERYDAY JOKES TABLE BLOCK (ANCHORED SAFELY AT THE ABSOLUTE DOWN-WISE BASE) -->
-<div class="global-footer-widget unique-table-container">
-    <div class="widget-header">
-        <div class="header-left">
-            <span class="breathing-dot"></span>
-            <h3 class="modern-text" style="margin: 0; color: #ffffff;">🧘 Mindful Break: Fun Logs & Emojis</h3>
-        </div>
-        <span class="widget-pill">Full Width Mode</span>
-    </div>
-    
-    <div class="table-flat-wrapper">
-        <table class="modern-jokes-data-table">
-            <thead>
-                <tr>
-                    <th style="width: 80px; text-align: center;">Mood</th>
-                    <th style="width: 120px;">Category</th>
-                    <th>The Daily Chuckle Log</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="joke-center-emoji">🍅</td>
-                    <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
-                    <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
-                </tr>
-                <tr>
-                    <td class="joke-center-emoji">🚲</td>
-                    <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
-                    <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
-                </tr>
-                <tr>
-                    <td class="joke-center-emoji">🦖</td>
-                    <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
-                    <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
-                </tr>
-                <tr>
-                    <td class="joke-center-emoji">🥔</td>
-                    <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
-                    <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
 
 </body>
 </html>
