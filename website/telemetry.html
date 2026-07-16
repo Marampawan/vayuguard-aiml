@@ -404,6 +404,72 @@
         .joke-center-emoji { font-size: 1.4rem !important; text-align: center; }
         .joke-phrase-text { font-style: italic; line-height: 1.5; }
         .status-glow { box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
+
+        /* 🧘 NEAT BASE PAGE TABLE WIDGET */
+        .unique-table-container {
+            display: block !important;
+            clear: both !important;
+            margin: 60px auto 30px auto !important; /* Forces it to sit neatly downward at the absolute page base */
+            width: 95% !important;
+            max-width: 1400px !important;
+            padding: 24px !important;
+            background: rgba(9, 15, 29, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
+            flex-shrink: 0 !important;
+        }
+
+        .table-scroll-wrapper {
+            width: 100% !important;
+            overflow-x: auto !important;
+            scroll-behavior: smooth !important;
+        }
+
+        .modern-jokes-data-table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 8px !important;
+        }
+
+        .modern-jokes-data-table th {
+            padding: 14px 18px !important;
+            color: #94a3b8 !important;
+            font-size: 0.85rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .modern-jokes-data-table tbody tr {
+            background: rgba(15, 23, 42, 0.6) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .modern-jokes-data-table tbody tr:hover {
+            background: rgba(56, 189, 248, 0.08) !important;
+        }
+
+        .modern-jokes-data-table td {
+            padding: 16px 18px !important;
+            color: #e2e8f0 !important;
+            font-size: 0.92rem !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .modern-jokes-data-table td:first-child { border-radius: 12px 0 0 12px !important; }
+        .modern-jokes-data-table td:last-child { border-radius: 0 12px 12px 0 !important; }
+
+        .j-tag { padding: 4px 10px !important; border-radius: 6px !important; font-size: 0.75rem !important; font-weight: 700 !important; display: inline-block; }
+        .j-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .j-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .j-yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .j-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .j-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+        .joke-center-emoji { font-size: 1.4rem !important; text-align: center; }
+        .joke-phrase-text { font-style: normal !important; line-weight: 500; }
     </style>
 </head>
 <body>
@@ -1278,6 +1344,57 @@
             setTimeout(checkUrlRoute, 150);
         }); // Close window.onload or DOMContentLoaded if you have one open
     </script>
+
+<!-- 🧘 GLOBAL FOOTER WIDGET: PURE CHILL & RANDOM JOKES TABLE -->
+<div class="global-footer-widget unique-table-container">
+    <div class="widget-header">
+        <div class="header-left">
+            <span class="breathing-dot"></span>
+            <h3 class="modern-text" style="margin: 0; color: #ffffff; letter-spacing: 0.5px;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+        </div>
+        <span class="widget-pill status-glow">Scroll Active</span>
+    </div>
+    
+    <!-- 🎛️ FRICTION-FREE SCROLLABLE TABLE ARRAY -->
+    <div class="table-scroll-wrapper">
+        <table class="modern-jokes-data-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px; text-align: center;">Mood</th>
+                    <th style="width: 120px;">Category</th>
+                    <th>The Daily Chuckle Log</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="joke-center-emoji">🍅</td>
+                    <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
+                    <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                </tr>
+                <tr>
+                    <td class="joke-center-emoji">🚲</td>
+                    <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
+                    <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                </tr>
+                <tr>
+                    <td class="joke-center-emoji">🦖</td>
+                    <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
+                    <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
+                </tr>
+                <tr>
+                    <td class="joke-center-emoji">🥔</td>
+                    <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
+                    <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
+                </tr>
+                <tr>
+                    <td class="joke-center-emoji">🎽</td>
+                    <td class="joke-tag-cell"><span class="j-tag j-cyan">Short</span></td>
+                    <td class="joke-phrase-text">"What do you call a belt with a watch on it? A waist of time!"</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 </body>
 </html>
