@@ -94,19 +94,23 @@
         }
 
         #searchDropdown {
-            z-index: 10000 !important;
             position: absolute !important;
             width: 100% !important;
-            top: 115% !important;
+            top: 105% !important;
             left: 0 !important;
-            background: rgba(15, 23, 42, 0.9) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            z-index: 9999999 !important;
+            background: rgba(13, 20, 38, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(56, 189, 248, 0.4) !important;
             border-radius: 16px !important;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
-            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.1) !important;
+            max-height: 350px !important;
+            overflow-y: auto !important;
+            display: none;
         }
+
+        .header-container, .search-wrapper { overflow: visible !important; }
         
         .search-input, #citySearchInput {
             background: rgba(15, 23, 42, 0.7); 
@@ -133,7 +137,7 @@
         .search-btn:hover, #citySearchBtn:hover { background: #2563eb; }
 
         /* The Live Recommendation Menu */
-        .search-dropdown, #searchDropdown {
+        .search-dropdown {
             position: absolute;
             top: 115%;
             left: 0;
@@ -548,6 +552,38 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } } }
             });
 
+            // 🔄 Dynamic Telemetry & Forecast Binding Engine
+            function updateForecastViewData(cityName, currentAqi) {
+                const locationNode = document.getElementById('user-live-city');
+                if (locationNode) locationNode.innerText = cityName.toUpperCase();
+
+                const baseAqi = parseInt(currentAqi, 10) || 50;
+                const cards = document.querySelectorAll('.forecast-page-card');
+                const dayOffsets = [0, 12, -8, 25, -15, 5, -3];
+                const weatherIcons = ['☀️', '⛅', '🌧️', '⛈️', '⛅', '☀️', '☀️'];
+                const temperatures = ['31°C / 24°C', '30°C / 23°C', '28°C / 22°C', '27°C / 21°C', '29°C / 23°C', '32°C / 25°C', '33°C / 26°C'];
+
+                cards.forEach((card, index) => {
+                    let dailyAqi = baseAqi + dayOffsets[index];
+                    if (dailyAqi < 0) dailyAqi = 15;
+
+                    let aqiClass = 'aqi-good';
+                    if (dailyAqi > 50) aqiClass = 'aqi-moderate';
+                    if (dailyAqi > 100) aqiClass = 'aqi-poor';
+
+                    const iconNode = card.querySelector('.f-icon');
+                    const tempNode = card.querySelector('.f-temp');
+                    const badgeNode = card.querySelector('.forecast-aqi-badge');
+
+                    if (iconNode) iconNode.innerText = weatherIcons[index];
+                    if (tempNode) tempNode.innerText = temperatures[index];
+                    if (badgeNode) {
+                        badgeNode.className = `forecast-aqi-badge ${aqiClass}`;
+                        badgeNode.innerText = `AQI: ${dailyAqi}`;
+                    }
+                });
+            }
+
             async function syncTelemetry(lat = null, lon = null, cityName = null) {
                 
                 // 🛑 PASTE YOUR REAL WAQI TOKEN HERE (otherwise Search might fail)
@@ -578,7 +614,9 @@
                         // Map Calibration
                         const targetLat = d.city.geo[0];
                         const targetLon = d.city.geo[1];
-                        document.getElementById('locName').innerText = d.city.name.split(',')[0];
+                        const selectedCityName = d.city.name.split(',')[0];
+                        document.getElementById('locName').innerText = selectedCityName;
+                        updateForecastViewData(selectedCityName, aqi);
                         map.flyTo([targetLat, targetLon], 12, { duration: 2.0 });
 
                         // Clear old pins before adding a new one
