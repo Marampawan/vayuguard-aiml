@@ -55,33 +55,51 @@
 
         .chart-box { width: 100%; height: 160px; position: relative; }
 
-        /* Search Bar & Autocomplete Enhancements */
-        .search-container { display: flex; gap: 8px; margin-left: auto; margin-right: 20px; pointer-events: auto; }
-        /* Force search bar to dead-center and give it a glass style. */
+        /* Header search and autocomplete */
+        .header-container {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 15px 30px !important;
+            background: rgba(15, 23, 42, 0.45) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            width: 100% !important;
+            height: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        .logo-title {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+        }
+
         .search-wrapper {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            z-index: 99999 !important;
-            width: 90% !important;
+            position: relative !important;
+            flex: 1 !important;
             max-width: 450px !important;
+            margin: 0 auto !important;
             background: rgba(15, 23, 42, 0.7) !important;
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid rgba(255, 255, 255, 0.15) !important;
             border-radius: 30px !important;
             padding: 5px 10px !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+            display: flex !important;
+            align-items: center !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
         }
 
         #searchDropdown {
             z-index: 10000 !important;
-            position: absolute;
-            width: 100%;
+            position: absolute !important;
+            width: 100% !important;
             top: 115% !important;
-            left: 0;
-            background: rgba(15, 23, 42, 0.85) !important;
+            left: 0 !important;
+            background: rgba(15, 23, 42, 0.9) !important;
             backdrop-filter: blur(16px) !important;
             -webkit-backdrop-filter: blur(16px) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -90,7 +108,7 @@
             overflow: hidden;
         }
         
-        .search-input { 
+        .search-input, #citySearchInput {
             background: rgba(15, 23, 42, 0.7); 
             border: 2px solid var(--border-glass); 
             color: #ffffff; /* Bright white text for clarity */
@@ -104,18 +122,18 @@
         }
         
         /* 🎨 Bright glowing border when you click to type */
-        .search-input:focus { 
+        .search-input:focus, #citySearchInput:focus {
             background: rgba(15, 23, 42, 0.95); 
             border-color: #3b82f6; 
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
         }
-        .search-input::placeholder { color: #64748b; }
+        .search-input::placeholder, #citySearchInput::placeholder { color: #64748b; }
         
-        .search-btn { background: var(--accent-blue); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .search-btn:hover { background: #2563eb; }
+        .search-btn, #citySearchBtn { background: var(--accent-blue); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .search-btn:hover, #citySearchBtn:hover { background: #2563eb; }
 
         /* The Live Recommendation Menu */
-        .search-dropdown {
+        .search-dropdown, #searchDropdown {
             position: absolute;
             top: 115%;
             left: 0;
@@ -145,8 +163,8 @@
         .search-item:last-child { border-bottom: none; }
         .search-item:hover { background: rgba(59, 130, 246, 0.2); color: #ffffff; }
         
-        .btn-back { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
-        .btn-back:hover { background: rgba(255,255,255,0.2); }
+        .btn-back, .dashboard-btn { background: rgba(255,255,255,0.1); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: 0.2s; pointer-events: auto; }
+        .btn-back:hover, .dashboard-btn:hover { background: rgba(255,255,255,0.2); }
 
         /* Modern glass treatment for dashboard panels and search controls. */
         .modern-panel {
@@ -191,18 +209,18 @@
 </head>
 <body>
 
-    <div class="search-wrapper">
-        <input type="text" id="citySearchInput" class="search-input" placeholder="Type city (e.g. Delhi)..." autocomplete="off">
-        <button id="citySearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
-        <div id="searchDropdown" class="search-dropdown"></div>
-    </div>
-
     <div id="map"></div>
 
-    <div class="top-bar">
-        <a href="index.html" class="brand"><i class="fas fa-shield-virus" style="color: var(--accent-blue);"></i> VayuGuard Advanced Monitor</a>
-        
-        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Return to Main Dashboard</a>
+    <div class="top-bar header-container">
+        <h1 class="logo-title">VayuGuard Advanced Monitor</h1>
+
+        <div class="search-wrapper">
+            <input type="text" id="citySearchInput" placeholder="Type city (e.g. Bangalore)...">
+            <button id="citySearchBtn">Search</button>
+            <div id="searchDropdown"></div>
+        </div>
+
+        <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
     <div class="ui-layer">
