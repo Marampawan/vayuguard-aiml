@@ -222,67 +222,65 @@
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
     <div id="forecast-7-view" class="tab-content">
     
-        <div class="forecast-main-section-part">
-            <div class="centered-forecast-header">
-                <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.6rem;">7-Day Advanced Atmospheric & AQI Projections</h2>
+        <!-- 🟦 PART 1: THE FORECAST GRID SYSTEM -->
+        <div class="forecast-main-section-part" style="display: block; width: 100%; margin: 0 auto 40px auto; text-align: center;">
+            <!-- Centered Header Row -->
+            <div class="centered-forecast-header" style="text-align: center; margin-bottom: 30px; width: 100%;">
+                <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.7rem; letter-spacing: 0.5px;">7-Day Advanced Atmospheric & AQI Projections</h2>
                 <div style="margin-top: 8px;">
                     <span class="live-pulse-badge" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">Predictive Array Active</span>
                 </div>
-                <div class="user-location-badge-inline" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(13, 20, 38, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
-                    <span>📍</span>
-                    <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">LOADING TELEMETRY DATA...</span>
-                </div>
             </div>
 
-            <div class="forecast-grid-container">
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card glass-inner-card"><span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <!-- Flat Wrapping Card Grid Matrix -->
+            <div class="forecast-grid-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; width: 100%; margin: 20px auto; justify-content: center;">
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Monday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Tuesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">⛅</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Wednesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">🌧️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Thursday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">⛈️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Friday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">⛅</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Saturday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
+                <div class="forecast-page-card glass-inner-card" style="background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 20px 14px;"><span class="f-day" style="color:#94a3b8; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Sunday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff;">--°C</span></div>
             </div>
         </div>
 
-        <div class="jokes-standalone-section-part unique-widget-panel">
-            <div class="widget-header-row">
-                <div class="header-identity-left">
-                    <span class="breathing-ui-dot"></span>
-                    <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+        <!-- 🛑 EXPLICIT STRUCTURAL DIVISION GAP -->
+        <div style="clear: both; height: 50px; width: 100%;"></div>
+
+        <!-- 🟩 PART 2: THE STANDALONE JOKES COMPARTMENT (BREATHING SYSTEM WIDGET STYLE) -->
+        <div class="jokes-standalone-section-part unique-widget-panel" style="display: block; clear: both; width: 100%; max-width: 1200px; margin: 20px auto; padding: 24px; background: rgba(13, 20, 38, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 25px 55px rgba(0, 0, 0, 0.6);">
+            <div class="widget-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
+                <div class="header-identity-left" style="display: flex; align-items: center; gap: 12px;">
+                    <span class="breathing-ui-dot" style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                    <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1.1rem; letter-spacing: 0.5px;">🧘 Mindful Break: Fun Logs & Emojis</h3>
                 </div>
-                <span class="widget-status-badge">Flat Mode Active</span>
+                <span class="widget-status-badge" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">Flat Mode</span>
             </div>
             
             <div class="table-flat-wrapper" style="width: 100%; overflow: visible;">
-                <table class="modern-jokes-data-table">
+                <table class="modern-jokes-data-table" style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
                     <thead>
-                        <tr>
-                            <th style="width: 80px; text-align: center; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; padding-bottom: 10px;">Mood</th>
-                            <th style="width: 120px; color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; padding-bottom: 10px;">Category</th>
-                            <th style="color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; padding-bottom: 10px; text-align: left;">Everyday Joke Narrative</th>
+                        <tr style="color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; text-align: left;">
+                            <th style="width: 80px; text-align: center; padding-bottom: 12px;">Mood</th>
+                            <th style="width: 130px; padding-bottom: 12px;">Category</th>
+                            <th style="padding-bottom: 12px;">Everyday Joke Narrative</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.3rem;">🍅</td>
-                            <td><span class="j-tag j-blue" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">Classic</span></td>
-                            <td>"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                    <tbody style="color: #cbd5e1; font-size: 0.9rem;">
+                        <tr style="background: rgba(21, 32, 59, 0.5);">
+                            <td style="text-align: center; font-size: 1.4rem; padding: 14px 16px;">🍅</td>
+                            <td style="padding: 14px 16px;"><span class="j-tag j-blue" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-weight: 700;">Classic</span></td>
+                            <td style="line-height: 1.5; padding: 14px 16px; white-space: normal;">"Why did the tomato blush? Because it saw the salad dressing!"</td>
                         </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.3rem;">🚲</td>
-                            <td><span class="j-tag j-purple" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">Random</span></td>
-                            <td>"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                        <tr style="background: rgba(21, 32, 59, 0.5);">
+                            <td style="text-align: center; font-size: 1.4rem; padding: 14px 16px;">🚲</td>
+                            <td style="padding: 14px 16px;"><span class="j-tag j-purple" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 4px 10px; border-radius: 6px; font-weight: 700;">Random</span></td>
+                            <td style="line-height: 1.5; padding: 14px 16px; white-space: normal;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
                         </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.3rem;">🦖</td>
-                            <td><span class="j-tag j-yellow" style="background: rgba(234, 179, 8, 0.15); color: #facc15; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">Dad Joke</span></td>
-                            <td>"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.3rem;">🥔</td>
-                            <td><span class="j-tag j-green" style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;">Food</span></td>
-                            <td>"Why did the potato cross the road? Because it saw a fork ahead!"</td>
+                        <tr style="background: rgba(21, 32, 59, 0.5);">
+                            <td style="text-align: center; font-size: 1.4rem; padding: 14px 16px;">🦖</td>
+                            <td style="padding: 14px 16px;"><span class="j-tag j-yellow" style="background: rgba(234, 179, 8, 0.15); color: #facc15; padding: 4px 10px; border-radius: 6px; font-weight: 700;">Dad Joke</span></td>
+                            <td style="line-height: 1.5; padding: 14px 16px; white-space: normal;">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
                         </tr>
                     </tbody>
                 </table>
