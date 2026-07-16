@@ -549,7 +549,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } } }
             });
 
-            // 🔄 Dynamic Telemetry & Forecast Binding Engine
+            // 🔄 Dynamic Real-Time Quantum Predictive Integration Engine
             function updateForecastViewData(cityName, currentAqi) {
                 const locationNode = document.getElementById('user-live-city');
                 if (locationNode) locationNode.innerText = cityName.toUpperCase();
@@ -564,6 +564,7 @@
                     aqi_offsets: [0, 12, -8, 25, -15, 5, -3]
                 };
 
+                // Step 1: Fetch the live quantum distributions from the qBraid output file.
                 fetch('quantum_data.json')
                     .then(res => {
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -572,20 +573,47 @@
                     .then(payload => {
                         if (Array.isArray(payload?.temp_offsets) && payload.temp_offsets.length >= cards.length) {
                             dataMap = payload;
-                            console.log(`Telemetry streams successfully synchronized with: ${payload.engine}`);
+                            console.log('Quantum predictive frameworks synced with front-end rendering engines.');
                         }
-                        applyCalculations();
+                        fetchLiveWeatherData();
                     })
                     .catch(err => {
-                        console.warn('Using baseline configuration matrices:', err);
-                        applyCalculations();
+                        console.warn('Using baseline quantum matrix fallbacks:', err);
+                        fetchLiveWeatherData();
                     });
 
-                function applyCalculations() {
+                // Step 2: Fetch live base weather metrics for the forecast baseline.
+                function fetchLiveWeatherData() {
+                    const openWeatherUrl = 'https://api.open-meteo.com/v1/forecast?latitude=12.97&longitude=77.59&current=temperature_2m,wind_speed_10m&daily=sunrise,sunset&timezone=auto';
+
+                    fetch(openWeatherUrl)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                            return res.json();
+                        })
+                        .then(realTimeData => {
+                            const liveTemp = realTimeData.current.temperature_2m;
+                            const liveWind = realTimeData.current.wind_speed_10m;
+                            let baseSunriseMin = 42;
+                            let baseSunsetMin = 38;
+
+                            if (realTimeData.daily?.sunrise?.[0]) {
+                                baseSunriseMin = new Date(realTimeData.daily.sunrise[0]).getMinutes();
+                            }
+                            if (realTimeData.daily?.sunset?.[0]) {
+                                baseSunsetMin = new Date(realTimeData.daily.sunset[0]).getMinutes();
+                            }
+                            applyCalculations(liveTemp, liveWind, baseSunriseMin, baseSunsetMin);
+                        })
+                        .catch(err => {
+                            console.error('Error fetching live city base weather, falling back to constants:', err);
+                            applyCalculations(31, 14, 42, 38);
+                        });
+                }
+
+                // Step 3: Compute forecast values from real weather metrics and quantum offsets.
+                function applyCalculations(baseTemp, baseWind, baseSunriseMin, baseSunsetMin) {
                     const weatherIcons = ['☀️', '⛅', '🌧️', '⛈️', '⛅', '☀️', '☀️'];
-                    const baseTempHigh = 31;
-                    const baseTempLow = 24;
-                    const baseWind = 14;
 
                     cards.forEach((card, index) => {
                         let dailyAqi = baseAqi + dataMap.aqi_offsets[index];
@@ -595,12 +623,12 @@
                         if (dailyAqi > 50) aqiClass = 'aqi-moderate';
                         if (dailyAqi > 100) aqiClass = 'aqi-poor';
 
-                        const highTemp = Math.round(baseTempHigh + dataMap.temp_offsets[index]);
-                        const lowTemp = Math.round(baseTempLow + (dataMap.temp_offsets[index] * 0.7));
+                        const highTemp = Math.round(baseTemp + dataMap.temp_offsets[index]);
+                        const lowTemp = Math.round((baseTemp - 7) + (dataMap.temp_offsets[index] * 0.7));
                         let currentWind = Math.round(baseWind + dataMap.wind_offsets[index]);
-                        if (currentWind < 2) currentWind = 4;
-                        const sunRiseMin = 42 + dataMap.sunrise_shift_mins[index];
-                        const sunSetMin = 38 + dataMap.sunset_shift_mins[index];
+                        if (currentWind < 2) currentWind = 3;
+                        const sunRiseMin = baseSunriseMin + dataMap.sunrise_shift_mins[index];
+                        const sunSetMin = baseSunsetMin + dataMap.sunset_shift_mins[index];
 
                         const iconNode = card.querySelector('.f-icon');
                         const tempNode = card.querySelector('.f-temp');
@@ -615,8 +643,8 @@
                         }
                         if (metricsWrapper) {
                             metricsWrapper.innerHTML = `
-                                <div><span>🌅 Sunrise:</span> <strong>05:${String(sunRiseMin).padStart(2, '0')} AM</strong></div>
-                                <div><span>🌇 Sunset:</span> <strong>06:${String(sunSetMin).padStart(2, '0')} PM</strong></div>
+                                <div><span>🌅 Sunrise:</span> <strong>05:${String(Math.abs(sunRiseMin) % 60).padStart(2, '0')} AM</strong></div>
+                                <div><span>🌇 Sunset:</span> <strong>06:${String(Math.abs(sunSetMin) % 60).padStart(2, '0')} PM</strong></div>
                                 <div><span>💨 Wind Speed:</span> <strong>${currentWind} km/h</strong></div>
                             `;
                         }
