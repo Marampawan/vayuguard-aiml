@@ -577,6 +577,118 @@
         .joke-center-emoji { font-size: 1.4rem !important; text-align: center; }
         .joke-phrase-text { font-style: normal !important; line-height: 1.5 !important; }
         .status-glow { box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
+
+        /* 📦 PARTITION LAYOUT SWITCH FOR THE TAB CONTAINER */
+        #forecast-7-view {
+            width: 100% !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+            overflow: visible !important; /* Disables inside scrollbars completely */
+        }
+
+        /* 🟦 PART 1 DESIGN: THE UPPER FORECAST GRID MODULE */
+        .forecast-main-section-part {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            margin-bottom: 20px !important;
+        }
+
+        .centered-forecast-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            width: 100% !important;
+            margin-bottom: 30px !important;
+        }
+
+        .forecast-grid-container {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
+            gap: 20px !important; 
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 🛑 STRUCTURAL GAP FACTOR */
+        .section-divider-break {
+            clear: both !important;
+            height: 50px !important; /* Solid physical gap between Part 1 and Part 2 */
+            width: 100% !important;
+        }
+
+        /* 🟩 PART 2 DESIGN: THE WIDGET PANEL FOOTER (MAIN PAGE WIDGET REPLICA) */
+        .jokes-standalone-section-part.unique-widget-panel {
+            display: block !important;
+            clear: both !important;
+            width: 100% !important;
+            padding: 24px !important;
+            background: rgba(9, 15, 29, 0.95) !important; /* Premium dark interface */
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
+            box-sizing: border-box !important;
+        }
+
+        .widget-header-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 20px !important;
+            width: 100% !important;
+        }
+
+        .header-identity-left {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+
+        /* 🟢 Breathing Dot Sync Symbol */
+        .breathing-ui-dot {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+            animation: widget-breathe 3s infinite ease-in-out;
+        }
+
+        @keyframes widget-breathe {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+            50% { transform: scale(1.2); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .widget-status-badge {
+            background: rgba(56, 189, 248, 0.1) !important;
+            border: 1px solid rgba(56, 189, 248, 0.3) !important;
+            color: #38bdf8 !important;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .table-flat-wrapper {
+            width: 100% !important;
+            overflow: visible !important;
+        }
+
+        .modern-jokes-data-table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 8px !important;
+        }
+
+        .modern-jokes-data-table td {
+            white-space: normal !important; /* Forces normal word wrapping bounds */
+            padding: 16px 18px !important;
+        }
     </style>
 </head>
 <body>
@@ -676,16 +788,15 @@
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
     <div id="forecast-7-view" class="tab-content">
     
-    <div class="forecast-page-wrapper">
-        
-        <div class="centered-forecast-header" style="text-align: center; margin-bottom: 35px; width: 100%;">
-            <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.8rem;">7-Day Advanced Atmospheric & AQI Projections</h2>
+    <div class="forecast-main-section-part">
+        <div class="centered-forecast-header">
+            <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.7rem; letter-spacing: 0.5px;">7-Day Advanced Atmospheric & AQI Projections</h2>
             <div style="margin-top: 8px;">
                 <span class="live-pulse-badge">Predictive Array Active</span>
             </div>
-            <div class="user-location-badge-inline" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
+            <div class="user-location-badge-inline">
                 <span class="pin-icon">📍</span>
-                <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">DETECTING LOCAL STATION...</span>
+                <span id="user-live-city">DETECTING LOCAL STATION...</span>
             </div>
         </div>
 
@@ -698,52 +809,54 @@
             <div class="forecast-page-card glass-inner-card"><span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
             <div class="forecast-page-card glass-inner-card"><span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
         </div>
-
-        <div class="tabbed-jokes-table-wrapper unique-table-container">
-            <div class="widget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
-                <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
-                    <span class="breathing-dot"></span>
-                    <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1.1rem; letter-spacing: 0.5px;">🧘 Mindful Break: Fun Logs & Emojis</h3>
-                </div>
-                <span class="widget-pill" style="color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">FLAT MODE</span>
-            </div>
-            
-            <div class="table-flat-wrapper" style="width: 100%; overflow: visible;">
-                <table class="modern-jokes-data-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 80px; text-align: center; color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px;">Mood</th>
-                            <th style="width: 120px; color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px;">Category</th>
-                            <th style="color: #94a3b8; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 12px;">The Daily Chuckle Log</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🍅</td>
-                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-blue">Classic</span></td>
-                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"Why did the tomato blush? Because it saw the salad dressing!"</td>
-                        </tr>
-                        <tr>
-                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🚲</td>
-                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-purple">Random</span></td>
-                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
-                        </tr>
-                        <tr>
-                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🦖</td>
-                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-yellow">Dad Joke</span></td>
-                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
-                        </tr>
-                        <tr>
-                            <td class="joke-center-emoji" style="font-size: 1.4rem; text-align: center; padding: 16px 12px;">🥔</td>
-                            <td class="joke-tag-cell" style="padding: 16px 12px;"><span class="j-tag j-green">Food</span></td>
-                            <td class="joke-phrase-text" style="color: #e2e8f0; font-size: 0.92rem; white-space: normal !important; padding: 16px 12px;">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
+
+    <div class="section-divider-break"></div>
+
+    <div class="jokes-standalone-section-part unique-widget-panel">
+        <div class="widget-header-row">
+            <div class="header-identity-left">
+                <span class="breathing-ui-dot"></span>
+                <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1.1rem;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+            </div>
+            <span class="widget-status-badge">Flat Mode Engine</span>
+        </div>
+        
+        <div class="table-flat-wrapper">
+            <table class="modern-jokes-data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px; text-align: center;">Mood</th>
+                        <th style="width: 120px;">Category</th>
+                        <th>The Daily Chuckle Log</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="joke-center-emoji">🍅</td>
+                        <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
+                        <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                    </tr>
+                    <tr>
+                        <td class="joke-center-emoji">🚲</td>
+                        <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
+                        <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                    </tr>
+                    <tr>
+                        <td class="joke-center-emoji">🦖</td>
+                        <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
+                        <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
+                    </tr>
+                    <tr>
+                        <td class="joke-center-emoji">🥔</td>
+                        <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
+                        <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 
