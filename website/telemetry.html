@@ -330,6 +330,15 @@
         .f-day { font-size: 1rem !important; font-weight: 700 !important; color: #f8fafc !important; letter-spacing: 0.5px; }
         .f-icon { font-size: 2.2rem !important; margin: 5px 0 !important; }
         .f-temp { font-size: 0.95rem !important; font-weight: 600 !important; color: #ffffff !important; }
+
+        /* 🛑 STRUCTURAL VERTICAL SEPARATION */
+        .forecast-section-spacer { height: 40px !important; width: 100%; display: block; }
+
+        /* 📍 MODERN TOP-RIGHT USER LOCATION BADGE */
+        .user-location-badge { display: flex !important; align-items: center !important; gap: 8px !important; background: rgba(15, 23, 42, 0.6) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; padding: 8px 16px !important; border-radius: 30px !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important; }
+        #user-live-city { color: #38bdf8 !important; font-weight: 700 !important; font-size: 0.85rem !important; letter-spacing: 0.5px; text-transform: uppercase; }
+        .pin-icon { font-size: 1rem; animation: pin-bounce 2s infinite ease-in-out; }
+        @keyframes pin-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
     </style>
 </head>
 <body>
@@ -428,39 +437,46 @@
     </div>
 
     <div id="forecast-7-view" class="tab-content">
+        <div class="forecast-section-spacer"></div>
         <div class="forecast-page-wrapper glass-sidebar">
             <div class="forecast-page-header">
-                <h2 class="modern-text">7-Day Advanced Atmospheric &amp; AQI Projections</h2>
-                <span class="live-pulse-badge">Predictive Array Active</span>
+                <div>
+                    <h2 class="modern-text" style="margin: 0; color: #f8fafc;">7-Day Advanced Atmospheric &amp; AQI Projections</h2>
+                    <span class="live-pulse-badge">Predictive Array Active</span>
+                </div>
+                <div class="user-location-badge">
+                    <span class="pin-icon">📍</span>
+                    <span id="user-live-city">Detecting Location...</span>
+                </div>
             </div>
             <div class="forecast-grid-container">
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: 45</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:42 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:38 PM</strong></div><div><span>💨 Wind Speed:</span><strong>14 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:42 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:38 PM</strong></div><div><span>💨 Wind:</span><strong>14 km/h</strong></div></div>
                 </div>
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">30°C / 23°C</span><span class="forecast-aqi-badge aqi-moderate">AQI: 72</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind Speed:</span><strong>12 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind:</span><strong>12 km/h</strong></div></div>
                 </div>
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 110</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind Speed:</span><strong>18 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind:</span><strong>18 km/h</strong></div></div>
                 </div>
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">27°C / 21°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 135</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:36 PM</strong></div><div><span>💨 Wind Speed:</span><strong>22 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:36 PM</strong></div><div><span>💨 Wind:</span><strong>22 km/h</strong></div></div>
                 </div>
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">29°C / 23°C</span><span class="forecast-aqi-badge aqi-moderate">AQI: 88</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind Speed:</span><strong>11 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind:</span><strong>11 km/h</strong></div></div>
                 </div>
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: 50</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:45 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind Speed:</span><strong>9 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:45 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind:</span><strong>9 km/h</strong></div></div>
                 </div>
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: 42</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind Speed:</span><strong>13 km/h</strong></div></div>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind:</span><strong>13 km/h</strong></div></div>
                 </div>
             </div>
         </div>
@@ -484,6 +500,26 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // 🌐 Live User Location Network Lookup Engine
+            function fetchUserLiveLocation() {
+                const cityLabel = document.getElementById('user-live-city');
+                fetch('https://ipapi.co/json/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.city) {
+                            cityLabel.innerText = `${data.city}, ${data.region}`.toUpperCase();
+                        } else {
+                            cityLabel.innerText = 'LOCATION DETECTED';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Location lookup error:', err);
+                        cityLabel.innerText = 'MONITOR ACTIVE';
+                    });
+            }
+
+            fetchUserLiveLocation();
+
             const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
             window.telemetryMap = map;
             // Modern, minimalist dark map layer (Swiggy/Uber style)
