@@ -197,6 +197,16 @@
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
             border-radius: 24px !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+            margin-top: 20px !important;
+            max-height: calc(100vh - 120px) !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        .glass-sidebar * {
+            max-width: 100% !important;
+            white-space: normal !important;
         }
 
         .glass-inner-card {
@@ -383,6 +393,10 @@
 
                         // Calculate Pollutant Progress Bars
                         const getV = (key) => (iaqi[key] ? iaqi[key].v : 0);
+                        const formatTelemetryNumber = (value) => {
+                            const numericValue = parseFloat(value);
+                            return Number.isFinite(numericValue) ? numericValue.toFixed(1) : '--';
+                        };
                         const dataArray = [
                             { label: 'PM2.5', val: getV('pm25'), max: 250, color: '#ef4444' },
                             { label: 'PM10', val: getV('pm10'), max: 250, color: '#f59e0b' },
@@ -398,7 +412,7 @@
                             <div class="metric-row">
                                 <div class="metric-label">${m.label}</div>
                                 <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${percentage}%; background: ${m.color};"></div></div>
-                                <div class="metric-val">${m.val || '--'}</div>
+                                <div class="metric-val">${formatTelemetryNumber(m.val)}</div>
                             </div>`;
                         });
                         document.getElementById('pollutantBars').innerHTML = barsHTML;
@@ -432,10 +446,10 @@
                         gasChart.update();
 
                         // Refresh Atmospheric Conditions Box
-                        if(iaqi.t) document.getElementById('val-temp').innerText = iaqi.t.v + "°C";
-                        if(iaqi.w) document.getElementById('val-wind').innerText = iaqi.w.v + " m/s";
-                        if(iaqi.h) document.getElementById('val-humidity').innerText = iaqi.h.v + "%";
-                        if(iaqi.p) document.getElementById('val-pressure').innerText = iaqi.p.v;
+                        if (iaqi.t) document.getElementById('val-temp').innerText = formatTelemetryNumber(iaqi.t.v) + "°C";
+                        if (iaqi.w) document.getElementById('val-wind').innerText = formatTelemetryNumber(iaqi.w.v) + " m/s";
+                        if (iaqi.h) document.getElementById('val-humidity').innerText = formatTelemetryNumber(iaqi.h.v) + "%";
+                        if (iaqi.p) document.getElementById('val-pressure').innerText = formatTelemetryNumber(iaqi.p.v);
                     } else {
                         alert("Could not find that location. Try a different city name!");
                     }
