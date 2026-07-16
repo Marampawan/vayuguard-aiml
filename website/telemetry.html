@@ -395,15 +395,12 @@
         .pin-icon { font-size: 1rem; animation: pin-bounce 2s infinite ease-in-out; }
         @keyframes pin-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-        /* 🧘 THE STRUCTURAL ISOLATED BOTTOM JOKES TABLE */
+        /* 🧘 NEAT SOLID FOOTER TABLE CONTAINER (NO SCROLL) */
         .global-footer-widget.unique-table-container {
             display: block !important; 
             position: relative !important;
-            clear: both !important; /* Prevents overlap from preceding grids */
-            
-            /* Pushes it all the way down below everything else cleanly */
-            margin: 80px auto 40px auto !important; 
-            
+            clear: both !important; /* Prevents overlap */
+            margin: 60px auto 40px auto !important; /* Spacious gap at the bottom */
             width: 95% !important;
             max-width: 1400px !important;
             padding: 24px !important;
@@ -411,69 +408,19 @@
             border: 1px solid rgba(255, 255, 255, 0.12) !important;
             border-radius: 24px !important;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8) !important;
-            
-            /* Structural Safety Parameters */
-            z-index: 10 !important;
-            flex-shrink: 0 !important;
-        }
-        .widget-header { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 20px !important; width: 100% !important; }
-        .header-left { display: flex !important; align-items: center !important; gap: 12px !important; }
-        .breathing-dot { width: 12px; height: 12px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse-breathe 3s infinite ease-in-out; }
-        @keyframes pulse-breathe { 0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 50% { transform: scale(1.2); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); } 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-        .widget-pill { background: rgba(56, 189, 248, 0.1) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; color: #38bdf8 !important; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        /* 🧘 MODERN QUANTUM TABLE CONTAINER OVERHAUL */
-        .unique-table-container { display: block !important; clear: both !important; margin: 60px auto 40px auto !important; width: 95% !important; max-width: 1400px !important; padding: 24px !important; background: rgba(9, 15, 29, 0.9) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 24px !important; box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important; overflow: hidden !important; }
-        /* 🏎️ FRICTION-FREE HORIZONTAL TABLE TRACK CONTAINER */
-        .table-scroll-wrapper {
-            width: 100% !important;
-            overflow-x: auto !important; /* Allows scrolling naturally without breaking alignment */
-            white-space: nowrap !important; /* Keeps table elements unified horizontally */
-            margin-top: 15px !important;
-        }
-        .table-scroll-wrapper::-webkit-scrollbar { height: 6px; }
-        .table-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.25); border-radius: 10px; }
-        .modern-jokes-data-table { width: 100% !important; border-collapse: separate !important; border-spacing: 0 8px !important; text-align: left; }
-        .modern-jokes-data-table th { padding: 14px 18px !important; color: #94a3b8 !important; font-size: 0.85rem !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; }
-        .modern-jokes-data-table tbody tr { background: rgba(15, 23, 42, 0.6) !important; transition: all 0.2s ease !important; }
-        .modern-jokes-data-table tbody tr:hover { background: rgba(56, 189, 248, 0.08) !important; transform: scale(1.002); }
-        .modern-jokes-data-table td { padding: 16px 18px !important; color: #e2e8f0 !important; font-size: 0.92rem !important; border-top: 1px solid rgba(255, 255, 255, 0.05) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; }
-        .modern-jokes-data-table td:first-child { border-left: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 12px 0 0 12px !important; }
-        .modern-jokes-data-table td:last-child { border-right: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 0 12px 12px 0 !important; }
-        .j-tag { padding: 4px 10px !important; border-radius: 6px !important; font-size: 0.75rem !important; font-weight: 700 !important; display: inline-block; }
-        .j-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
-        .j-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-        .j-yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
-        .j-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .j-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
-        .joke-center-emoji { font-size: 1.4rem !important; text-align: center; }
-        .joke-phrase-text { font-style: italic; line-height: 1.5; }
-        .status-glow { box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
-
-        /* 🧘 NEAT BASE PAGE TABLE WIDGET */
-        .unique-table-container {
-            display: block !important;
-            clear: both !important;
-            margin: 60px auto 30px auto !important; /* Forces it to sit neatly downward at the absolute page base */
-            width: 95% !important;
-            max-width: 1400px !important;
-            padding: 24px !important;
-            background: rgba(9, 15, 29, 0.9) !important;
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
-            flex-shrink: 0 !important;
         }
 
-        .table-scroll-wrapper {
+        /* Clean full-width container without scroll constraints */
+        .table-flat-wrapper {
             width: 100% !important;
-            overflow-x: auto !important;
-            scroll-behavior: smooth !important;
+            overflow: visible !important; /* No more scrolling */
         }
 
         .modern-jokes-data-table {
             width: 100% !important;
             border-collapse: separate !important;
             border-spacing: 0 8px !important;
+            table-layout: auto !important; /* Let column sizes adjust naturally */
         }
 
         .modern-jokes-data-table th {
@@ -500,6 +447,7 @@
             font-size: 0.92rem !important;
             border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            white-space: normal !important; /* Allows text to wrap perfectly onto new lines */
         }
 
         .modern-jokes-data-table td:first-child { border-radius: 12px 0 0 12px !important; }
@@ -513,7 +461,8 @@
         .j-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
 
         .joke-center-emoji { font-size: 1.4rem !important; text-align: center; }
-        .joke-phrase-text { font-style: normal !important; line-weight: 500; }
+        .joke-phrase-text { font-style: normal !important; line-height: 1.5 !important; }
+        .status-glow { box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
     </style>
 </head>
 <body>
@@ -674,7 +623,7 @@
                     <span class="widget-pill status-glow">System Frictionless</span>
                 </div>
                 
-                <div class="table-scroll-wrapper">
+                <div class="table-flat-wrapper">
                     <table class="modern-jokes-data-table">
                         <thead>
                             <tr>
@@ -1402,10 +1351,10 @@
             <span class="breathing-dot"></span>
             <h3 class="modern-text" style="margin: 0; color: #ffffff;">🧘 Mindful Break: Fun Logs & Emojis</h3>
         </div>
-        <span class="widget-pill status-glow">Scroll Enabled</span>
+        <span class="widget-pill">Full Width Mode</span>
     </div>
     
-    <div class="table-scroll-wrapper">
+    <div class="table-flat-wrapper">
         <table class="modern-jokes-data-table">
             <thead>
                 <tr>
