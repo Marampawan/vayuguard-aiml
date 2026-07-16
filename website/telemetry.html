@@ -951,6 +951,24 @@
                 if(e.key === 'Enter') searchBtn.click();
             });
             */
+
+            // 🗺️ URL Query Parameter Router
+            function checkUrlRoute() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const viewParam = urlParams.get('view');
+
+                if (viewParam === 'forecast') {
+                    const fakeEvent = {
+                        currentTarget: document.querySelector("button[onclick*='forecast-7-view']")
+                    };
+
+                    if (fakeEvent.currentTarget) {
+                        switchTab(fakeEvent, 'forecast-7-view');
+                    }
+                }
+            }
+
+            setTimeout(checkUrlRoute, 150);
         }); // Close window.onload or DOMContentLoaded if you have one open
     </script>
 </body>

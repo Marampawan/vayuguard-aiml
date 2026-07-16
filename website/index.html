@@ -19,6 +19,9 @@
         .family-details-box { margin-top: 1.5rem; padding: 1.2rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.95rem; color: #334155; transition: all 0.3s ease; }
         .city-selector-dropdown { width: 100%; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; border-radius: 50px; font-family: inherit; font-size: 0.9rem; font-weight: 600; color: var(--dark); background-color: var(--light); cursor: pointer; outline: none; transition: border-color 0.2s; }
         .city-selector-dropdown:focus { border-color: var(--primary); }
+        .hero-buttons { flex-wrap: wrap; }
+        .hero-buttons .modern-card { flex: 1 0 100%; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 16px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18); }
+        .hero-buttons .modern-card:hover { transform: translateY(-4px) !important; }
 
         /* === 🩺 ULTRA-MODERN DOCTOR CARDS === */
         .ultra-doc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-top: 3rem; }
@@ -141,6 +144,11 @@
             <div class="hero-buttons">
                 <a href="#forecast" class="btn btn-primary">Check AQI Forecast</a>
                 <a href="helpdesk.html" class="btn btn-ghost">Contact Support</a>
+                <a href="telemetry.html?view=forecast" class="modern-card glass-inner-card" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; padding: 20px; text-align: center; transition: transform 0.2s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">📅</div>
+                    <h3 class="modern-text" style="color: #ffffff; margin: 0 0 5px 0; font-size: 1.1rem;">Forecast 7 Projections</h3>
+                    <p style="color: #94a3b8; font-size: 0.8rem; margin: 0;">Directly jump to the 7-day atmospheric &amp; predictive AQI models.</p>
+                </a>
             </div>
         </div>
         <div class="hero-visual">
