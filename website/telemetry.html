@@ -325,26 +325,29 @@
             gap: 40px !important; /* Huge physical gap between forecast and jokes */
         }
 
-        /* 🎯 CENTER THE 7-DAY CONTAINER & WRAPPER ELEMENTS */
+        /* 🛑 STAGE 1: FULL FLAT RESET FOR 7-DAY CONTAINER */
         .forecast-page-wrapper {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important; /* Centers grid content horizontally */
-            justify-content: center !important;
+            display: block !important; /* Disables any weird layout behaviors */
+            float: none !important;
             width: 100% !important;
             max-width: 1400px !important;
-            margin: 0 auto !important; /* Centers container on wide screens */
+            margin: 0 auto !important;
             padding: 20px !important;
             box-sizing: border-box !important;
+            overflow: visible !important; /* REMOVES SCROLLING PLUGINS COMPLETELY */
         }
 
+        /* 📊 STAGE 2: 7-DAY CARDS GRID AXIS */
         .forecast-grid-container {
             display: grid !important;
+            /* Auto-fits all 7 cards cleanly on large screens, wraps them vertically on mobile */
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
-            gap: 20px !important; 
+            gap: 24px !important; /* Clear physical breathing room around cards */
             width: 100% !important;
-            margin: 20px auto !important; /* Keeps the grid perfectly aligned in the middle */
+            margin: 30px auto !important;
+            float: none !important;
             box-sizing: border-box !important;
+            overflow: visible !important; /* STOPS CARD CLIPPING SCROLLBARS */
         }
         .forecast-page-card { padding: 20px !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 12px !important; }
         .f-day { font-size: 1.1rem !important; font-weight: 700 !important; color: #f8fafc !important; }
@@ -386,17 +389,15 @@
             border-radius: 30px !important;
         }
 
-        /* 📊 7-DAY FORECAST GRID (NO SCROLLING - WRAPS TO NEXT LINE IF SMALL) */
-        .forecast-grid-container {
-            display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
-            gap: 20px !important; 
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* 🧘 NEAT FLAT BOTTOM JOKES PANEL (NO SCROLLBARS AT ALL) */
-        .tabbed-jokes-table-wrapper {
+        /* 🧘 STAGE 3: ISOLATED DOWN-WISE JOKES TABLE */
+        .tabbed-jokes-table-wrapper.unique-table-container {
+            display: block !important;
+            clear: both !important; /* FORCES IT BELOW THE 7-DAY CARDS ENTIRELY */
+            float: none !important;
+            
+            /* Heavy physical separation pushing it neatly to the base of the page */
+            margin: 60px auto 20px auto !important; 
+            
             width: 100% !important;
             padding: 24px !important;
             background: rgba(9, 15, 29, 0.95) !important;
@@ -404,7 +405,30 @@
             border-radius: 20px !important;
             box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
             box-sizing: border-box !important;
-            overflow: visible !important; /* Completely blocks scrollbars */
+            overflow: visible !important; /* NO SCROLLBARS ALLOWED HERE */
+        }
+
+        /* 🎛️ STAGE 4: CLEAN NATURAL TEXT WRAPPING ELEMENT */
+        .table-flat-wrapper {
+            display: block !important;
+            width: 100% !important;
+            overflow: visible !important;
+        }
+
+        .modern-jokes-data-table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 8px !important;
+            table-layout: auto !important;
+        }
+
+        .modern-jokes-data-table td {
+            padding: 16px 18px !important;
+            color: #e2e8f0 !important;
+            font-size: 0.92rem !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            white-space: normal !important; /* Wraps the everyday joke sentences cleanly */
         }
         .forecast-page-card { background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; padding: 24px 16px !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 14px !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease !important; white-space: normal !important; word-break: break-word !important; }
         .forecast-page-card:hover { transform: translateY(-5px) !important; border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 35px rgba(56, 189, 248, 0.15) !important; }
@@ -569,105 +593,56 @@
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
     <div id="forecast-7-view" class="tab-content">
     
-        <div class="centered-forecast-header">
+    <div class="forecast-page-wrapper">
+        
+        <div class="centered-forecast-header" style="text-align: center; margin-bottom: 30px;">
             <h2 class="modern-text" style="color: #ffffff; margin: 0;">7-Day Advanced Atmospheric & AQI Projections</h2>
-            <div style="margin-top: 8px;">
-                <span class="live-pulse-badge">Predictive Array Active</span>
-            </div>
-            <div class="user-location-badge-inline" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
-                <span class="pin-icon">📍</span>
-                <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">DETECTING LOCAL STATION...</span>
-            </div>
+            <span class="live-pulse-badge" style="display:inline-block; margin-top:8px;">Predictive Array Active</span>
         </div>
 
         <div class="forecast-grid-container">
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Monday</span>
-                <div class="f-icon">☀️</div>
-                <span class="f-temp">31°C / 24°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Tuesday</span>
-                <div class="f-icon">⛅</div>
-                <span class="f-temp">30°C / 23°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Wednesday</span>
-                <div class="f-icon">🌧️</div>
-                <span class="f-temp">28°C / 22°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Thursday</span>
-                <div class="f-icon">⛈️</div>
-                <span class="f-temp">27°C / 21°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Friday</span>
-                <div class="f-icon">⛅</div>
-                <span class="f-temp">29°C / 23°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Saturday</span>
-                <div class="f-icon">☀️</div>
-                <span class="f-temp">32°C / 25°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
-            <div class="forecast-page-card glass-inner-card">
-                <span class="f-day">Sunday</span>
-                <div class="f-icon">☀️</div>
-                <span class="f-temp">33°C / 26°C</span>
-                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
-                <div class="f-metrics"></div>
-            </div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">30°C / 23°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">27°C / 21°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">29°C / 23°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
         </div>
 
         <div class="tabbed-jokes-table-wrapper unique-table-container">
             <div class="widget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
-                    <span class="breathing-dot"></span>
-                    <h3 class="modern-text" style="margin: 0; color: #ffffff;">🧘 Mindful Break: Fun Logs & Emojis</h3>
-                </div>
-                <span class="widget-pill" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem;">Flat Table</span>
+                <h3 class="modern-text" style="margin: 0; color: #ffffff;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+                <span class="widget-pill" style="color: #38bdf8; font-size: 0.75rem;">Flat Mode Active</span>
             </div>
             
             <div class="table-flat-wrapper">
                 <table class="modern-jokes-data-table">
                     <thead>
                         <tr>
-                            <th style="width: 80px; text-align: center; color: #94a3b8; font-size: 0.85rem;">Mood</th>
-                            <th style="width: 120px; color: #94a3b8; font-size: 0.85rem;">Category</th>
-                            <th style="color: #94a3b8; font-size: 0.85rem;">The Daily Chuckle Log</th>
+                            <th style="width: 80px; text-align: center; color: #94a3b8;">Mood</th>
+                            <th style="width: 120px; color: #94a3b8;">Category</th>
+                            <th style="color: #94a3b8;">The Daily Chuckle Log</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="joke-center-emoji">🍅</td>
+                            <td class="joke-center-emoji">Tomato🍅</td>
                             <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
                             <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
                         </tr>
                         <tr>
-                            <td class="joke-center-emoji">🚲</td>
+                            <td class="joke-center-emoji">Bicycle🚲</td>
                             <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
                             <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
                         </tr>
                         <tr>
-                            <td class="joke-center-emoji">🦖</td>
+                            <td class="joke-center-emoji">Dino🦖</td>
                             <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
                             <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
                         </tr>
                         <tr>
-                            <td class="joke-center-emoji">🥔</td>
+                            <td class="joke-center-emoji">Potato🥔</td>
                             <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
                             <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
                         </tr>
@@ -675,7 +650,9 @@
                 </table>
             </div>
         </div>
+
     </div>
+</div>
 
 
     <script>
