@@ -557,28 +557,48 @@
                 const baseAqi = parseInt(currentAqi, 10) || 50;
                 const cards = document.querySelectorAll('.forecast-page-card');
                 const dayOffsets = [0, 12, -8, 25, -15, 5, -3];
-                const weatherIcons = ['☀️', '⛅', '🌧️', '⛈️', '⛅', '☀️', '☀️'];
-                const temperatures = ['31°C / 24°C', '30°C / 23°C', '28°C / 22°C', '27°C / 21°C', '29°C / 23°C', '32°C / 25°C', '33°C / 26°C'];
 
-                cards.forEach((card, index) => {
-                    let dailyAqi = baseAqi + dayOffsets[index];
-                    if (dailyAqi < 0) dailyAqi = 15;
+                fetch('quantum_data.json')
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        return res.json();
+                    })
+                    .then(quantumPayload => {
+                        if (Array.isArray(quantumPayload?.forecast_offsets) && quantumPayload.forecast_offsets.length >= cards.length) {
+                            dayOffsets.splice(0, dayOffsets.length, ...quantumPayload.forecast_offsets);
+                            console.log(`Successfully integrated predictive layers via ${quantumPayload.engine}`);
+                        }
+                        applyCalculations();
+                    })
+                    .catch(err => {
+                        console.warn('Falling back to simulated matrix array calculations:', err);
+                        applyCalculations();
+                    });
 
-                    let aqiClass = 'aqi-good';
-                    if (dailyAqi > 50) aqiClass = 'aqi-moderate';
-                    if (dailyAqi > 100) aqiClass = 'aqi-poor';
+                function applyCalculations() {
+                    const weatherIcons = ['☀️', '⛅', '🌧️', '⛈️', '⛅', '☀️', '☀️'];
+                    const temperatures = ['31°C / 24°C', '30°C / 23°C', '28°C / 22°C', '27°C / 21°C', '29°C / 23°C', '32°C / 25°C', '33°C / 26°C'];
 
-                    const iconNode = card.querySelector('.f-icon');
-                    const tempNode = card.querySelector('.f-temp');
-                    const badgeNode = card.querySelector('.forecast-aqi-badge');
+                    cards.forEach((card, index) => {
+                        let dailyAqi = baseAqi + dayOffsets[index];
+                        if (dailyAqi < 0) dailyAqi = 15;
 
-                    if (iconNode) iconNode.innerText = weatherIcons[index];
-                    if (tempNode) tempNode.innerText = temperatures[index];
-                    if (badgeNode) {
-                        badgeNode.className = `forecast-aqi-badge ${aqiClass}`;
-                        badgeNode.innerText = `AQI: ${dailyAqi}`;
-                    }
-                });
+                        let aqiClass = 'aqi-good';
+                        if (dailyAqi > 50) aqiClass = 'aqi-moderate';
+                        if (dailyAqi > 100) aqiClass = 'aqi-poor';
+
+                        const iconNode = card.querySelector('.f-icon');
+                        const tempNode = card.querySelector('.f-temp');
+                        const badgeNode = card.querySelector('.forecast-aqi-badge');
+
+                        if (iconNode) iconNode.innerText = weatherIcons[index];
+                        if (tempNode) tempNode.innerText = temperatures[index];
+                        if (badgeNode) {
+                            badgeNode.className = `forecast-aqi-badge ${aqiClass}`;
+                            badgeNode.innerText = `AQI: ${dailyAqi}`;
+                        }
+                    });
+                }
             }
 
             async function syncTelemetry(lat = null, lon = null, cityName = null) {
