@@ -1,0 +1,5 @@
+.env
+website/quantum_data.json
+website/quantum_data.pkl
+__pycache__/
+*.py[cod]

@@ -5,12 +5,14 @@ import os
 import pickle
 from pathlib import Path
 
+from dotenv import load_dotenv
 from qbraid import QbraidProvider
 from qiskit import QuantumCircuit
 
 
 OUTPUT_DIR = Path(__file__).resolve().parent / "website"
 SIMULATOR_ID = "qbraid:qbraid:sim:qir-sv"
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 
 def execute_quantum_forecast() -> None:
