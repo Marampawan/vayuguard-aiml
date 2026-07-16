@@ -313,6 +313,18 @@
         .f-temp { font-size: 1rem !important; color: #ffffff !important; font-weight: 600 !important; }
         .f-metrics { width: 100% !important; border-top: 1px solid rgba(255,255,255,0.08) !important; padding-top: 12px !important; display: flex !important; flex-direction: column !important; gap: 6px !important; font-size: 0.8rem !important; color: #cbd5e1 !important; }
         .f-metrics div { display: flex; justify-content: space-between; }
+
+        /* 🎨 HIGH-CONTRAST MODERN DARK NAV BAR */
+        .modern-dark-tabs { display: flex !important; gap: 12px !important; width: 95% !important; max-width: 1400px !important; margin: 25px auto 15px auto !important; padding: 8px !important; background: rgba(9, 15, 29, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-radius: 50px !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.1) !important; }
+        .tab-link { flex: 1; background: transparent !important; border: none !important; color: #94a3b8 !important; padding: 12px 24px !important; font-weight: 700 !important; font-size: 0.95rem !important; cursor: pointer; border-radius: 40px !important; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.05) !important; }
+        .active-tab { background: rgba(255, 255, 255, 0.12) !important; color: #38bdf8 !important; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25) !important; border: 1px solid rgba(56, 189, 248, 0.4) !important; }
+        .tab-icon { font-size: 1.1rem; }
+        .forecast-page-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; }
+        .live-pulse-badge { background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .forecast-grid-container { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; gap: 20px !important; }
+        .forecast-page-card { padding: 24px 16px !important; border-radius: 20px !important; background: rgba(15, 23, 42, 0.6) !important; border: 1px solid rgba(255,255,255,0.06) !important; display: flex !important; flex-direction: column !important; align-items: center !important; gap: 12px !important; box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important; transition: transform 0.2s ease, border-color 0.2s ease !important; }
+        .forecast-page-card:hover { transform: translateY(-4px) !important; border-color: rgba(56, 189, 248, 0.3) !important; }
     </style>
 </head>
 <body>
@@ -329,9 +341,9 @@
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
-    <div class="tab-navigation-bar glass-inner-card">
-        <button class="tab-link active-tab" onclick="switchTab(event, 'live-tracking-view')">🌐 Live Tracking Map</button>
-        <button class="tab-link" onclick="switchTab(event, 'forecast-7-view')">📅 Forecast 7 Projections</button>
+    <div class="tab-navigation-bar modern-dark-tabs">
+        <button class="tab-link active-tab" onclick="switchTab(event, 'live-tracking-view')"><span class="tab-icon">🌐</span> Live Tracking Map</button>
+        <button class="tab-link" onclick="switchTab(event, 'forecast-7-view')"><span class="tab-icon">📅</span> Forecast 7 Projections</button>
     </div>
 
     <div id="live-tracking-view" class="tab-content view-active">
@@ -412,8 +424,10 @@
 
     <div id="forecast-7-view" class="tab-content">
         <div class="forecast-page-wrapper glass-sidebar">
-            <h2 class="modern-text">7-Day Advanced Atmospheric &amp; AQI Analysis</h2>
-            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 25px;">Predictive telemetry arrays modeled over the next 168 hours.</p>
+            <div class="forecast-page-header">
+                <h2 class="modern-text">7-Day Advanced Atmospheric &amp; AQI Projections</h2>
+                <span class="live-pulse-badge">Predictive Array Active</span>
+            </div>
             <div class="forecast-grid-container">
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: 45</span>
@@ -426,6 +440,22 @@
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 110</span>
                     <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind Speed:</span><strong>18 km/h</strong></div></div>
+                </div>
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">27°C / 21°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 135</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:36 PM</strong></div><div><span>💨 Wind Speed:</span><strong>22 km/h</strong></div></div>
+                </div>
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">29°C / 23°C</span><span class="forecast-aqi-badge aqi-moderate">AQI: 88</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind Speed:</span><strong>11 km/h</strong></div></div>
+                </div>
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: 50</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:45 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind Speed:</span><strong>9 km/h</strong></div></div>
+                </div>
+                <div class="forecast-page-card glass-inner-card">
+                    <span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: 42</span>
+                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind Speed:</span><strong>13 km/h</strong></div></div>
                 </div>
             </div>
         </div>
