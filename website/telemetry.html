@@ -350,13 +350,27 @@
         .breathing-dot { width: 12px; height: 12px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse-breathe 3s infinite ease-in-out; }
         @keyframes pulse-breathe { 0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 50% { transform: scale(1.2); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); } 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .widget-pill { background: rgba(56, 189, 248, 0.1) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; color: #38bdf8 !important; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .friction-free-scroll-track { display: flex !important; flex-direction: row !important; gap: 20px !important; overflow-x: auto !important; white-space: nowrap !important; padding: 10px 5px !important; width: 100% !important; box-sizing: border-box !important; }
-        .friction-free-scroll-track::-webkit-scrollbar { height: 5px; }
-        .friction-free-scroll-track::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
-        .modern-joke-card { flex: 0 0 320px !important; display: inline-flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 12px !important; padding: 24px 20px !important; background: rgba(15, 23, 42, 0.9) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 20px !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; white-space: normal !important; }
-        .modern-joke-card:hover { transform: translateY(-4px) scale(1.01) !important; border-color: rgba(56, 189, 248, 0.3) !important; }
-        .card-art { font-size: 2rem !important; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
-        .joke-narrative { color: #e2e8f0 !important; font-size: 0.9rem !important; line-height: 1.5 !important; margin: 0 !important; }
+        /* 🧘 MODERN QUANTUM TABLE CONTAINER OVERHAUL */
+        .unique-table-container { display: block !important; clear: both !important; margin: 60px auto 40px auto !important; width: 95% !important; max-width: 1400px !important; padding: 24px !important; background: rgba(9, 15, 29, 0.9) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; border-radius: 24px !important; box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important; overflow: hidden !important; }
+        .table-scroll-wrapper { width: 100% !important; overflow-x: auto !important; scroll-behavior: smooth !important; -webkit-overflow-scrolling: touch !important; }
+        .table-scroll-wrapper::-webkit-scrollbar { height: 6px; }
+        .table-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.25); border-radius: 10px; }
+        .modern-jokes-data-table { width: 100% !important; border-collapse: separate !important; border-spacing: 0 8px !important; text-align: left; }
+        .modern-jokes-data-table th { padding: 14px 18px !important; color: #94a3b8 !important; font-size: 0.85rem !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; }
+        .modern-jokes-data-table tbody tr { background: rgba(15, 23, 42, 0.6) !important; transition: all 0.2s ease !important; }
+        .modern-jokes-data-table tbody tr:hover { background: rgba(56, 189, 248, 0.08) !important; transform: scale(1.002); }
+        .modern-jokes-data-table td { padding: 16px 18px !important; color: #e2e8f0 !important; font-size: 0.92rem !important; border-top: 1px solid rgba(255, 255, 255, 0.05) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; }
+        .modern-jokes-data-table td:first-child { border-left: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 12px 0 0 12px !important; }
+        .modern-jokes-data-table td:last-child { border-right: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 0 12px 12px 0 !important; }
+        .j-tag { padding: 4px 10px !important; border-radius: 6px !important; font-size: 0.75rem !important; font-weight: 700 !important; display: inline-block; }
+        .j-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .j-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .j-yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .j-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .j-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+        .joke-center-emoji { font-size: 1.4rem !important; text-align: center; }
+        .joke-phrase-text { font-style: italic; line-height: 1.5; }
+        .status-glow { box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
     </style>
 </head>
 <body>
@@ -499,19 +513,25 @@
         </div>
     </div>
 
-    <div class="global-footer-widget glass-sidebar">
+    <div class="global-footer-widget unique-table-container">
         <div class="widget-header">
             <div class="header-left">
                 <span class="breathing-dot"></span>
-                <h3 class="modern-text" style="margin: 0; color: #fff;">🧘 Mindful Break: Quantum Log &amp; Chuckles</h3>
+                <h3 class="modern-text" style="margin: 0; color: #ffffff; letter-spacing: 0.5px;">🧘 Mindful Break: Quantum Logs &amp; Emojis</h3>
             </div>
-            <span class="widget-pill">Frictionless Scroll Enabled</span>
+            <span class="widget-pill status-glow">System Frictionless</span>
         </div>
-        <div class="friction-free-scroll-track">
-            <div class="modern-joke-card glass-inner-card"><div class="card-art">⚛️✨</div><p class="joke-narrative">“Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!”</p></div>
-            <div class="modern-joke-card glass-inner-card"><div class="card-art">💨🌀</div><p class="joke-narrative">“I asked the qBraid simulator for today’s wind speed. It told me it’s simultaneously a category 5 hurricane and a total calm until I open my window.”</p></div>
-            <div class="modern-joke-card glass-inner-card"><div class="card-art">☀️🧠</div><p class="joke-narrative">“Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!”</p></div>
-            <div class="modern-joke-card glass-inner-card"><div class="card-art">🌡️🛡️</div><p class="joke-narrative">“What’s a quantum computer’s favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!”</p></div>
+        <div class="table-scroll-wrapper">
+            <table class="modern-jokes-data-table">
+                <thead><tr><th style="width: 80px; text-align: center;">Matrix</th><th style="width: 120px;">Category</th><th>Atmospheric Telemetry &amp; Quantum Log Chuckles</th></tr></thead>
+                <tbody>
+                    <tr><td class="joke-center-emoji">⚛️✨</td><td class="joke-tag-cell"><span class="j-tag j-blue">QuantumState</span></td><td class="joke-phrase-text">“Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!”</td></tr>
+                    <tr><td class="joke-center-emoji">💨🌀</td><td class="joke-tag-cell"><span class="j-tag j-purple">Simulation</span></td><td class="joke-phrase-text">“I asked the qBraid simulator for today’s wind speed. It told me it’s simultaneously a category 5 hurricane and a total calm until I open my window.”</td></tr>
+                    <tr><td class="joke-center-emoji">☀️🧠</td><td class="joke-tag-cell"><span class="j-tag j-yellow">Superposition</span></td><td class="joke-phrase-text">“Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!”</td></tr>
+                    <tr><td class="joke-center-emoji">🌡️🛡️</td><td class="joke-tag-cell"><span class="j-tag j-green">Hardware</span></td><td class="joke-phrase-text">“What’s a quantum computer’s favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!”</td></tr>
+                    <tr><td class="joke-center-emoji">📍🌌</td><td class="joke-tag-cell"><span class="j-tag j-cyan">Localization</span></td><td class="joke-phrase-text">“My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!”</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
