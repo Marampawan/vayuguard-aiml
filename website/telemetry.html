@@ -342,6 +342,18 @@
         #user-live-city { color: #38bdf8 !important; font-weight: 700 !important; font-size: 0.85rem !important; letter-spacing: 0.5px; text-transform: uppercase; }
         .pin-icon { font-size: 1rem; animation: pin-bounce 2s infinite ease-in-out; }
         @keyframes pin-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+        /* 🎭 SMOOTH SCROLLING JOKES VIEW ENGINE */
+        .jokes-section-wrapper { margin-top: 40px !important; padding: 20px !important; background: rgba(9, 15, 29, 0.6) !important; border: 1px dashed rgba(56, 189, 248, 0.3) !important; border-radius: 20px !important; }
+        .jokes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px !important; }
+        .joke-pulse-badge { background: rgba(234, 179, 8, 0.15) !important; border: 1px solid #eab308 !important; color: #facc15 !important; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .jokes-scroll-row { display: flex !important; gap: 16px !important; overflow-x: auto !important; padding: 10px 5px !important; box-sizing: border-box !important; scrollbar-width: thin; scrollbar-color: rgba(56, 189, 248, 0.4) transparent; }
+        .jokes-scroll-row::-webkit-scrollbar { height: 6px; }
+        .jokes-scroll-row::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 10px; }
+        .joke-card { flex: 0 0 280px !important; padding: 18px !important; border-radius: 16px !important; background: rgba(15, 23, 42, 0.8) !important; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important; transition: transform 0.2s ease; }
+        .joke-card:hover { transform: scale(1.02); border-color: rgba(234, 179, 8, 0.4) !important; }
+        .joke-emoji { font-size: 1.6rem; }
+        .joke-text { color: #cbd5e1 !important; font-size: 0.85rem !important; line-height: 1.4 !important; margin: 0 !important; font-style: italic; }
     </style>
 </head>
 <body>
@@ -479,6 +491,19 @@
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: 42</span>
                     <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind:</span><strong>13 km/h</strong></div></div>
+                </div>
+            </div>
+            <div class="jokes-section-wrapper">
+                <div class="jokes-header">
+                    <h3 class="modern-text">⚡ Quantum Weather Log: Daily Chuckles</h3>
+                    <span class="joke-pulse-badge">High Probability of Laughs</span>
+                </div>
+                <div class="jokes-scroll-row">
+                    <div class="joke-card glass-inner-card"><div class="joke-emoji">⚛️</div><p class="joke-text">“Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!”</p></div>
+                    <div class="joke-card glass-inner-card"><div class="joke-emoji">💨</div><p class="joke-text">“I asked the qBraid simulator for today’s wind speed. It told me it’s simultaneously a category 5 hurricane and a total calm until I open my window.”</p></div>
+                    <div class="joke-card glass-inner-card"><div class="joke-emoji">☀️</div><p class="joke-text">“Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!”</p></div>
+                    <div class="joke-card glass-inner-card"><div class="joke-emoji">🌡️</div><p class="joke-text">“What’s a quantum computer’s favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!”</p></div>
+                    <div class="joke-card glass-inner-card"><div class="joke-emoji">🗺️</div><p class="joke-text">“My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!”</p></div>
                 </div>
             </div>
         </div>
