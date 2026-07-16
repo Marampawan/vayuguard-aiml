@@ -6,9 +6,9 @@
     <title>Advanced Monitor — VayuGuard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=2.0">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v=2.0" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -430,6 +430,44 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
             white-space: normal !important; /* Wraps the everyday joke sentences cleanly */
         }
+        /* 🛑 STRICT BLOCK LAYOUT - DISABLES SIDEWAYS SCROLLING */
+        .forecast-page-wrapper {
+            display: block !important;
+            width: 100% !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            overflow: visible !important; /* Forces the page to stay flat */
+        }
+
+        /* 📊 AUTOMATIC WRAPPING 7-DAY FORECAST GRID */
+        .forecast-grid-container {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
+            gap: 24px !important;
+            width: 100% !important;
+            margin: 30px auto !important;
+            overflow: visible !important;
+        }
+
+        /* 🧘 STANDALONE NO-SCROLL JOKES TABLE AT THE BOTTOM */
+        .tabbed-jokes-table-wrapper.unique-table-container {
+            display: block !important;
+            clear: both !important; /* Direct dynamic drop below the cards */
+            margin: 60px auto 20px auto !important; 
+            width: 100% !important;
+            padding: 24px !important;
+            background: rgba(9, 15, 29, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 20px !important;
+            overflow: visible !important;
+        }
+
+        .modern-jokes-data-table td {
+            padding: 16px 18px !important;
+            white-space: normal !important; /* Force lines of text to wrap vertically instead of stretching out */
+        }
+
         .forecast-page-card { background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; padding: 24px 16px !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 14px !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease !important; white-space: normal !important; word-break: break-word !important; }
         .forecast-page-card:hover { transform: translateY(-5px) !important; border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 35px rgba(56, 189, 248, 0.15) !important; }
         .f-day { font-size: 1rem !important; font-weight: 700 !important; color: #f8fafc !important; letter-spacing: 0.5px; }
