@@ -343,17 +343,20 @@
         .pin-icon { font-size: 1rem; animation: pin-bounce 2s infinite ease-in-out; }
         @keyframes pin-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-        /* 🎭 SMOOTH SCROLLING JOKES VIEW ENGINE */
-        .jokes-section-wrapper { margin-top: 40px !important; padding: 20px !important; background: rgba(9, 15, 29, 0.6) !important; border: 1px dashed rgba(56, 189, 248, 0.3) !important; border-radius: 20px !important; }
-        .jokes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px !important; }
-        .joke-pulse-badge { background: rgba(234, 179, 8, 0.15) !important; border: 1px solid #eab308 !important; color: #facc15 !important; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-        .jokes-scroll-row { display: flex !important; gap: 16px !important; overflow-x: auto !important; padding: 10px 5px !important; box-sizing: border-box !important; scrollbar-width: thin; scrollbar-color: rgba(56, 189, 248, 0.4) transparent; }
-        .jokes-scroll-row::-webkit-scrollbar { height: 6px; }
-        .jokes-scroll-row::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 10px; }
-        .joke-card { flex: 0 0 280px !important; padding: 18px !important; border-radius: 16px !important; background: rgba(15, 23, 42, 0.8) !important; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important; transition: transform 0.2s ease; }
-        .joke-card:hover { transform: scale(1.02); border-color: rgba(234, 179, 8, 0.4) !important; }
-        .joke-emoji { font-size: 1.6rem; }
-        .joke-text { color: #cbd5e1 !important; font-size: 0.85rem !important; line-height: 1.4 !important; margin: 0 !important; font-style: italic; }
+        /* 🧘 MODERN BASE WIDGET CONTAINER */
+        .global-footer-widget { position: fixed; left: 50%; bottom: 20px; z-index: 20; width: 95% !important; max-width: 1400px !important; padding: 24px !important; margin: 0 !important; background: rgba(9, 15, 29, 0.7) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 24px !important; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5) !important; box-sizing: border-box; transform: translateX(-50%); }
+        .widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px !important; }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .breathing-dot { width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); animation: pulse-breathe 3s infinite ease-in-out; }
+        @keyframes pulse-breathe { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 50% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .widget-pill { background: rgba(56, 189, 248, 0.1) !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; color: #38bdf8 !important; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .friction-free-scroll-track { display: flex !important; gap: 20px !important; overflow-x: auto !important; scroll-behavior: smooth !important; -webkit-overflow-scrolling: touch !important; padding: 10px 5px !important; box-sizing: border-box !important; }
+        .friction-free-scroll-track::-webkit-scrollbar { height: 5px; }
+        .friction-free-scroll-track::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        .modern-joke-card { flex: 0 0 310px !important; padding: 24px 20px !important; border-radius: 20px !important; background: rgba(15, 23, 42, 0.85) !important; border: 1px solid rgba(255, 255, 255, 0.05) !important; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease !important; }
+        .modern-joke-card:hover { transform: translateY(-4px) scale(1.01) !important; border-color: rgba(56, 189, 248, 0.3) !important; }
+        .card-art { font-size: 1.8rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+        .joke-narrative { color: #e2e8f0 !important; font-size: 0.88rem !important; line-height: 1.5 !important; margin: 0 !important; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -491,19 +494,6 @@
                 <div class="forecast-page-card glass-inner-card">
                     <span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: 42</span>
                     <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind:</span><strong>13 km/h</strong></div></div>
-                </div>
-            </div>
-            <div class="jokes-section-wrapper">
-                <div class="jokes-header">
-                    <h3 class="modern-text">⚡ Quantum Weather Log: Daily Chuckles</h3>
-                    <span class="joke-pulse-badge">High Probability of Laughs</span>
-                </div>
-                <div class="jokes-scroll-row">
-                    <div class="joke-card glass-inner-card"><div class="joke-emoji">⚛️</div><p class="joke-text">“Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!”</p></div>
-                    <div class="joke-card glass-inner-card"><div class="joke-emoji">💨</div><p class="joke-text">“I asked the qBraid simulator for today’s wind speed. It told me it’s simultaneously a category 5 hurricane and a total calm until I open my window.”</p></div>
-                    <div class="joke-card glass-inner-card"><div class="joke-emoji">☀️</div><p class="joke-text">“Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!”</p></div>
-                    <div class="joke-card glass-inner-card"><div class="joke-emoji">🌡️</div><p class="joke-text">“What’s a quantum computer’s favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!”</p></div>
-                    <div class="joke-card glass-inner-card"><div class="joke-emoji">🗺️</div><p class="joke-text">“My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!”</p></div>
                 </div>
             </div>
         </div>
@@ -1180,5 +1170,22 @@
             setTimeout(checkUrlRoute, 150);
         }); // Close window.onload or DOMContentLoaded if you have one open
     </script>
+
+    <div class="global-footer-widget glass-sidebar">
+        <div class="widget-header">
+            <div class="header-left">
+                <span class="breathing-dot"></span>
+                <h3 class="modern-text">🧘 Mindful Break: Quantum Log &amp; Chuckles</h3>
+            </div>
+            <span class="widget-pill">Frictionless Scroll Enabled</span>
+        </div>
+        <div class="friction-free-scroll-track">
+            <div class="modern-joke-card glass-inner-card"><div class="card-art">⚛️✨</div><p class="joke-narrative">“Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!”</p></div>
+            <div class="modern-joke-card glass-inner-card"><div class="card-art">💨🌀</div><p class="joke-narrative">“I asked the qBraid simulator for today’s wind speed. It told me it’s simultaneously a category 5 hurricane and a total calm until I open my window.”</p></div>
+            <div class="modern-joke-card glass-inner-card"><div class="card-art">☀️🧠</div><p class="joke-narrative">“Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!”</p></div>
+            <div class="modern-joke-card glass-inner-card"><div class="card-art">🌡️🛡️</div><p class="joke-narrative">“What’s a quantum computer’s favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!”</p></div>
+            <div class="modern-joke-card glass-inner-card"><div class="card-art">📍🌌</div><p class="joke-narrative">“My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!”</p></div>
+        </div>
+    </div>
 </body>
 </html>
