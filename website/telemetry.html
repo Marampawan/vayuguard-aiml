@@ -23,7 +23,18 @@
             --accent-red: #ef4444;
         }
 
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: #f1f5f9; overflow: hidden; color: var(--text-main); }
+        /* 🔓 GLOBAL LAYOUT UNLOCK: ENABLES NATURAL DOWNWARD SCROLLING */
+        html, body {
+            height: auto !important; /* Overrides any tight fixed fullscreen restrictions */
+            min-height: 100% !important;
+            overflow-y: auto !important; /* Forces the browser to allow vertical down scrolling */
+            overflow-x: hidden !important; 
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
 
         #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
 
@@ -308,21 +319,22 @@
         #live-tracking-view { overflow: hidden; }
         #live-tracking-view .ui-layer { top: 0; height: 100%; }
 
-        /* 📦 THE SYSTEM TAB CONTENT ISOLATOR */
+        /* 📦 CENTERED SYSTEM VIEW FOR THE SCALED CONTENT HUB */
         #forecast-7-view {
-            display: none; /* Controlled by tab JS switch */
+            display: none; /* Regulated by active class handler */
             width: 100% !important;
-            max-width: 1400px !important;
-            margin: 0 auto !important;
-            padding: 10px 20px 40px 20px !important;
+            max-width: 1200px !important; /* Perfect sleek layout profile width */
+            margin: 0 auto !important; /* Centers the whole container block horizontally */
+            padding: 40px 20px !important;
             box-sizing: border-box !important;
+            overflow: visible !important; /* Forces internal cuts to display naturally */
         }
 
-        /* Displays when active tab is selected */
         #forecast-7-view.active-tab {
             display: flex !important;
-            flex-direction: column !important; /* Strictly stacks forecast -> separator -> jokes downwards */
-            gap: 40px !important; /* Huge physical gap between forecast and jokes */
+            flex-direction: column !important; /* Orderly vertical drop down orientation */
+            align-items: center !important; /* Aligns all rows dead-center inside the block space */
+            gap: 40px !important; /* Dynamic clear separator space */
         }
 
         /* 🛑 STAGE 1: FULL FLAT RESET FOR 7-DAY CONTAINER */
@@ -578,39 +590,29 @@
         .joke-phrase-text { font-style: normal !important; line-height: 1.5 !important; }
         .status-glow { box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
 
-        /* 📦 PARTITION LAYOUT SWITCH FOR THE TAB CONTAINER */
-        #forecast-7-view {
-            width: 100% !important;
-            max-width: 1400px !important;
-            margin: 0 auto !important;
-            padding: 20px !important;
-            box-sizing: border-box !important;
-            overflow: visible !important; /* Disables inside scrollbars completely */
-        }
-
-        /* 🟦 PART 1 DESIGN: THE UPPER FORECAST GRID MODULE */
+        /* 🟦 UPPER FORECAST PARTITION MODULE */
         .forecast-main-section-part {
-            display: block !important;
             width: 100% !important;
-            box-sizing: border-box !important;
-            margin-bottom: 20px !important;
-        }
-
-        .centered-forecast-header {
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
-            text-align: center !important;
-            width: 100% !important;
-            margin-bottom: 30px !important;
+            box-sizing: border-box !important;
         }
 
+        .centered-forecast-header {
+            text-align: center !important;
+            margin-bottom: 30px !important;
+            width: 100% !important;
+        }
+
+        /* 📊 FLAT CARD MATRIX (ADAPTS IN LINE SHAPES WITHOUT BREAKING) */
         .forecast-grid-container {
             display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
-            gap: 20px !important; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            gap: 16px !important;
             width: 100% !important;
             box-sizing: border-box !important;
+            justify-content: center !important;
         }
 
         /* 🛑 STRUCTURAL GAP FACTOR */
@@ -620,17 +622,16 @@
             width: 100% !important;
         }
 
-        /* 🟩 PART 2 DESIGN: THE WIDGET PANEL FOOTER (MAIN PAGE WIDGET REPLICA) */
+        /* 🟩 BOTTOM PARTITION MODULE: PURE STANDALONE WIDGET PANEL CONTAINER */
         .jokes-standalone-section-part.unique-widget-panel {
-            display: block !important;
-            clear: both !important;
             width: 100% !important;
             padding: 24px !important;
-            background: rgba(9, 15, 29, 0.95) !important; /* Premium dark interface */
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
+            background: rgba(15, 23, 42, 0.85) !important; /* Deep carbon background style */
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
             box-sizing: border-box !important;
+            overflow: visible !important;
         }
 
         .widget-header-row {
@@ -679,6 +680,7 @@
             overflow: visible !important;
         }
 
+        /* Modern Flat Data Presentation Formatting */
         .modern-jokes-data-table {
             width: 100% !important;
             border-collapse: separate !important;
@@ -686,8 +688,12 @@
         }
 
         .modern-jokes-data-table td {
-            white-space: normal !important; /* Forces normal word wrapping bounds */
-            padding: 16px 18px !important;
+            padding: 14px 16px !important;
+            color: #e2e8f0 !important;
+            font-size: 0.9rem !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+            white-space: normal !important; /* Keeps jokes text sentences wrapping down cleanly */
         }
     </style>
 </head>
@@ -788,68 +794,69 @@
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
     <div id="forecast-7-view" class="tab-content">
     
+    <!-- 🟦 DIVISION 1: CENTERED 7-DAY TEMPERATURE PROJECTIONS MATRIX -->
     <div class="forecast-main-section-part">
         <div class="centered-forecast-header">
-            <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.7rem; letter-spacing: 0.5px;">7-Day Advanced Atmospheric & AQI Projections</h2>
-            <div style="margin-top: 8px;">
+            <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.6rem;">7-Day Advanced Atmospheric & AQI Projections</h2>
+            <div style="margin-top: 6px;">
                 <span class="live-pulse-badge">Predictive Array Active</span>
             </div>
-            <div class="user-location-badge-inline">
-                <span class="pin-icon">📍</span>
-                <span id="user-live-city">DETECTING LOCAL STATION...</span>
+            <div class="user-location-badge-inline" style="margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(56, 189, 248, 0.25); padding: 4px 14px; border-radius: 20px;">
+                <span style="font-size: 0.8rem;">📍</span>
+                <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.8rem;">LOADING STATION COORDINATES...</span>
             </div>
         </div>
 
         <div class="forecast-grid-container">
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">30°C / 23°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">27°C / 21°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">29°C / 23°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+            <!-- Forecast Days layout deck wrapper references -->
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Mon</span><div class="f-icon">☀️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Tue</span><div class="f-icon">⛅</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Wed</span><div class="f-icon">🌧️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Thu</span><div class="f-icon">⛈️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Fri</span><div class="f-icon">⛅</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Sat</span><div class="f-icon">☀️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
+            <div class="forecast-page-card glass-inner-card"><span class="f-day">Sun</span><div class="f-icon">☀️</div><span class="f-temp">--°C</span><span class="forecast-aqi-badge">AQI: --</span><div class="f-metrics"></div></div>
         </div>
     </div>
 
-    <div class="section-divider-break"></div>
-
+    <!-- 🟩 DIVISION 2: INDEPENDENT JOKES VAULT (STAGED VISIBLY AT THE DEEP BASE) -->
     <div class="jokes-standalone-section-part unique-widget-panel">
         <div class="widget-header-row">
-            <div class="header-identity-left">
-                <span class="breathing-ui-dot"></span>
-                <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1.1rem;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="breathing-ui-dot" style="width:10px; height:10px; background:#10b981; border-radius:50%; display:inline-block;"></span>
+                <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1rem;">🧘 Mindful Break: Fun Logs & Emojis</h3>
             </div>
-            <span class="widget-status-badge">Flat Mode Engine</span>
+            <span class="widget-status-badge">Layout Perfect Fit</span>
         </div>
         
         <div class="table-flat-wrapper">
             <table class="modern-jokes-data-table">
                 <thead>
                     <tr>
-                        <th style="width: 80px; text-align: center;">Mood</th>
-                        <th style="width: 120px;">Category</th>
-                        <th>The Daily Chuckle Log</th>
+                        <th style="width: 70px; text-align: center; color: #94a3b8; font-size: 0.8rem;">Mood</th>
+                        <th style="width: 110px; color: #94a3b8; font-size: 0.8rem;">Category</th>
+                        <th style="color: #94a3b8; font-size: 0.8rem; text-align: left;">The Daily Chuckle Log</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="joke-center-emoji">🍅</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
+                        <td style="text-align:center; font-size:1.2rem;">🍅</td>
+                        <td><span class="j-tag j-blue" style="background:rgba(56,189,248,0.15); color:#38bdf8; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:700;">Classic</span></td>
                         <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
                     </tr>
                     <tr>
-                        <td class="joke-center-emoji">🚲</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
+                        <td style="text-align:center; font-size:1.2rem;">🚲</td>
+                        <td><span class="j-tag j-purple" style="background:rgba(168,85,247,0.15); color:#c084fc; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:700;">Random</span></td>
                         <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
                     </tr>
                     <tr>
-                        <td class="joke-center-emoji">🦖</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
+                        <td style="text-align:center; font-size:1.2rem;">Rex🦖</td>
+                        <td><span class="j-tag j-yellow" style="background:rgba(234,179,8,0.15); color:#facc15; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:700;">Dad Joke</span></td>
                         <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
                     </tr>
                     <tr>
-                        <td class="joke-center-emoji">🥔</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
+                        <td style="text-align:center; font-size:1.2rem;">🥔</td>
+                        <td><span class="j-tag j-green" style="background:rgba(16,185,129,0.15); color:#34d399; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:700;">Food</span></td>
                         <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
                     </tr>
                 </tbody>
