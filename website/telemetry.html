@@ -308,6 +308,23 @@
         #live-tracking-view { overflow: hidden; }
         #live-tracking-view .ui-layer { top: 0; height: 100%; }
 
+        /* 📦 THE SYSTEM TAB CONTENT ISOLATOR */
+        #forecast-7-view {
+            display: none; /* Controlled by tab JS switch */
+            width: 100% !important;
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 10px 20px 40px 20px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Displays when active tab is selected */
+        #forecast-7-view.active-tab {
+            display: flex !important;
+            flex-direction: column !important; /* Strictly stacks forecast -> separator -> jokes downwards */
+            gap: 40px !important; /* Huge physical gap between forecast and jokes */
+        }
+
         /* 🎯 CENTER THE 7-DAY CONTAINER & WRAPPER ELEMENTS */
         .forecast-page-wrapper {
             display: flex !important;
@@ -345,7 +362,7 @@
         .tab-icon { font-size: 1.1rem; }
         .forecast-page-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; }
         .live-pulse-badge { background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        /* 🎯 CENTERED WEATHER HEADER FORMAT */
+        /* 🎯 CENTERED FORECAST HEADER */
         .centered-forecast-header {
             display: flex !important;
             flex-direction: column !important;
@@ -353,9 +370,9 @@
             justify-content: center !important;
             text-align: center !important;
             width: 100% !important;
-            margin-bottom: 30px !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-            padding-bottom: 20px !important;
+            margin-bottom: 25px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding-bottom: 15px !important;
         }
 
         .user-location-badge-inline {
@@ -369,17 +386,26 @@
             border-radius: 30px !important;
         }
 
-        /* 🧘 INTERNAL TAB TABLE BOX ENHANCEMENTS */
-        .tabbed-jokes-table-wrapper {
-            margin-top: 25px !important;
+        /* 📊 7-DAY FORECAST GRID (NO SCROLLING - WRAPS TO NEXT LINE IF SMALL) */
+        .forecast-grid-container {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; 
+            gap: 20px !important; 
             width: 100% !important;
-            background: rgba(15, 23, 42, 0.4) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            border-radius: 16px !important;
             box-sizing: border-box !important;
         }
-        /* 📊 THE CLEAN FORECAST CONTAINER OVERHAUL */
-        .forecast-grid-container { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; gap: 20px !important; width: 100% !important; padding: 10px 0 !important; box-sizing: border-box !important; }
+
+        /* 🧘 NEAT FLAT BOTTOM JOKES PANEL (NO SCROLLBARS AT ALL) */
+        .tabbed-jokes-table-wrapper {
+            width: 100% !important;
+            padding: 24px !important;
+            background: rgba(9, 15, 29, 0.95) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.7) !important;
+            box-sizing: border-box !important;
+            overflow: visible !important; /* Completely blocks scrollbars */
+        }
         .forecast-page-card { background: rgba(15, 23, 42, 0.75) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; padding: 24px 16px !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 14px !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease !important; white-space: normal !important; word-break: break-word !important; }
         .forecast-page-card:hover { transform: translateY(-5px) !important; border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 35px rgba(56, 189, 248, 0.15) !important; }
         .f-day { font-size: 1rem !important; font-weight: 700 !important; color: #f8fafc !important; letter-spacing: 0.5px; }
@@ -410,35 +436,16 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8) !important;
         }
 
-        /* Clean full-width container without scroll constraints */
         .table-flat-wrapper {
             width: 100% !important;
-            overflow: visible !important; /* No more scrolling */
+            overflow: visible !important;
         }
 
         .modern-jokes-data-table {
             width: 100% !important;
             border-collapse: separate !important;
             border-spacing: 0 8px !important;
-            table-layout: auto !important; /* Let column sizes adjust naturally */
-        }
-
-        .modern-jokes-data-table th {
-            padding: 14px 18px !important;
-            color: #94a3b8 !important;
-            font-size: 0.85rem !important;
-            font-weight: 700 !important;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        .modern-jokes-data-table tbody tr {
-            background: rgba(15, 23, 42, 0.6) !important;
-            transition: all 0.2s ease !important;
-        }
-
-        .modern-jokes-data-table tbody tr:hover {
-            background: rgba(56, 189, 248, 0.08) !important;
+            table-layout: auto !important;
         }
 
         .modern-jokes-data-table td {
@@ -447,7 +454,7 @@
             font-size: 0.92rem !important;
             border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-            white-space: normal !important; /* Allows text to wrap perfectly onto new lines */
+            white-space: normal !important; /* Wraps long jokes text to next lines */
         }
 
         .modern-jokes-data-table td:first-child { border-radius: 12px 0 0 12px !important; }
@@ -561,106 +568,111 @@
 
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
     <div id="forecast-7-view" class="tab-content">
-        <div class="forecast-section-spacer"></div>
+    
+        <div class="centered-forecast-header">
+            <h2 class="modern-text" style="color: #ffffff; margin: 0;">7-Day Advanced Atmospheric & AQI Projections</h2>
+            <div style="margin-top: 8px;">
+                <span class="live-pulse-badge">Predictive Array Active</span>
+            </div>
+            <div class="user-location-badge-inline" style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
+                <span class="pin-icon">📍</span>
+                <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem;">DETECTING LOCAL STATION...</span>
+            </div>
+        </div>
 
-        <div class="forecast-page-wrapper glass-sidebar">
-            <!-- 🎯 CENTERED MAIN FORECAST HEADER ELEMENT -->
-            <div class="forecast-page-header centered-forecast-header">
-                <h2 class="modern-text">7-Day Advanced Atmospheric &amp; AQI Projections</h2>
-                <div style="margin-top: 8px;">
-                    <span class="live-pulse-badge">Predictive Array Active</span>
+        <div class="forecast-grid-container">
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Monday</span>
+                <div class="f-icon">☀️</div>
+                <span class="f-temp">31°C / 24°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Tuesday</span>
+                <div class="f-icon">⛅</div>
+                <span class="f-temp">30°C / 23°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Wednesday</span>
+                <div class="f-icon">🌧️</div>
+                <span class="f-temp">28°C / 22°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Thursday</span>
+                <div class="f-icon">⛈️</div>
+                <span class="f-temp">27°C / 21°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Friday</span>
+                <div class="f-icon">⛅</div>
+                <span class="f-temp">29°C / 23°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Saturday</span>
+                <div class="f-icon">☀️</div>
+                <span class="f-temp">32°C / 25°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+            <div class="forecast-page-card glass-inner-card">
+                <span class="f-day">Sunday</span>
+                <div class="f-icon">☀️</div>
+                <span class="f-temp">33°C / 26°C</span>
+                <span class="forecast-aqi-badge aqi-good">AQI: --</span>
+                <div class="f-metrics"></div>
+            </div>
+        </div>
+
+        <div class="tabbed-jokes-table-wrapper unique-table-container">
+            <div class="widget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
+                    <span class="breathing-dot"></span>
+                    <h3 class="modern-text" style="margin: 0; color: #ffffff;">🧘 Mindful Break: Fun Logs & Emojis</h3>
                 </div>
-                
-                <!-- 📍 Live Location Reference Display Tag -->
-                <div class="user-location-badge-inline">
-                    <span class="pin-icon">📍</span>
-                    <span id="user-live-city">DETECTING LOCAL STATION...</span>
-                </div>
+                <span class="widget-pill" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem;">Flat Table</span>
             </div>
             
-            <!-- 📊 The 7 Projections Card Columns Array Grid -->
-            <div class="forecast-grid-container">
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: 45</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:42 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:38 PM</strong></div><div><span>💨 Wind:</span><strong>14 km/h</strong></div></div>
-                </div>
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">30°C / 23°C</span><span class="forecast-aqi-badge aqi-moderate">AQI: 72</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind:</span><strong>12 km/h</strong></div></div>
-                </div>
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 110</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:43 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:37 PM</strong></div><div><span>💨 Wind:</span><strong>18 km/h</strong></div></div>
-                </div>
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">27°C / 21°C</span><span class="forecast-aqi-badge aqi-poor">AQI: 135</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:36 PM</strong></div><div><span>💨 Wind:</span><strong>22 km/h</strong></div></div>
-                </div>
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">29°C / 23°C</span><span class="forecast-aqi-badge aqi-moderate">AQI: 88</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:44 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind:</span><strong>11 km/h</strong></div></div>
-                </div>
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: 50</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:45 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:35 PM</strong></div><div><span>💨 Wind:</span><strong>9 km/h</strong></div></div>
-                </div>
-                <div class="forecast-page-card glass-inner-card">
-                    <span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: 42</span>
-                    <div class="f-metrics"><div><span>🌅 Sunrise:</span><strong>05:46 AM</strong></div><div><span>🌇 Sunset:</span><strong>06:34 PM</strong></div><div><span>💨 Wind:</span><strong>13 km/h</strong></div></div>
-                </div>
-            </div>
-
-            <!-- 🛑 VERTICAL SEPARATOR FOR SPACIOUS BREAK -->
-            <div style="height: 45px; width: 100%;"></div>
-
-            <!-- 🧘 NEAT JOKES TABLE ARRAY TIED DIRECTLY INSIDE FORECAST TAB WRAPPER -->
-            <div class="tabbed-jokes-table-wrapper unique-table-container">
-                <div class="widget-header">
-                    <div class="header-left">
-                        <span class="breathing-dot"></span>
-                        <h3 class="modern-text" style="margin: 0; color: #ffffff; letter-spacing: 0.5px;">🧘 Mindful Break: Quantum Logs &amp; Emojis</h3>
-                    </div>
-                    <span class="widget-pill status-glow">System Frictionless</span>
-                </div>
-                
-                <div class="table-flat-wrapper">
-                    <table class="modern-jokes-data-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 80px; text-align: center;">Matrix</th>
-                                <th style="width: 120px;">Category</th>
-                                <th>Atmospheric Telemetry &amp; Quantum Log Chuckles</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="joke-center-emoji">⚛️✨</td>
-                                <td class="joke-tag-cell"><span class="j-tag j-blue">QuantumState</span></td>
-                                <td class="joke-phrase-text">"Why did the cloud break up with the quantum computer? Because it kept changing its state every time she looked at it!"</td>
-                            </tr>
-                            <tr>
-                                <td class="joke-center-emoji">💨🌀</td>
-                                <td class="joke-tag-cell"><span class="j-tag j-purple">Simulation</span></td>
-                                <td class="joke-phrase-text">"I asked the qBraid simulator for today's wind speed. It told me it's simultaneously a category 5 hurricane and a total calm until I open my window."</td>
-                            </tr>
-                            <tr>
-                                <td class="joke-center-emoji">☀️🧠</td>
-                                <td class="joke-tag-cell"><span class="j-tag j-yellow">Superposition</span></td>
-                                <td class="joke-phrase-text">"Why do quantum physicists make terrible weather anchors? Because their predictions are always in a state of absolute superposition!"</td>
-                            </tr>
-                            <tr>
-                                <td class="joke-center-emoji">🌡️🛡️</td>
-                                <td class="joke-tag-cell"><span class="j-tag j-green">Hardware</span></td>
-                                <td class="joke-phrase-text">"What’s a quantum computer's favorite type of weather? Clear skies with a zero percent chance of thermal decoherence!"</td>
-                            </tr>
-                            <tr>
-                                <td class="joke-center-emoji">📍🌌</td>
-                                <td class="joke-tag-cell"><span class="j-tag j-cyan">Localization</span></td>
-                                <td class="joke-phrase-text">"My dashboard successfully localized my coordinate index. Now the quantum processor has no idea how fast I am traveling!"</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-flat-wrapper">
+                <table class="modern-jokes-data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px; text-align: center; color: #94a3b8; font-size: 0.85rem;">Mood</th>
+                            <th style="width: 120px; color: #94a3b8; font-size: 0.85rem;">Category</th>
+                            <th style="color: #94a3b8; font-size: 0.85rem;">The Daily Chuckle Log</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="joke-center-emoji">🍅</td>
+                            <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
+                            <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                        </tr>
+                        <tr>
+                            <td class="joke-center-emoji">🚲</td>
+                            <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
+                            <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                        </tr>
+                        <tr>
+                            <td class="joke-center-emoji">🦖</td>
+                            <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
+                            <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
+                        </tr>
+                        <tr>
+                            <td class="joke-center-emoji">🥔</td>
+                            <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
+                            <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -670,12 +682,17 @@
         // 🗂️ Structural Tab Switching Function
         function switchTab(evt, tabId) {
             const tabContents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < tabContents.length; i++) tabContents[i].classList.remove('view-active');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('view-active');
+                tabContents[i].classList.remove('active-tab');
+            }
 
             const tabLinks = document.getElementsByClassName('tab-link');
             for (let i = 0; i < tabLinks.length; i++) tabLinks[i].classList.remove('active-tab');
 
-            document.getElementById(tabId).classList.add('view-active');
+            const targetPanel = document.getElementById(tabId);
+            targetPanel.classList.add('view-active');
+            targetPanel.classList.add('active-tab');
             evt.currentTarget.classList.add('active-tab');
 
             if (tabId === 'live-tracking-view' && window.telemetryMap) {
