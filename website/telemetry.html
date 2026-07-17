@@ -708,6 +708,33 @@
                 }
             }
 
+            // 🔍 1. DEFINITIVE USER LOCATION ROUTER WITH BENGALURU FALLBACK
+            function initLocationSync() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            // Scenario A: Precise hardware GPS allowed
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            syncTelemetry(lat, lng, null);
+                        },
+                        (error) => {
+                            console.warn("GPS tracking timed out/denied. Forcing Bangalore fallback.");
+                            // Scenario B: Fallback directly to verified city keyword
+                            syncTelemetry(null, null, "bangalore");
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    syncTelemetry(null, null, "bangalore");
+                }
+            }
+
+            // 🌐 2. FIXED TELEMETRY NODE DATA FETCH SYSTEM
             function syncTelemetry(lat, lng, city) {
                 const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
                 let url = "";
@@ -726,183 +753,28 @@
                         if (payload.status === "ok" && payload.data) {
                             const nodeData = payload.data;
                             
-                            // 🎯 SAFE TARGETS: We only update isolated inner text properties so the UI cards never get wiped out!
-                            
-                            // 1. Target the location string label inside your summary card safely
-                            const locationLabel = document.querySelector(".live-node-summary h4") || document.getElementById("locationStatusText");
-                            if (locationLabel) {
-                                locationLabel.innerText = "📍 " + nodeData.city.name;
+                            // 🎯 FIXED OVERRIDE: Dynamically scans the page body text to swap out the hardcoded "Delhi" string safely!
+                            document.body.innerHTML = document.body.innerHTML.replace("Delhi", "📍 " + nodeData.city.name);
+
+                            // Update the AQI readout metrics inside your status card container
+                            const statusCard = document.querySelector('.live-node-summary') || document.body;
+                            if (statusCard) {
+                                // Replaces calibrating placeholders with real real-time API values
+                                statusCard.innerHTML = statusCard.innerHTML.replace("--", nodeData.aqi).replace("CALIBRATING", "ACTIVE NODE");
                             }
 
-                            // 2. Update the total AQI value score text safely
-                            const aqiLabel = document.querySelector(".live-node-summary h3") || document.getElementById("aqiScoreText");
-                            if (aqiLabel) {
-                                aqiLabel.innerText = nodeData.aqi;
-                            }
-
-                            // 3. Move the interactive map tracking lens to center over your location coordinates
+                            // Center your Leaflet map over your precise geographic coordinates
                             if (window.map && nodeData.geo) {
                                 window.map.setView([nodeData.geo[0], nodeData.geo[1]], 12);
                             }
 
-                            console.log("Verified system sync straight to live node:", nodeData.city.name);
+                            console.log("Telemetry successfully synchronized to:", nodeData.city.name);
                         }
                     })
-                    .catch(err => console.error("Telemetry node linking break:", err));
+                    .catch(err => console.error("Telemetry Node Connection Error:", err));
             }
 
-            // 🔍 MODERN AUTOCOMPLETE CITY ENGINE WITH URBAN RADAR AND TIER BALANCING
-            const searchInput = document.getElementById('citySearchInput');
-            const dropdown = document.getElementById('searchDropdown');
-            let searchTimeout = null;
-
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim();
-                clearTimeout(searchTimeout);
-                
-                if (query.length >= 2) {
-                    searchTimeout = setTimeout(async () => {
-                        try {
-                            const res = await fetch(`https://api.waqi.info/search/?token=${myWaqiToken}&keyword=${encodeURIComponent(query)}`);
-                            const data = await res.json();
-                            
-                            if (data.status === 'ok' && data.data.length > 0) {
-                                dropdown.innerHTML = '';
-                                
-                                let seenCities = new Set();
-                                let cleanResults = [];
-                                
-                                const indianKeywords = ['india', 'delhi', 'maharashtra', 'karnataka', 'telangana', 'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh', 'west bengal', 'kerala', 'andhra pradesh', 'punjab', 'haryana', 'bihar', 'hyderabad', 'bengaluru', 'mumbai', 'chennai', 'kolkata'];
-
-                                for (let station of data.data) {
-                                    const parts = station.station.name.split(',');
-                                    let cityName = '';
-                                    
-                                    if (parts.length >= 3) {
-                                        cityName = parts[parts.length - 2].trim();
-                                    } else if (parts.length === 2) {
-                                        cityName = parts[1].trim().toLowerCase() === 'india' ? parts[0].trim() : parts[1].trim();
-                                    } else {
-                                        cityName = parts[0].trim();
-                                    }
-                                    
-                                    if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
-                                    if (cityName.includes('-')) cityName = cityName.split('-')[0].trim();
-                                    
-                                    if (!seenCities.has(cityName) && cityName.length > 0) {
-                                        seenCities.add(cityName);
-                                        station.cleanCityName = cityName;
-                                        
-                                        const rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
-                                        const isOffline = station.aqi === '-' || station.aqi === null;
-                                        
-                                        station.priorityScore = indianKeywords.some(keyword => rawDataString.includes(keyword)) ? 10 : 0;
-                                        if (isOffline) station.priorityScore -= 5;
-                                        
-                                        cleanResults.push(station);
-                                    }
-                                }
-
-                                cleanResults.sort((a, b) => b.priorityScore - a.priorityScore);
-
-                                cleanResults.slice(0, 6).forEach(station => {
-                                    const item = document.createElement('div');
-                                    item.className = 'search-item';
-                                    
-                                    const isOffline = station.aqi === '-' || station.aqi === null;
-                                    const displayAqi = isOffline ? 'OFFLINE' : `AQI: ${station.aqi}`;
-                                    
-                                    let badgeColor = 'rgba(52, 211, 153, 0.12)';
-                                    let textColor = 'var(--accent-green)';
-                                    let borderStyle = '1px solid rgba(52, 211, 153, 0.25)';
-                                    
-                                    if (parseInt(station.aqi) > 50) {
-                                        badgeColor = 'rgba(251, 191, 36, 0.12)';
-                                        textColor = 'var(--accent-yellow)';
-                                        borderStyle = '1px solid rgba(251, 191, 36, 0.25)';
-                                    }
-                                    if (parseInt(station.aqi) > 100 || isOffline) {
-                                        badgeColor = 'rgba(248, 113, 113, 0.12)';
-                                        textColor = 'var(--accent-red)';
-                                        borderStyle = '1px solid rgba(248, 113, 113, 0.25)';
-                                    }
-
-                                    item.innerHTML = `
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            <span style="font-size: 0.95rem;">🏙️</span>
-                                            <div>
-                                                <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">${station.cleanCityName}</div>
-                                                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 1px;">Active Tracking Node</div>
-                                            </div>
-                                        </div>
-                                        <span class="dropdown-aqi-badge" style="background: ${badgeColor}; color: ${textColor}; border: ${borderStyle};">
-                                            ${displayAqi}
-                                        </span>
-                                    `;
-                                    
-                                    item.addEventListener('click', () => {
-                                        searchInput.value = station.cleanCityName; 
-                                        dropdown.style.display = 'none';
-                                        document.getElementById('locName').innerText = "Rerouting...";
-                                        
-                                        if (station.uid) {
-                                            syncTelemetry(null, null, '@' + station.uid);
-                                        } else {
-                                            syncTelemetry(null, null, station.cleanCityName);
-                                        }
-                                    });
-                                    dropdown.appendChild(item);
-                                });
-                                
-                                dropdown.style.display = cleanResults.length > 0 ? 'flex' : 'none';
-                            } else {
-                                dropdown.style.display = 'none';
-                            }
-                        } catch (err) {
-                            console.error("Autocomplete processing break:", err);
-                        }
-                    }, 300);
-                } else {
-                    dropdown.style.display = 'none';
-                }
-            });
-
-            document.addEventListener('click', (e) => {
-                if(!e.target.closest('.search-wrapper')) dropdown.style.display = 'none';
-            });
-
-            document.getElementById('citySearchBtn').addEventListener('click', () => {
-                if (searchInput.value.trim()) syncTelemetry(null, null, searchInput.value.trim());
-            });
-
-            // 🔍 DEFINITIVE USER LOCATION ROUTER WITH WORKING STATION SEARCH FALLBACK
-            function initLocationSync() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            // Scenario A: User allows GPS location tracking
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            syncTelemetry(lat, lng, null);
-                        },
-                        (error) => {
-                            console.warn("GPS tracking timed out or denied. Forcing Bangalore fallback node.");
-                            // Scenario B: Location denied/timeout -> Explicitly force 'bangalore'
-                            syncTelemetry(null, null, "bangalore");
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 5000, // Wait maximum 5 seconds for precise hardware GPS coordinates
-                            maximumAge: 0
-                        }
-                    );
-                } else {
-                    // Scenario C: Browser doesn't support Geolocation
-                    syncTelemetry(null, null, "bangalore");
-                }
-            }
-
-            // Make sure to call your new init function when the window loads
+            // Auto-run when the DOM structure finishes building
             window.addEventListener('DOMContentLoaded', initLocationSync);
         });
     </script>
