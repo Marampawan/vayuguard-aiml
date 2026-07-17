@@ -97,68 +97,76 @@
         .tab-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
         .tab-link.active-tab { background: #fff; color: #0a0f1d; border-color: #fff; font-weight: 800; box-shadow: 0 10px 25px rgba(255,255,255,0.15); }
 
-        /* 🌐 ULTRA-MODERN FULL-WIDTH DASHBOARD LAYOUT GRID */
+        /* 🌐 CLEAN SINGLE-VIEWPORT DASHBOARD GRID GRID SYSTEM */
         #live-tracking-view {
             display: none;
             width: 100%;
-            height: calc(100vh - 180px); /* Perfect fit within window bounds */
-            padding: 0 24px;
+            height: calc(100vh - 190px) !important; /* Locks parent height tightly to window limits */
+            padding: 0 24px 20px 24px;
             box-sizing: border-box;
+            overflow: hidden !important; /* Destroys duplicate parent scrollbars */
         }
         
         #live-tracking-view.view-active {
             display: grid !important;
-            grid-template-columns: 350px 1fr 350px; /* Symmetrical left panel, map center, right panel */
+            grid-template-columns: 350px 1fr 350px;
             gap: 20px;
             align-items: stretch;
         }
 
-        /* Center Map Element Takes Up Full Remaining Height */
         #map {
             width: 100%;
             height: 100%;
             border-radius: 24px;
             border: 1px solid var(--border-glass);
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
-            position: relative !important; /* Removes absolute layout positioning overlay breaks */
+            position: relative !important;
             z-index: 1;
         }
 
-        /* Disable absolute layering constraint requirements */
         .ui-layer {
-            display: contents; /* Dissolves wrapper to let children slide directly into grid tracks */
+            display: contents;
             pointer-events: none;
         }
 
-        /* 📦 PERFECT-FIT DATA PANELS (NO SCROLLBARS) */
+        /* 📦 PERFECT-FIT DATA PANELS (SCROLLBARS COMPLETELY REMOVED) */
         .modern-panel {
-            width: 100% !important; /* Adapts directly to the 350px grid track size */
-            height: 100%;
+            width: 100% !important;
+            height: 100% !important;
             background: var(--bg-glass);
             border: 1px solid var(--border-glass);
             border-radius: 28px;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Evenly spreads components vertically */
-            gap: 16px;
+            justify-content: space-between; /* Dynamic layout spatial distribution */
+            gap: 12px;
             pointer-events: auto;
             backdrop-filter: blur(20px);
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
             box-sizing: border-box;
-            overflow: visible !important; /* FORCES NATURAL RENDER FIT WITH NO SCROLLBAR WINDOWS */
+            
+            /* The Scroll Killer Matrix Rules */
+            overflow: hidden !important; 
             max-height: 100% !important;
         }
 
-        /* Compact Adjustment Factors for inner elements to fit layout sizes */
+        /* Adjusted element heights to ensure a clean inline layout fit */
         .chart-box { 
             background: rgba(0,0,0,0.15); 
             border-radius: 18px; 
             padding: 10px; 
-            flex: 1; /* Allows charts to expand/shrink dynamically to fit spaces */
-            min-height: 90px;
+            height: 105px !important; /* Scaled down slightly to prevent clipping boundaries */
             position: relative; 
             border: 1px solid var(--border-glass); 
+        }
+
+        .metric-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 8px; /* Tighter vertical spacing rows */
+            font-size: 0.8rem; 
         }
 
         .weather-grid { 
@@ -168,7 +176,7 @@
         }
         
         .w-card { 
-            padding: 12px 8px; 
+            padding: 10px 8px; 
             border-radius: 16px;
         }
 
@@ -185,7 +193,6 @@
         .aqi-num { font-size: 2.6rem; font-weight: 900; letter-spacing: -1px; }
         .aqi-desc { text-align: right; display: flex; flex-direction: column; justify-content: center; }
 
-        .metric-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.8rem; }
         .metric-label { width: 50px; color: var(--text-muted); font-weight: 700; }
         .metric-bar-bg { flex: 1; height: 7px; background: rgba(255, 255, 255, 0.04); border-radius: 4px; overflow: hidden; }
         .metric-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
