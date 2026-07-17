@@ -518,6 +518,84 @@
             if (tabId === 'live-tracking-view' && window.telemetryMap) {
                 setTimeout(() => window.telemetryMap.invalidateSize(), 100);
             }
+            
+            // 🎲 Trigger the randomizer engine whenever the user enters the forecast tab
+            if (tabId === 'forecast-7-view') {
+                generateRandomJokes();
+            }
+        }
+
+        // 🧠 DATA POOL AND RANDOMIZATION SYSTEM
+        function generateRandomJokes() {
+            // Expanded comedy repository matrix
+            const classicPool = [
+                { emoji: "🍅", narrative: '"Why did the tomato blush? Because it saw the salad dressing!"' },
+                { emoji: "🥚", narrative: '"Why did the egg hide? Because it was a little chicken!"' },
+                { emoji: "🥕", narrative: '"What do you call a carrot that wins an award? A root success!"' }
+            ];
+
+            const randomPool = [
+                { emoji: "🚲", narrative: '"Why can\'t a bicycle stand up by itself? Because it\'s two-tired!"' },
+                { emoji: "👟", narrative: '"Why do shoes go to school? To get a little sole conditioning!"' },
+                { emoji: "🔑", narrative: '"What kind of key opens a banana? A mon-key!"' }
+            ];
+
+            const dadPool = [
+                { emoji: "🦖", narrative: '"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"' },
+                { emoji: "🐻", narrative: '"What do you call a bear with no teeth? A gummy bear!"' },
+                { emoji: "🦁", narrative: '"Why don\'t lions play cards in the jungle? Too many cheetahs!"' }
+            ];
+
+            const atmospherePool = [
+                { emoji: "☁️", narrative: '"Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!"' },
+                { emoji: "⚡", narrative: '"What did the lightning bolt say to the solar panels? You electrify me!"' },
+                { emoji: "🌬️", narrative: '"Why did the wind go to jail? For blowing away the competition!"' }
+            ];
+
+            const geekPool = [
+                { emoji: "💻", narrative: '"There are 10 types of people in the world: those who understand binary, and those who don\'t."' },
+                { emoji: "🤖", narrative: '"Why did the AI go cross-eyed? Too many input parameters to process!"' },
+                { emoji: "🔌", narrative: '"Why did the developer go broke? Because he used up all his cache!"' }
+            ];
+
+            // Safely select one random index item from each distinct category track
+            const cItem = classicPool[Math.floor(Math.random() * classicPool.length)];
+            const rItem = randomPool[Math.floor(Math.random() * randomPool.length)];
+            const dItem = dadPool[Math.floor(Math.random() * dadPool.length)];
+            const aItem = atmospherePool[Math.floor(Math.random() * atmospherePool.length)];
+            const gItem = geekPool[Math.floor(Math.random() * geekPool.length)];
+
+            // Inject the dynamic rows into your table's body element container securely
+            const tableBody = document.querySelector('.modern-jokes-data-table tbody');
+            if (tableBody) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td style="text-align: center; font-size: 1.4rem;">${cItem.emoji}</td>
+                        <td><span class="j-tag j-blue">Classic</span></td>
+                        <td>${cItem.narrative}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; font-size: 1.4rem;">${rItem.emoji}</td>
+                        <td><span class="j-tag j-purple">Random</span></td>
+                        <td>${rItem.narrative}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; font-size: 1.4rem;">${dItem.emoji}</td>
+                        <td><span class="j-tag j-yellow">Dad Joke</span></td>
+                        <td>${dItem.narrative}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; font-size: 1.4rem;">${aItem.emoji}</td>
+                        <td><span class="j-tag j-green">Atmosphere</span></td>
+                        <td>${aItem.narrative}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; font-size: 1.4rem;">${gItem.emoji}</td>
+                        <td><span class="j-tag j-pink">Geek Logic</span></td>
+                        <td>${gItem.narrative}</td>
+                    </tr>
+                `;
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
