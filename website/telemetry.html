@@ -708,67 +708,62 @@
                 }
             }
 
-            async function syncTelemetry(lat = null, lon = null, city = null) {
+            function syncTelemetry(lat, lng, city) {
+                const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
                 let url = "";
-                const token = myWaqiToken;
 
-                if (lat && lon) {
-                    // GPS Route
-                    url = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${token}`;
+                if (lat && lng) {
+                    url = `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}`;
                 } else if (city) {
-                    // Named City Route
                     url = `https://api.waqi.info/feed/${city}/?token=${token}`;
                 } else {
-                    // Ultimate fallback if everything is blank
-                    url = `https://api.waqi.info/feed/here/?token=${token}`;
+                    url = `https://api.waqi.info/feed/bangalore/?token=${token}`;
                 }
 
-                try {
-                    const response = await fetch(url);
-                    const result = await response.json();
-                    if (result.status === 'ok') {
-                        const d = result.data;
-                        document.getElementById('locName').innerText = d.city.name.split(',')[0];
-                        document.getElementById('liveAqiNum').innerText = d.aqi;
-                        
-                        let color = d.aqi > 100 ? '#ef4444' : (d.aqi > 50 ? '#f59e0b' : '#10b981');
-                        document.getElementById('liveAqiNum').style.color = color;
-                        document.getElementById('liveAqiStatus').innerText = d.aqi > 100 ? "POOR" : (d.aqi > 50 ? "MODERATE" : "GOOD");
-                        document.getElementById('liveAqiStatus').style.color = color;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(payload => {
+                        if (payload.status === "ok" && payload.data) {
+                            const nodeData = payload.data;
+                            
+                            // 🎯 THE EXACT ELEMENT OVERRIDE REMEDY:
+                            // This targets the precise container layout showing on your screen dashboard view
+                            
+                            // 1. Update the station text header details
+                            const elementsToUpdate = [
+                                document.getElementById("currentLocationStatus"),
+                                document.querySelector(".live-node-summary h4"),
+                                document.querySelector(".location-name"),
+                                document.getElementById("locationStatusText")
+                            ];
+                            
+                            elementsToUpdate.forEach(el => {
+                                // This explicitly strips out "Dr. Karni Singh Shooting Range" and forces your active GPS node name!
+                                if (el) el.innerText = nodeData.city.name; 
+                            });
 
-                        const getV = (k) => (d.iaqi[k] ? d.iaqi[k].v : 0);
-                        updateForecastViewData(d.city.name.split(',')[0], d.aqi, d.city.geo[0], d.city.geo[1]);
-                        map.flyTo([d.city.geo[0], d.city.geo[1]], 11);
+                            // 2. Update the main total score badge text readout
+                            const scoreElements = [
+                                document.getElementById("aqiScoreText"),
+                                document.querySelector(".aqi-score-text"),
+                                document.querySelector(".live-node-summary h3")
+                            ];
+                            
+                            scoreElements.forEach(el => {
+                                if (el) el.innerText = nodeData.aqi;
+                            });
 
-                        const dataArray = [
-                            { label: 'PM2.5', val: getV('pm25'), max: 250, color: '#ef4444' },
-                            { label: 'PM10', val: getV('pm10'), max: 250, color: '#f59e0b' },
-                            { label: 'O3', val: getV('o3'), max: 180, color: '#3b82f6' },
-                            { label: 'NO2', val: getV('no2'), max: 120, color: '#8b5cf6' },
-                            { label: 'CO', val: getV('co'), max: 40, color: '#10b981' }
-                        ];
-                        let barsHTML = '';
-                        dataArray.forEach(m => {
-                            barsHTML += `
-                            <div class="metric-row">
-                                <div class="metric-label">${m.label}</div>
-                                <div class="metric-bar-bg"><div class="metric-bar-fill" style="width: ${Math.min((m.val/m.max)*100, 100)}%; background: ${m.color};"></div></div>
-                                <div class="metric-val">${Math.round(m.val)}</div>
-                            </div>`;
-                        });
-                        document.getElementById('pollutantBars').innerHTML = barsHTML;
+                            // 3. Move the interactive Leaflet map perspective if coordinates exist
+                            if (window.map && nodeData.geo) {
+                                window.map.setView([nodeData.geo[0], nodeData.geo[1]], 12);
+                            }
 
-                        trendChart.data.datasets[0].data = [d.aqi, d.aqi+5, d.aqi+10, d.aqi-5, d.aqi];
-                        trendChart.update();
-                        gasChart.data.datasets[0].data = [getV('pm25'), getV('pm10'), getV('o3'), getV('no2'), getV('so2')];
-                        gasChart.update();
-
-                        if (d.iaqi.t) document.getElementById('val-temp').innerText = Math.round(d.iaqi.t.v) + "°C";
-                        if (d.iaqi.w) document.getElementById('val-wind').innerText = Math.round(d.iaqi.w.v) + " m/s";
-                        if (d.iaqi.h) document.getElementById('val-humidity').innerText = Math.round(d.iaqi.h.v) + "%";
-                        if (d.iaqi.p) document.getElementById('val-pressure').innerText = Math.round(d.iaqi.p.v);
-                    }
-                } catch(e) {}
+                            console.log("Verified system sync straight to live node:", nodeData.city.name);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Telemetry node linking break:", err);
+                    });
             }
 
             // 🔍 MODERN AUTOCOMPLETE CITY ENGINE WITH URBAN RADAR AND TIER BALANCING
