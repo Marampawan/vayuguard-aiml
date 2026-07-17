@@ -14,338 +14,217 @@
     
     <style>
         :root {
-            --bg-glass: rgba(15, 23, 42, 0.85);
+            --bg-glass: rgba(13, 20, 38, 0.65);
             --border-glass: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --bg-dark: #0f172a;
+            --accent-blue: #38bdf8;
+            --accent-green: #34d399;
+            --accent-yellow: #fbbf24;
+            --accent-red: #f87171;
+            --bg-dark: #0a0f1d;
         }
 
-        /* 🌌 RESTORED GLOBAL STYLING SCHEME */
+        /* 🌌 GLOBAL CYBERPUNK SLATE WORKSPACE */
         html, body {
             background-color: var(--bg-dark) !important;
             color: var(--text-main) !important;
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
+            letter-spacing: -0.2px;
         }
 
+        /* PREMIUM FROSTED GLASSMORPHIC HEADER BAR */
         .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
-            background: rgba(15, 23, 42, 0.6);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 40px; background: rgba(10, 15, 29, 0.7);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-glass);
         }
 
-        .logo-title {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #fff;
+        .logo-title { 
+            margin: 0; font-size: 1.6rem; font-weight: 800; 
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .dashboard-btn {
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: color 0.2s;
+        
+        .dashboard-btn { 
+            color: var(--accent-blue); text-decoration: none; font-weight: 600; font-size: 0.85rem; 
+            padding: 8px 18px; border-radius: 50px; background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.2); transition: all 0.2s ease; 
         }
-        .dashboard-btn:hover { color: #60a5fa; }
+        .dashboard-btn:hover { background: var(--accent-blue); color: #0a0f1d; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
 
-        /* 🔍 SEARCH AND NAVIGATION INTERFACE */
+        /* 🔍 ULTRA-GLOSSY NEON NESTED SEARCH CAPSULE */
         .search-wrapper {
-            max-width: 500px;
-            margin: 25px auto;
-            display: flex;
-            align-items: center;
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid var(--border-glass);
-            padding: 10px 20px;
-            border-radius: 30px;
-            position: relative;
+            max-width: 520px; margin: 30px auto; display: flex; align-items: center;
+            background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-glass);
+            padding: 12px 24px; border-radius: 50px; position: relative;
+            backdrop-filter: blur(8px); transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-wrapper:focus-within {
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
         }
 
-        /* 🔍 ULTRA-MODERN AUTOCOMPLETE DROPDOWN */
         #searchDropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: rgba(15, 23, 42, 0.95) !important; /* Deep glass slate background */
-            backdrop-filter: blur(12px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 16px !important;
-            margin-top: 10px;
-            display: none;
-            flex-direction: column;
-            z-index: 9999;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
-            padding: 6px !important;
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: rgba(10, 15, 29, 0.95) !important; backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important;
+            margin-top: 12px; display: none; flex-direction: column; z-index: 9999; 
+            overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important; padding: 8px !important;
         }
-
+        
         .search-item {
-            padding: 12px 16px !important;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 14px 18px !important; cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center; 
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            color: #f8fafc !important;
-            border-radius: 10px !important;
-            margin-bottom: 2px;
+            color: #fff !important; border-radius: 12px !important; margin-bottom: 3px;
         }
+        .search-item:hover { background: rgba(56, 189, 248, 0.12) !important; transform: translateX(6px); }
 
-        /* Hover effect with subtle modern blue glow */
-        .search-item:hover {
-            background: rgba(59, 130, 246, 0.15) !important;
-            transform: translateX(4px);
-        }
-
-        .search-item:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Modern badge inside dropdown items */
-        .dropdown-aqi-badge {
-            font-size: 0.75rem !important;
-            font-weight: 700 !important;
-            padding: 4px 10px !important;
-            border-radius: 8px !important;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .tab-navigation-bar {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
+        /* CAPSULE RADAR NAVIGATION TAB CONTROLLERS */
+        .tab-navigation-bar { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
+        
         .tab-link {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid var(--border-glass);
-            color: var(--text-muted);
-            padding: 10px 24px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass);
+            color: var(--text-muted); padding: 12px 26px; border-radius: 50px;
+            cursor: pointer; font-weight: 700; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 10px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .tab-link:hover, .tab-link.active-tab {
-            background: var(--accent-blue);
-            color: #fff;
-            border-color: var(--accent-blue);
-        }
+        .tab-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+        .tab-link.active-tab { background: #fff; color: #0a0f1d; border-color: #fff; font-weight: 800; box-shadow: 0 10px 25px rgba(255,255,255,0.15); }
 
-        /* 🌐 LIVE MAP WRAPPERS */
+        /* 🌐 GLASS SIDEBAR MONITOR LAYOUT PANEL DECK */
         .tab-content { display: none; }
         .tab-content.view-active { display: block; }
-
-        #live-tracking-view {
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 200px);
-        }
-        #map {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0; left: 0;
-            z-index: 1;
-        }
-
-        .ui-layer {
-            position: absolute;
-            top: 20px; left: 20px; right: 20px; bottom: 20px;
-            z-index: 10;
-            pointer-events: none;
-            display: flex;
-            justify-content: space-between;
-        }
+        #live-tracking-view { position: relative; width: 100%; height: calc(100vh - 220px); }
+        #map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        .ui-layer { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; z-index: 10; pointer-events: none; display: flex; justify-content: space-between; }
 
         .modern-panel {
-            width: 340px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 24px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            pointer-events: auto;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            overflow-y: auto;
-            max-height: 90%;
+            width: 350px; background: var(--bg-glass); border: 1px solid var(--border-glass);
+            border-radius: 28px; padding: 24px; display: flex; flex-direction: column;
+            gap: 24px; pointer-events: auto; backdrop-filter: blur(20px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4); overflow-y: auto; max-height: 95%;
         }
 
         .section-title {
-            margin: 0 0 12px 0;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 6px;
+            margin: 0 0 4px 0; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;
         }
 
         .aqi-core {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(255,255,255,0.03);
-            padding: 14px;
-            border-radius: 16px;
-            border: 1px solid var(--border-glass);
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.02); padding: 18px; border-radius: 20px;
+            border: 1px solid var(--border-glass); margin-top: 10px;
         }
-        .aqi-num { font-size: 2.2rem; font-weight: 800; }
+        .aqi-num { font-size: 2.6rem; font-weight: 900; letter-spacing: -1px; }
         .aqi-desc { text-align: right; display: flex; flex-direction: column; justify-content: center; }
 
-        .weather-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+        .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .w-card { 
+            background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); 
+            padding: 16px 12px; border-radius: 18px; text-align: center;
+            transition: background 0.2s ease;
         }
-        .w-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border-glass);
-            padding: 12px;
-            border-radius: 14px;
-            text-align: center;
-        }
-        .w-card i { color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 6px; }
-        .w-card .w-val { font-size: 1rem; font-weight: 700; color: #fff; }
-        .w-card .w-label { font-size: 0.75rem; color: var(--text-muted); }
+        .w-card:hover { background: rgba(255, 255, 255, 0.03); }
+        .w-card i { color: var(--accent-blue); font-size: 1.2rem; margin-bottom: 8px; display: block; }
+        .w-card .w-val { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .w-card .w-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
-        .chart-box { height: 110px; position: relative; }
+        .chart-box { background: rgba(0,0,0,0.15); border-radius: 18px; padding: 12px; height: 120px; position: relative; border: 1px solid var(--border-glass); }
+        
+        .metric-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.8rem; }
+        .metric-label { width: 50px; color: var(--text-muted); font-weight: 700; }
+        .metric-bar-bg { flex: 1; height: 7px; background: rgba(255, 255, 255, 0.04); border-radius: 4px; overflow: hidden; }
+        .metric-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .metric-val { width: 35px; text-align: right; color: #fff; font-weight: 700; }
 
-        .metric-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.8rem; }
-        .metric-label { width: 45px; color: var(--text-muted); font-weight: 600; }
-        .metric-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
-        .metric-bar-fill { height: 100%; border-radius: 3px; }
-        .metric-val { width: 35px; text-align: right; color: #fff; font-weight: 600; }
-
-        /* 📦 FORECAST 7 TAB INTERACTIVE CONFIGURATION */
+        /* 📦 DYNAMIC 7-DAY FORECAST GRAPH MATRIX VIEW PANEL */
         #forecast-7-view {
-            width: 100% !important;
-            max-width: 1300px !important;
-            margin: 0 auto !important;
-            padding: 30px 20px 60px 20px !important;
-            box-sizing: border-box !important;
-            display: none;
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 40px !important;
+            width: 100% !important; max-width: 1350px !important; margin: 0 auto !important;
+            padding: 40px 24px 60px 24px !important; box-sizing: border-box !important;
+            display: none; flex-direction: column !important; align-items: center !important; gap: 45px !important;
         }
         #forecast-7-view.active-tab { display: flex !important; }
 
-        .forecast-main-section-part {
-            width: 100% !important;
-            max-width: 1200px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            box-sizing: border-box !important;
-            flex-shrink: 0 !important;
-        }
-
-        .forecast-grid-container {
-            display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-            gap: 16px !important;
-            width: 100% !important;
-            justify-content: center !important;
-            box-sizing: border-box !important;
-        }
+        .forecast-main-section-part { width: 100% !important; max-width: 1250px !important; display: flex !important; flex-direction: column !important; align-items: center !important; box-sizing: border-box !important; }
+        .forecast-grid-container { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)) !important; gap: 18px !important; width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }
 
         .forecast-page-card {
-            background: rgba(24, 24, 27, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 20px 14px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            background: rgba(15, 23, 42, 0.5) !important; border: 1px solid var(--border-glass) !important;
+            border-radius: 22px !important; padding: 24px 16px !important; text-align: center !important;
+            backdrop-filter: blur(10px); box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important; 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease !important;
         }
-        .forecast-page-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-blue);
+        .forecast-page-card:hover { 
+            transform: translateY(-6px) scale(1.02) !important; 
+            border-color: rgba(255,255,255,0.2) !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important;
         }
 
-        .forecast-aqi-badge {
-            display: inline-block;
-            margin-top: 8px;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
+        .forecast-aqi-badge { 
+            display: inline-block; margin-top: 10px; padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; 
+            letter-spacing: 0.3px; text-transform: uppercase;
         }
-        .aqi-good { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .aqi-moderate { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .aqi-poor { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .aqi-good { background: rgba(52, 211, 153, 0.12) !important; color: var(--accent-green) !important; border: 1px solid rgba(52, 211, 153, 0.25) !important; }
+        .aqi-moderate { background: rgba(251, 191, 36, 0.12) !important; color: var(--accent-yellow) !important; border: 1px solid rgba(251, 191, 36, 0.25) !important; }
+        .aqi-poor { background: rgba(248, 113, 113, 0.12) !important; color: var(--accent-red) !important; border: 1px solid rgba(248, 113, 113, 0.25) !important; }
 
-        .f-metrics {
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.7rem;
-            text-align: left;
-            color: var(--text-muted);
-            line-height: 1.5;
+        .f-metrics { 
+            margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.05); 
+            font-size: 0.72rem; text-align: left; color: var(--text-muted); line-height: 1.6; 
         }
+        .f-metrics div { margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .f-metrics span { color: rgba(255, 255, 255, 0.35); }
 
-        /* 🧘 DETACHED JOKES MODULE PANEL BLOCK (BREATHING REPLICA STYLE) */
+        /* 🟩 HIGH-END ISOLATED WIDGET PANEL DECK (BREATHING REPLICA MODEL) */
         .jokes-standalone-section-part.unique-widget-panel {
-            width: 100% !important;
-            max-width: 1200px !important;
-            padding: 24px !important;
-            background: rgba(24, 24, 27, 0.95) !important;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.6) !important;
-            box-sizing: border-box !important;
-            flex-shrink: 0 !important;
+            width: 100% !important; max-width: 1250px !important; padding: 28px !important;
+            background: rgba(15, 23, 42, 0.5) !important; border: 1px solid var(--border-glass) !important;
+            border-radius: 28px !important; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5) !important; 
+            backdrop-filter: blur(10px); box-sizing: border-box !important;
         }
 
-        .widget-header-row {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            margin-bottom: 20px !important;
-            width: 100% !important;
+        .widget-header-row { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 24px !important; width: 100% !important; }
+        
+        .modern-jokes-data-table { width: 100% !important; border-collapse: separate !important; border-spacing: 0 10px !important; }
+        .modern-jokes-data-table th { padding: 0 16px 10px 16px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+        
+        .modern-jokes-data-table tbody tr {
+            background: rgba(255, 255, 255, 0.01) !important;
+            transition: all 0.2s ease !important;
         }
-
-        .modern-jokes-data-table {
-            width: 100% !important;
-            border-collapse: separate !important;
-            border-spacing: 0 8px !important;
+        .modern-jokes-data-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03) !important;
         }
+        
         .modern-jokes-data-table td {
-            padding: 14px 16px !important;
-            color: #cbd5e1 !important;
-            font-size: 0.9rem !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+            padding: 16px !important; color: #cbd5e1 !important; font-size: 0.9rem;
+            border-top: 1px solid var(--border-glass) !important; border-bottom: 1px solid var(--border-glass) !important;
             white-space: normal !important;
         }
+        .modern-jokes-data-table td:first-child { border-left: 1px solid var(--border-glass) !important; border-radius: 14px 0 0 14px !important; }
+        .modern-jokes-data-table td:last-child { border-right: 1px solid var(--border-glass) !important; border-radius: 0 14px 14px 0 !important; }
 
-        .j-tag { padding: 3px 8px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; }
-        .j-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .j-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-        .j-yellow { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .dropdown-aqi-badge { font-size: 0.75rem !important; font-weight: 800 !important; padding: 4px 10px !important; border-radius: 8px !important; letter-spacing: 0.3px; }
+        .j-tag { padding: 4px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+        .j-blue { background: rgba(56, 189, 248, 0.12); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.2); }
+        .j-purple { background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.2); }
+        .j-yellow { background: rgba(251, 191, 36, 0.12); color: var(--accent-yellow); border: 1px solid rgba(251, 191, 36, 0.2); }
+
+        .breathing-ui-dot {
+            width: 12px; height: 12px; background: var(--accent-green); border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 12px rgba(52,211,153,0.4); animation: widget-breathe 3s infinite ease-in-out;
+        }
+        @keyframes widget-breathe {
+            0% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(52,211,153,0.4); }
+            50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px 6px rgba(52,211,153,0); }
+            100% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+        }
     </style>
 </head>
 <body>
@@ -702,7 +581,7 @@
                 } catch(e) {}
             }
 
-            // 🔍 SEARCH RECOMMENDATIONS ENGINE: INDIAN CITIES PRIORITY FILTER
+            // 🔍 MODERN AUTOCOMPLETE CITY ENGINE WITH URBAN RADAR AND TIER BALANCING
             const searchInput = document.getElementById('citySearchInput');
             const dropdown = document.getElementById('searchDropdown');
             let searchTimeout = null;
@@ -723,14 +602,12 @@
                                 let seenCities = new Set();
                                 let cleanResults = [];
                                 
-                                // Indian Keywords to score and prioritize Indian nodes
                                 const indianKeywords = ['india', 'delhi', 'maharashtra', 'karnataka', 'telangana', 'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh', 'west bengal', 'kerala', 'andhra pradesh', 'punjab', 'haryana', 'bihar', 'hyderabad', 'bengaluru', 'mumbai', 'chennai', 'kolkata'];
 
                                 for (let station of data.data) {
                                     const parts = station.station.name.split(',');
                                     let cityName = '';
                                     
-                                    // 🏙️ Clean out the streets: Extract only the main city segment
                                     if (parts.length >= 3) {
                                         cityName = parts[parts.length - 2].trim();
                                     } else if (parts.length === 2) {
@@ -739,11 +616,9 @@
                                         cityName = parts[0].trim();
                                     }
                                     
-                                    // Strip any remaining station specific code parameters (: or -)
                                     if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
                                     if (cityName.includes('-')) cityName = cityName.split('-')[0].trim();
                                     
-                                    // Prevent duplicate city listings in the recommendations dropdown
                                     if (!seenCities.has(cityName) && cityName.length > 0) {
                                         seenCities.add(cityName);
                                         station.cleanCityName = cityName;
@@ -751,18 +626,15 @@
                                         const rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
                                         const isOffline = station.aqi === '-' || station.aqi === null;
                                         
-                                        // 🇮🇳 Calculate Priority Score: Online India = 10, Online Foreign = 0
                                         station.priorityScore = indianKeywords.some(keyword => rawDataString.includes(keyword)) ? 10 : 0;
-                                        if (isOffline) station.priorityScore -= 5; // Demote offline stations
+                                        if (isOffline) station.priorityScore -= 5;
                                         
                                         cleanResults.push(station);
                                     }
                                 }
 
-                                // 🎯 Sort: Sorts Indian cities straight to the absolute top
                                 cleanResults.sort((a, b) => b.priorityScore - a.priorityScore);
 
-                                // Render the top 6 optimized modern results
                                 cleanResults.slice(0, 6).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
@@ -770,25 +642,28 @@
                                     const isOffline = station.aqi === '-' || station.aqi === null;
                                     const displayAqi = isOffline ? 'OFFLINE' : `AQI: ${station.aqi}`;
                                     
-                                    let badgeColor = 'rgba(16, 185, 129, 0.15)';
-                                    let textColor = '#10b981';
-                                    let borderStyle = '1px solid rgba(16, 185, 129, 0.3)';
+                                    let badgeColor = 'rgba(52, 211, 153, 0.12)';
+                                    let textColor = 'var(--accent-green)';
+                                    let borderStyle = '1px solid rgba(52, 211, 153, 0.25)';
                                     
                                     if (parseInt(station.aqi) > 50) {
-                                        badgeColor = 'rgba(245, 158, 11, 0.15)';
-                                        textColor = '#f59e0b';
-                                        borderStyle = '1px solid rgba(245, 158, 11, 0.3)';
+                                        badgeColor = 'rgba(251, 191, 36, 0.12)';
+                                        textColor = 'var(--accent-yellow)';
+                                        borderStyle = '1px solid rgba(251, 191, 36, 0.25)';
                                     }
                                     if (parseInt(station.aqi) > 100 || isOffline) {
-                                        badgeColor = 'rgba(239, 68, 68, 0.15)';
-                                        textColor = '#ef4444';
-                                        borderStyle = '1px solid rgba(239, 68, 68, 0.3)';
+                                        badgeColor = 'rgba(248, 113, 113, 0.12)';
+                                        textColor = 'var(--accent-red)';
+                                        borderStyle = '1px solid rgba(248, 113, 113, 0.25)';
                                     }
 
                                     item.innerHTML = `
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <span style="font-size: 0.9rem; color: #fff;">📍</span>
-                                            <span style="font-weight: 600; font-size: 0.85rem;">${station.cleanCityName}</span>
+                                            <span style="font-size: 0.95rem;">🏙️</span>
+                                            <div>
+                                                <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">${station.cleanCityName}</div>
+                                                <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 1px;">Active Tracking Node</div>
+                                            </div>
                                         </div>
                                         <span class="dropdown-aqi-badge" style="background: ${badgeColor}; color: ${textColor}; border: ${borderStyle};">
                                             ${displayAqi}
