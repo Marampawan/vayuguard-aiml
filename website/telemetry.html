@@ -317,6 +317,112 @@
             50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px 6px rgba(52,211,153,0); }
             100% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(52,211,153,0); }
         }
+
+        /* 🤖 PREMIUM FLOATING AI COPILOT WINDOW */
+        #ai-copilot-trigger {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+            color: #0a0f1d;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 2000000;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #ai-copilot-trigger:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        #ai-copilot-window {
+            position: fixed;
+            bottom: 105px;
+            right: 30px;
+            width: 380px;
+            height: 480px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.1);
+            z-index: 2000000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .copilot-header {
+            background: rgba(56, 189, 248, 0.08);
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copilot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .copilot-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+        .copilot-bubble.bot {
+            background: rgba(255,255,255,0.03);
+            color: #cbd5e1;
+            border: 1px solid var(--border-glass);
+            align-self: flex-start;
+        }
+        .copilot-bubble.user {
+            background: #3b82f6;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .copilot-input-area {
+            padding: 14px;
+            background: rgba(10, 15, 29, 0.5);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            gap: 10px;
+        }
+        .copilot-input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .copilot-input:focus { border-color: var(--accent-blue); }
+        .copilot-send {
+            background: var(--accent-blue);
+            border: none;
+            color: #0a0f1d;
+            padding: 0 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -813,6 +919,95 @@
                 syncTelemetry();
             }
         });
+
+        // 🤖 INTERACTIVE AI COPILOT ARCHITECTURE ENGINE
+        function toggleCopilotWindow() {
+            const win = document.getElementById('ai-copilot-window');
+            win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function handleCopilotKey(e) {
+            if (e.key === 'Enter') sendCopilotMessage();
+        }
+
+        function sendCopilotMessage() {
+            const input = document.getElementById('copilotTextInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            // Render user message bubble
+            appendCopilotBubble(msg, 'user');
+            input.value = '';
+
+            // Extract real-time AQI metrics from dashboard states
+            const currentLiveAqi = document.getElementById('liveAqiNum').innerText;
+            const currentCity = document.getElementById('locName').innerText;
+
+            setTimeout(() => {
+                let reply = "I am processing that request using our cloud telemetry nodes. Could you please clarify your specific inquiry?";
+                const lowerMsg = msg.toLowerCase();
+
+                // Intent Analysis Matrix Parsing
+                if (lowerMsg.includes('safe') || lowerMsg.includes('jog') || lowerMsg.includes('exercise') || lowerMsg.includes('outside')) {
+                    if (currentLiveAqi === '--' || currentLiveAqi === 'Calibrating') {
+                        reply = `Checking physical sensors for ${currentCity}. Telemetry is currently calibrating. Please stand by.`;
+                    } else {
+                        const aqiNum = parseInt(currentLiveAqi, 10);
+                        if (aqiNum > 100) {
+                            reply = `⚠️ <strong>Health Warning for ${currentCity}:</strong> The live AQI score is currently high at <strong>${aqiNum}</strong>. I highly recommend shifting your exercise indoors today to avoid heavy exposure.`;
+                        } else if (aqiNum > 50) {
+                            reply = `📊 <strong>Moderate Conditions:</strong> The live AQI score in ${currentCity} is <strong>${aqiNum}</strong>. Outdoor activities are acceptable, but sensitive groups should minimize extended heavy exertion.`;
+                        } else {
+                            reply = `✅ <strong>Perfect Conditions:</strong> The live AQI score in ${currentCity} is an optimal <strong>${aqiNum}</strong>. It is completely safe for jogging, outdoor sports, and opening windows!`;
+                        }
+                    }
+                } else if (lowerMsg.includes('aqi') || lowerMsg.includes('status') || lowerMsg.includes('current')) {
+                    reply = `The active quantum monitoring node in <strong>${currentCity}</strong> is reporting a real-time tracking calculation score of <strong>${currentLiveAqi} AQI</strong>.`;
+                } else if (lowerMsg.includes('joke') || lowerMsg.includes('mindful')) {
+                    reply = "💨 Here's an atmospheric joke for you: Why did the classical machine learning model look sad? Because it couldn't handle the quantum leaps in air forecasting!";
+                } else if (lowerMsg.includes('hello') || lowerMsg.includes('hey') || lowerMsg.includes('hi')) {
+                    reply = `Hello! Connected to the <strong>${currentCity}</strong> sensory array tracking network. How can your assistant help you today?`;
+                }
+
+                appendCopilotBubble(reply, 'bot');
+            }, 600);
+        }
+
+        function appendCopilotBubble(text, sender) {
+            const chatBox = document.getElementById('copilotChatBox');
+            const bubble = document.createElement('div');
+            bubble.className = `copilot-bubble ${sender}`;
+            bubble.innerHTML = text;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     </script>
+
+    <!-- ================= 🤖 VAYUGUARD AI COPILOT INTERACTIVE CONTAINER ================= -->
+    <div id="ai-copilot-trigger" onclick="toggleCopilotWindow()">🤖</div>
+
+    <div id="ai-copilot-window">
+        <div class="copilot-header">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="breathing-ui-dot" style="background: #38bdf8; box-shadow: 0 0 10px #38bdf8;"></span>
+                <div>
+                    <div style="font-weight: 800; font-size: 0.9rem; color: #fff;">VayuGuard Copilot</div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted);">Quantum AI Agent Core v1.0</div>
+                </div>
+            </div>
+            <button onclick="toggleCopilotWindow()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:1.1rem;">×</button>
+        </div>
+        
+        <div class="copilot-messages" id="copilotChatBox">
+            <div class="copilot-bubble bot">
+                Hello! I am your <strong>VayuGuard Telemetry Agent</strong>. I track live atmospheric vectors across the cloud grid. Ask me anything about health advice, pollution indexes, or recommendations!
+            </div>
+        </div>
+
+        <div class="copilot-input-area">
+            <input type="text" id="copilotTextInput" class="copilot-input" placeholder="Ask agent (e.g., Is it safe to jog right now?)..." onkeypress="handleCopilotKey(event)">
+            <button class="copilot-send" onclick="sendCopilotMessage()">Send</button>
+        </div>
+    </div>
 </body>
 </html>
