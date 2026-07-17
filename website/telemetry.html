@@ -57,12 +57,22 @@
         }
         .dashboard-btn:hover { background: var(--accent-blue); color: #0a0f1d; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
 
-        /* 🔍 ULTRA-GLOSSY NEON NESTED SEARCH CAPSULE */
+        /* 🔍 ULTRA-GLOSSY UNBOUNDED SEARCH CAPSULE WRAPPER */
         .search-wrapper {
-            max-width: 520px; margin: 30px auto; display: flex; align-items: center;
-            background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-glass);
-            padding: 12px 24px; border-radius: 50px; position: relative;
-            backdrop-filter: blur(8px); transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            max-width: 520px; 
+            margin: 30px auto; 
+            display: flex; 
+            align-items: center;
+            background: rgba(15, 23, 42, 0.4); 
+            border: 1px solid var(--border-glass);
+            padding: 12px 24px; 
+            border-radius: 50px; 
+            position: relative;
+            backdrop-filter: blur(8px); 
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            
+            /* 🛑 THE KEY VISIBILITY REMEDY: PREVENTS CONTAINER FROM HIDING THE DROPDOWN */
+            overflow: visible !important; 
         }
         .search-wrapper:focus-within {
             border-color: rgba(56, 189, 248, 0.4);
