@@ -1074,11 +1074,10 @@
             appendCopilotBubble(msg, 'user');
             input.value = '';
 
-            // Render a modern translucent pulsing loading indicator dot state
+            // Render loading status text indicator
             const loadingId = 'bot-loading-' + Date.now();
             appendCopilotBubble(`<span id="${loadingId}" style="color:var(--text-muted);">Agent processing neural vectors...</span>`, 'bot');
 
-            // 2. Point directly to your Free Tier Google AI Studio Gemini API Key
             // 🎯 Perfectly aligned full Gemini API Key string
             const GEMINI_FREE_KEY = "AIzaSy" + "Ab8RN6I3-5t3tvdnMfHS0d6VkVavVRmpBhAJ3Im4CRCfl-S9yw";
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_FREE_KEY}`;
@@ -1090,10 +1089,7 @@
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
-                                text: `You are VayuGuard Copilot, an expert AI assistant for an advanced Quantum-Hybrid Environmental Air Intelligence platform. 
-                                Give short, highly interactive, professional answers (under 3 sentences). 
-                                If the user asks about the 'live monitor', 'map', or 'forecast', encourage them to open the telemetry subpage. 
-                                User question: ${msg}`
+                                text: `You are VayuGuard Copilot, an expert AI assistant for an advanced Quantum-Hybrid Environmental Air Intelligence platform. Give short, highly interactive, professional answers (under 3 sentences). If the user asks about the 'live monitor', 'map', or 'forecast', encourage them to open the telemetry subpage. User question: ${msg}`
                             }]
                         }]
                     })
@@ -1102,18 +1098,27 @@
                 const data = await response.json();
                 let outputResponse = "";
 
-                if (data && data.candidates && data.candidates[0].content.parts[0].text) {
+                // 🔍 Key Fix: Safely extracting text according to the exact schema definition
+                if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                     outputResponse = data.candidates[0].content.parts[0].text;
+                } else if (data && data.error) {
+                    outputResponse = `API Error: ${data.error.message}`;
                 } else {
                     outputResponse = "Sensory node feedback anomaly encountered. Please check your query parameters.";
                 }
 
-                // Remove loading tracking strings and post real response text strings
-                document.getElementById(loadingId).parentElement.innerHTML = outputResponse;
+                // Swap out the loading indicator with the real model answer
+                const loadEl = document.getElementById(loadingId);
+                if (loadEl) {
+                    loadEl.parentElement.innerHTML = outputResponse;
+                }
 
             } catch (err) {
                 console.error("Gemini Endpoint Break:", err);
-                document.getElementById(loadingId).parentElement.innerHTML = "Network connection timeout across cloud sensors. Please verify connection.";
+                const loadEl = document.getElementById(loadingId);
+                if (loadEl) {
+                    loadEl.parentElement.innerHTML = "Network connection timeout across cloud sensors. Please verify connection.";
+                }
             }
         }
 
