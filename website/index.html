@@ -1084,7 +1084,7 @@
                 const part2 = "pBhAJ3Im4CRCfl-S9yw";
                 const GEMINI_FREE_KEY = part1 + part2;
                 
-                // 🔍 THE DEFINITIVE FIX: Pointing to the modern stable production model (gemini-2.5-flash)
+                // 🔍 FUTURE-PROOF ROUTING FIX: Pointing to the active stable production engine model
                 const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_FREE_KEY}`;
 
                 const response = await fetch(endpoint, {
@@ -1104,7 +1104,7 @@
                 const data = await response.json();
                 let outputResponse = "";
 
-                // Safely parse out the incoming generation tokens
+                // Safely parse out incoming text generation tokens
                 if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                     outputResponse = data.candidates[0].content.parts[0].text;
                 } else if (data && data.error) {
