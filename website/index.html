@@ -1079,7 +1079,8 @@
             appendCopilotBubble(`<span id="${loadingId}" style="color:var(--text-muted);">Agent processing neural vectors...</span>`, 'bot');
 
             // 🎯 Perfectly aligned full Gemini API Key string
-            const GEMINI_FREE_KEY = "AIzaSy" + "Ab8RN6I3-5t3tvdnMfHS0d6VkVavVRmpBhAJ3Im4CRCfl-S9yw";
+            // 🎯 The complete key mapping including the active "AQ." authentication prefix
+            const GEMINI_FREE_KEY = "AQ." + "Ab8RN6I3-5t3tvdnMfHS0d6VkVavVRmpBhAJ3Im4CRCfl-S9yw";
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_FREE_KEY}`;
 
             try {
