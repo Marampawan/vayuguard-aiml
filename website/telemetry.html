@@ -708,13 +708,23 @@
                 }
             }
 
-            async function syncTelemetry(lat = null, lon = null, cityName = null) {
-                let apiUrl = `https://api.waqi.info/feed/here/?token=${myWaqiToken}`;
-                if (cityName) apiUrl = `https://api.waqi.info/feed/${cityName}/?token=${myWaqiToken}`;
-                else if (lat && lon) apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${myWaqiToken}`;
+            async function syncTelemetry(lat = null, lon = null, city = null) {
+                let url = "";
+                const token = myWaqiToken;
+
+                if (lat && lon) {
+                    // GPS Route
+                    url = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${token}`;
+                } else if (city) {
+                    // Named City Route
+                    url = `https://api.waqi.info/feed/${city}/?token=${token}`;
+                } else {
+                    // Ultimate fallback if everything is blank
+                    url = `https://api.waqi.info/feed/here/?token=${token}`;
+                }
 
                 try {
-                    const response = await fetch(apiUrl);
+                    const response = await fetch(url);
                     const result = await response.json();
                     if (result.status === 'ok') {
                         const d = result.data;
@@ -885,23 +895,35 @@
                 if (searchInput.value.trim()) syncTelemetry(null, null, searchInput.value.trim());
             });
 
-            // 🔍 FIXED GEOLOCATION MATRIX BLOCK WITH BENGALURU AS DEFAULT FALLBACK Hub
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    p => {
-                        // Successfully fetched browser coordinates
-                        syncTelemetry(p.coords.latitude, p.coords.longitude);
-                    }, 
-                    () => {
-                        // Fallback 1: Explicitly pass your hub city if permissions are denied/delayed
-                        syncTelemetry(null, null, "Bengaluru");
-                    },
-                    { timeout: 5000 } // Sets a strict 5-second maximum wait limit
-                );
-            } else {
-                // Fallback 2: Direct routing string if browser doesn't support geolocation
-                syncTelemetry(null, null, "Bengaluru");
+            // 🔍 DEFINITIVE USER LOCATION ROUTER WITH WORKING STATION SEARCH FALLBACK
+            function initLocationSync() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            // Perfect Scenario: User allowed location, use exact Lat/Lng
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            syncTelemetry(lat, lng);
+                        },
+                        (error) => {
+                            console.warn("Geolocation failed or denied, using Bangalore fallback:", error.message);
+                            // Fallback 1: Use explicit keyword matched by WAQI API
+                            syncTelemetry(null, null, "bangalore");
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 8000, // Give it up to 8 seconds to grab GPS before giving up
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    // Fallback 2: Old browser support
+                    syncTelemetry(null, null, "bangalore");
+                }
             }
+
+            // Make sure to call your new init function when the window loads
+            window.addEventListener('DOMContentLoaded', initLocationSync);
         });
     </script>
 </body>
