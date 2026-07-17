@@ -900,24 +900,24 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
-                            // Perfect Scenario: User allowed location, use exact Lat/Lng
+                            // Scenario A: User allows GPS location tracking
                             const lat = position.coords.latitude;
                             const lng = position.coords.longitude;
-                            syncTelemetry(lat, lng);
+                            syncTelemetry(lat, lng, null);
                         },
                         (error) => {
-                            console.warn("Geolocation failed or denied, using Bangalore fallback:", error.message);
-                            // Fallback 1: Use explicit keyword matched by WAQI API
+                            console.warn("GPS tracking timed out or denied. Forcing Bangalore fallback node.");
+                            // Scenario B: Location denied/timeout -> Explicitly force 'bangalore'
                             syncTelemetry(null, null, "bangalore");
                         },
                         {
                             enableHighAccuracy: true,
-                            timeout: 8000, // Give it up to 8 seconds to grab GPS before giving up
+                            timeout: 5000, // Wait maximum 5 seconds for precise hardware GPS coordinates
                             maximumAge: 0
                         }
                     );
                 } else {
-                    // Fallback 2: Old browser support
+                    // Scenario C: Browser doesn't support Geolocation
                     syncTelemetry(null, null, "bangalore");
                 }
             }
