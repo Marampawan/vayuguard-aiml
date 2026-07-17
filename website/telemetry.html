@@ -426,7 +426,7 @@
                 </div>
                 <div style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
                     <span>📍</span>
-                    <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">LOADING TELEMETRY NETWORK...</span>
+                    <span id="locationNameHeading">Delhi</span>
                 </div>
             </div>
 
@@ -708,7 +708,7 @@
                 }
             }
 
-            // 🔍 1. DEFINITIVE USER LOCATION ROUTER WITH BENGALURU FALLBACK
+            // 🔍 1. DEFINITIVE GEOLOCATION ROUTER WITH BENGALURU FALLBACK
             function initLocationSync() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -719,13 +719,13 @@
                             syncTelemetry(lat, lng, null);
                         },
                         (error) => {
-                            console.warn("GPS tracking timed out/denied. Forcing Bangalore fallback.");
+                            console.warn("GPS tracking timed out or denied. Forcing Bangalore fallback node.");
                             // Scenario B: Fallback directly to verified city keyword
                             syncTelemetry(null, null, "bangalore");
                         },
                         {
                             enableHighAccuracy: true,
-                            timeout: 5000,
+                            timeout: 7000, // Wait maximum 7 seconds for precise hardware GPS coordinates
                             maximumAge: 0
                         }
                     );
@@ -734,7 +734,7 @@
                 }
             }
 
-            // 🌐 2. FIXED TELEMETRY NODE DATA FETCH SYSTEM
+            // 🌐 2. FIXED TELEMETRY DATA FETCH & MAP SYNC SYSTEM
             function syncTelemetry(lat, lng, city) {
                 const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
                 let url = "";
@@ -753,22 +753,43 @@
                         if (payload.status === "ok" && payload.data) {
                             const nodeData = payload.data;
                             
-                            // 🎯 FIXED OVERRIDE: Dynamically scans the page body text to swap out the hardcoded "Delhi" string safely!
-                            document.body.innerHTML = document.body.innerHTML.replace("Delhi", "📍 " + nodeData.city.name);
-
-                            // Update the AQI readout metrics inside your status card container
-                            const statusCard = document.querySelector('.live-node-summary') || document.body;
-                            if (statusCard) {
-                                // Replaces calibrating placeholders with real real-time API values
-                                statusCard.innerHTML = statusCard.innerHTML.replace("--", nodeData.aqi).replace("CALIBRATING", "ACTIVE NODE");
+                            // 🎯 A. SAFELY UPDATE HEADERS WITHOUT WIPING THE PAGE STRUCTURE
+                            const headingEl = document.getElementById("locationNameHeading");
+                            if (headingEl) {
+                                headingEl.innerText = "📍 " + nodeData.city.name;
                             }
 
-                            // Center your Leaflet map over your precise geographic coordinates
+                            // Update text inside the card panels visible on your screen
+                            const statusSummaryEl = document.querySelector(".live-node-summary h4") || document.getElementById("currentLocationStatus");
+                            if (statusSummaryEl) {
+                                statusSummaryEl.innerText = "ACTIVE TELEMETRY STREAM";
+                            }
+
+                            const scoreEl = document.querySelector(".live-node-summary h3") || document.getElementById("aqiScoreText");
+                            if (scoreEl) {
+                                scoreEl.innerHTML = `<span style="font-size: 3rem; font-weight: bold; color: #00d2ff;">${nodeData.aqi}</span>`;
+                            }
+
+                            // 🎯 B. MOVE THE LEAFLET MAP & RE-CENTER OVER USER COORDINATES
+                            // This targets your active map instance variable ('map') and slides it instantly
                             if (window.map && nodeData.geo) {
-                                window.map.setView([nodeData.geo[0], nodeData.geo[1]], 12);
+                                const nodeLat = nodeData.geo[0];
+                                const nodeLng = nodeData.geo[1];
+
+                                // Pan and zoom smoothly into your true local coordinates
+                                window.map.setView([nodeLat, nodeLng], 13);
+                                
+                                // Clear older layers or drop a direct pinpoint marker icon
+                                if (window.L) {
+                                    // Drop a fresh locator pin on the map
+                                    const userMarker = window.L.marker([nodeLat, nodeLng])
+                                        .addTo(window.map)
+                                        .bindPopup(`<b>${nodeData.city.name} Node</b><br>AQI Score: ${nodeData.aqi}`)
+                                        .openPopup();
+                                }
                             }
 
-                            console.log("Telemetry successfully synchronized to:", nodeData.city.name);
+                            console.log("Telemetry matrix synced successfully to target node:", nodeData.city.name);
                         }
                     })
                     .catch(err => console.error("Telemetry Node Connection Error:", err));
