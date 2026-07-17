@@ -97,18 +97,79 @@
         .tab-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
         .tab-link.active-tab { background: #fff; color: #0a0f1d; border-color: #fff; font-weight: 800; box-shadow: 0 10px 25px rgba(255,255,255,0.15); }
 
-        /* 🌐 GLASS SIDEBAR MONITOR LAYOUT PANEL DECK */
-        .tab-content { display: none; }
-        .tab-content.view-active { display: block; }
-        #live-tracking-view { position: relative; width: 100%; height: calc(100vh - 220px); }
-        #map { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-        .ui-layer { position: absolute; top: 20px; left: 20px; right: 20px; bottom: 20px; z-index: 10; pointer-events: none; display: flex; justify-content: space-between; }
+        /* 🌐 ULTRA-MODERN FULL-WIDTH DASHBOARD LAYOUT GRID */
+        #live-tracking-view {
+            display: none;
+            width: 100%;
+            height: calc(100vh - 180px); /* Perfect fit within window bounds */
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+        
+        #live-tracking-view.view-active {
+            display: grid !important;
+            grid-template-columns: 350px 1fr 350px; /* Symmetrical left panel, map center, right panel */
+            gap: 20px;
+            align-items: stretch;
+        }
 
+        /* Center Map Element Takes Up Full Remaining Height */
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            border: 1px solid var(--border-glass);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+            position: relative !important; /* Removes absolute layout positioning overlay breaks */
+            z-index: 1;
+        }
+
+        /* Disable absolute layering constraint requirements */
+        .ui-layer {
+            display: contents; /* Dissolves wrapper to let children slide directly into grid tracks */
+            pointer-events: none;
+        }
+
+        /* 📦 PERFECT-FIT DATA PANELS (NO SCROLLBARS) */
         .modern-panel {
-            width: 350px; background: var(--bg-glass); border: 1px solid var(--border-glass);
-            border-radius: 28px; padding: 24px; display: flex; flex-direction: column;
-            gap: 24px; pointer-events: auto; backdrop-filter: blur(20px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4); overflow-y: auto; max-height: 95%;
+            width: 100% !important; /* Adapts directly to the 350px grid track size */
+            height: 100%;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 28px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Evenly spreads components vertically */
+            gap: 16px;
+            pointer-events: auto;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+            box-sizing: border-box;
+            overflow: visible !important; /* FORCES NATURAL RENDER FIT WITH NO SCROLLBAR WINDOWS */
+            max-height: 100% !important;
+        }
+
+        /* Compact Adjustment Factors for inner elements to fit layout sizes */
+        .chart-box { 
+            background: rgba(0,0,0,0.15); 
+            border-radius: 18px; 
+            padding: 10px; 
+            flex: 1; /* Allows charts to expand/shrink dynamically to fit spaces */
+            min-height: 90px;
+            position: relative; 
+            border: 1px solid var(--border-glass); 
+        }
+
+        .weather-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+        }
+        
+        .w-card { 
+            padding: 12px 8px; 
+            border-radius: 16px;
         }
 
         .section-title {
@@ -124,19 +185,6 @@
         .aqi-num { font-size: 2.6rem; font-weight: 900; letter-spacing: -1px; }
         .aqi-desc { text-align: right; display: flex; flex-direction: column; justify-content: center; }
 
-        .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .w-card { 
-            background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); 
-            padding: 16px 12px; border-radius: 18px; text-align: center;
-            transition: background 0.2s ease;
-        }
-        .w-card:hover { background: rgba(255, 255, 255, 0.03); }
-        .w-card i { color: var(--accent-blue); font-size: 1.2rem; margin-bottom: 8px; display: block; }
-        .w-card .w-val { font-size: 1.1rem; font-weight: 800; color: #fff; }
-        .w-card .w-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
-
-        .chart-box { background: rgba(0,0,0,0.15); border-radius: 18px; padding: 12px; height: 120px; position: relative; border: 1px solid var(--border-glass); }
-        
         .metric-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 0.8rem; }
         .metric-label { width: 50px; color: var(--text-muted); font-weight: 700; }
         .metric-bar-bg { flex: 1; height: 7px; background: rgba(255, 255, 255, 0.04); border-radius: 4px; overflow: hidden; }
