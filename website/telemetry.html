@@ -57,7 +57,7 @@
         }
         .dashboard-btn:hover { background: var(--accent-blue); color: #0a0f1d; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
 
-        /* 🔍 ULTRA-GLOSSY UNBOUNDED SEARCH CAPSULE WRAPPER */
+        /* 🔍 ULTRA-GLOSSY LAYER-ISOLATED SEARCH CAPSULE WRAPPER */
         .search-wrapper {
             max-width: 520px; 
             margin: 30px auto; 
@@ -71,7 +71,8 @@
             backdrop-filter: blur(8px); 
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             
-            /* 🛑 THE KEY VISIBILITY REMEDY: PREVENTS CONTAINER FROM HIDING THE DROPDOWN */
+            /* 🛑 FORCES THE ENTIRE SEARCH AREA TO STAY ON TOP OF THE MAP CANVAS GRID */
+            z-index: 999999 !important; 
             overflow: visible !important; 
         }
         .search-wrapper:focus-within {
@@ -79,22 +80,23 @@
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
         }
 
-        /* 🔍 INTUITIVE OVERLAY AUTOCOMPLETE DROPDOWN FIX */
+        /* 🔍 OVERLAY AUTOCOMPLETE DROPDOWN */
         #searchDropdown {
             position: absolute !important;
-            /* Shifting it down past the search box boundaries */
-            top: calc(100% + 5px) !important; 
+            top: calc(100% + 8px) !important; /* Positions it perfectly below the pill shape input wrapper */
             left: 0 !important;
             right: 0 !important;
-            background: rgba(15, 23, 42, 0.98) !important; 
+            background: rgba(10, 15, 29, 0.98) !important; /* Opaque slate glass for clean layout readability */
             backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            border-radius: 16px !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+            border-radius: 20px !important;
             display: none;
             flex-direction: column !important;
-            padding: 6px !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.1) !important;
-            z-index: 999999 !important; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(56, 189, 248, 0.15) !important; 
+            padding: 8px !important;
+            
+            /* 🛑 GUARANTEES DROPDOWN FLIES ABOVE ALL MAP LAYERS */
+            z-index: 1000000 !important; 
         }
         
         .search-item {
