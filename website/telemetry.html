@@ -885,10 +885,22 @@
                 if (searchInput.value.trim()) syncTelemetry(null, null, searchInput.value.trim());
             });
 
+            // 🔍 FIXED GEOLOCATION MATRIX BLOCK WITH BENGALURU AS DEFAULT FALLBACK Hub
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(p => syncTelemetry(p.coords.latitude, p.coords.longitude), () => syncTelemetry());
+                navigator.geolocation.getCurrentPosition(
+                    p => {
+                        // Successfully fetched browser coordinates
+                        syncTelemetry(p.coords.latitude, p.coords.longitude);
+                    }, 
+                    () => {
+                        // Fallback 1: Explicitly pass your hub city if permissions are denied/delayed
+                        syncTelemetry(null, null, "Bengaluru");
+                    },
+                    { timeout: 5000 } // Sets a strict 5-second maximum wait limit
+                );
             } else {
-                syncTelemetry();
+                // Fallback 2: Direct routing string if browser doesn't support geolocation
+                syncTelemetry(null, null, "Bengaluru");
             }
         });
     </script>
