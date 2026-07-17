@@ -73,27 +73,56 @@
             position: relative;
         }
 
+        /* 🔍 ULTRA-MODERN AUTOCOMPLETE DROPDOWN */
         #searchDropdown {
             position: absolute;
-            top: 100%; left: 0; right: 0;
-            background: #1e293b;
-            border: 1px solid var(--border-glass);
-            border-radius: 12px;
-            margin-top: 8px;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95) !important; /* Deep glass slate background */
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            margin-top: 10px;
             display: none;
             flex-direction: column;
             z-index: 9999;
             overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+            padding: 6px !important;
         }
+
         .search-item {
-            padding: 12px 20px;
+            padding: 12px 16px !important;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            color: #f8fafc !important;
+            border-radius: 10px !important;
+            margin-bottom: 2px;
         }
-        .search-item:hover { background: rgba(255,255,255,0.05); }
+
+        /* Hover effect with subtle modern blue glow */
+        .search-item:hover {
+            background: rgba(59, 130, 246, 0.15) !important;
+            transform: translateX(4px);
+        }
+
+        .search-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Modern badge inside dropdown items */
+        .dropdown-aqi-badge {
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            padding: 4px 10px !important;
+            border-radius: 8px !important;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
 
         .tab-navigation-bar {
             display: flex;
@@ -672,7 +701,7 @@
                 } catch(e) {}
             }
 
-            // Search setup logic integration
+            // 🔄 MODERN SEARCH AUTOCOMPLETE LOGIC
             const searchInput = document.getElementById('citySearchInput');
             const dropdown = document.getElementById('searchDropdown');
             let searchTimeout = null;
@@ -680,26 +709,77 @@
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
                 clearTimeout(searchTimeout);
+                
                 if (query.length >= 2) {
                     searchTimeout = setTimeout(async () => {
-                        const res = await fetch(`https://api.waqi.info/search/?token=${myWaqiToken}&keyword=${encodeURIComponent(query)}`);
-                        const data = await res.json();
-                        if (data.status === 'ok') {
-                            dropdown.innerHTML = '';
-                            data.data.slice(0, 5).forEach(station => {
-                                const item = document.createElement('div');
-                                item.className = 'search-item';
-                                item.innerHTML = `<span>${station.station.name.split(',')[0]}</span> <span class="j-tag j-blue">AQI: ${station.aqi}</span>`;
-                                item.addEventListener('click', () => {
-                                    searchInput.value = station.station.name.split(',')[0];
-                                    dropdown.style.display = 'none';
-                                    syncTelemetry(null, null, station.uid ? '@'+station.uid : station.station.name);
+                        try {
+                            // Using the correct "myWaqiToken" variable to prevent script crashes
+                            const res = await fetch(`https://api.waqi.info/search/?token=${myWaqiToken}&keyword=${encodeURIComponent(query)}`);
+                            const data = await res.json();
+                            
+                            if (data.status === 'ok') {
+                                dropdown.innerHTML = '';
+                                
+                                data.data.slice(0, 6).forEach(station => {
+                                    const item = document.createElement('div');
+                                    item.className = 'search-item';
+                                    
+                                    const cleanName = station.station.name.split(',')[0];
+                                    const rawAqi = parseInt(station.aqi, 10);
+                                    
+                                    // Determine modern color classes dynamically for recommended items
+                                    let badgeColor = 'rgba(16, 185, 129, 0.15)';
+                                    let textColor = '#10b981';
+                                    let borderStyle = '1px solid rgba(16, 185, 129, 0.3)';
+                                    
+                                    if (rawAqi > 50) {
+                                        badgeColor = 'rgba(245, 158, 11, 0.15)';
+                                        textColor = '#f59e0b';
+                                        borderStyle = '1px solid rgba(245, 158, 11, 0.3)';
+                                    }
+                                    if (rawAqi > 100 || isNaN(rawAqi)) {
+                                        badgeColor = 'rgba(239, 68, 68, 0.15)';
+                                        textColor = '#ef4444';
+                                        borderStyle = '1px solid rgba(239, 68, 68, 0.3)';
+                                    }
+
+                                    const displayAqi = isNaN(rawAqi) ? 'OFFLINE' : `AQI: ${rawAqi}`;
+
+                                    // Render modern element components cleanly
+                                    item.innerHTML = `
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <span style="font-size: 0.9rem; color: #fff;">📍</span>
+                                            <span style="font-weight: 600; font-size: 0.85rem;">${cleanName}</span>
+                                        </div>
+                                        <span class="dropdown-aqi-badge" style="background: ${badgeColor}; color: ${textColor}; border: ${borderStyle};">
+                                            ${displayAqi}
+                                        </span>
+                                    `;
+                                    
+                                    item.addEventListener('click', () => {
+                                        searchInput.value = cleanName;
+                                        dropdown.style.display = 'none';
+                                        document.getElementById('locName').innerText = "Rerouting...";
+                                        syncTelemetry(null, null, station.uid ? '@' + station.uid : station.station.name);
+                                    });
+                                    dropdown.appendChild(item);
                                 });
-                                dropdown.appendChild(item);
-                            });
-                            dropdown.style.display = 'flex';
+                                
+                                dropdown.style.display = 'flex';
+                            }
+                        } catch (err) {
+                            console.error("Modern autocomplete rendering failed:", err);
                         }
                     }, 300);
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            // Auto-hide the dropdown if you click outside the search box
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-wrapper')) {
+                    dropdown.style.display = 'none';
                 }
             });
 
