@@ -734,7 +734,7 @@
                 }
             }
 
-            // 🌐 2. FIXED TELEMETRY DATA FETCH & MAP SYNC SYSTEM
+            // 📊 4. NON-DESTRUCTIVE TELEMETRY PANEL UPDATER (DIRECT ID MAPPING)
             function syncTelemetry(lat, lng, city) {
                 const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
                 let url = "";
@@ -752,47 +752,64 @@
                     .then(payload => {
                         if (payload.status === "ok" && payload.data) {
                             const nodeData = payload.data;
+                            const formattedCityName = nodeData.city.name.split(',')[0].toUpperCase();
                             
-                            // 🎯 A. SAFELY UPDATE HEADERS WITHOUT WIPING THE PAGE STRUCTURE
-                            const headingEl = document.getElementById("locationNameHeading");
-                            if (headingEl) {
-                                headingEl.innerText = "📍 " + nodeData.city.name;
+                            // A. DIRECTLY TARGET LOCATION CONTAINER INDEPENDICIES BY ID
+                            const nodeHeader = document.getElementById("stationHeaderNode");
+                            if (nodeHeader) {
+                                nodeHeader.innerText = `📍 NODE: ${formattedCityName}`;
                             }
 
-                            // Update text inside the card panels visible on your screen
-                            const statusSummaryEl = document.querySelector(".live-node-summary h4") || document.getElementById("currentLocationStatus");
-                            if (statusSummaryEl) {
-                                statusSummaryEl.innerText = "ACTIVE TELEMETRY STREAM";
+                            // B. DIRECTLY TARGET AQI SCORE DISPLAY CARD
+                            const aqiDisplay = document.getElementById("aqiScoreDisplay");
+                            if (aqiDisplay) {
+                                aqiDisplay.innerText = nodeData.aqi;
+                            }
+                            
+                            // Update calibrating stream label color text properties
+                            const statusLabel = document.getElementById("streamStatusLabel");
+                            if (statusLabel) {
+                                statusLabel.innerText = "ACTIVE TELEMETRY STREAM";
+                                statusLabel.style.color = "#00ffcc";
                             }
 
-                            const scoreEl = document.querySelector(".live-node-summary h3") || document.getElementById("aqiScoreText");
-                            if (scoreEl) {
-                                scoreEl.innerHTML = `<span style="font-size: 3rem; font-weight: bold; color: #00d2ff;">${nodeData.aqi}</span>`;
+                            // C. TARGET EVERY ATMOSPHERIC VALUE DIRECTLY BY ID (WITHOUT LOOPING WORDS)
+                            if (nodeData.iaqi) {
+                                const tempEl = document.getElementById("tempMetricText");
+                                if (tempEl) tempEl.innerText = nodeData.iaqi.t ? nodeData.iaqi.t.v + "°C" : "--°C";
+
+                                const windEl = document.getElementById("windMetricText");
+                                if (windEl) windEl.innerText = nodeData.iaqi.w ? nodeData.iaqi.w.v + " m/s" : "-- m/s";
+
+                                const humidEl = document.getElementById("humidMetricText");
+                                if (humidEl) humidEl.innerText = nodeData.iaqi.h ? nodeData.iaqi.h.v + "%" : "--%";
+
+                                const pressEl = document.getElementById("pressMetricText");
+                                if (pressEl) pressEl.innerText = nodeData.iaqi.p ? nodeData.iaqi.p.v + " hPa" : "-- hPa";
                             }
 
-                            // 🎯 B. MOVE THE LEAFLET MAP & RE-CENTER OVER USER COORDINATES
-                            // This targets your active map instance variable ('map') and slides it instantly
-                            if (window.map && nodeData.geo) {
-                                const nodeLat = nodeData.geo[0];
-                                const nodeLng = nodeData.geo[1];
-
-                                // Pan and zoom smoothly into your true local coordinates
-                                window.map.setView([nodeLat, nodeLng], 13);
+                            // D. PAN & FOCUS LEAFLET MAP perspective focus directly over coordinates
+                            if (mapInstance && nodeData.geo) {
+                                const latCoord = nodeData.geo[0];
+                                const lngCoord = nodeData.geo[1];
                                 
-                                // Clear older layers or drop a direct pinpoint marker icon
-                                if (window.L) {
-                                    // Drop a fresh locator pin on the map
-                                    const userMarker = window.L.marker([nodeLat, nodeLng])
-                                        .addTo(window.map)
-                                        .bindPopup(`<b>${nodeData.city.name} Node</b><br>AQI Score: ${nodeData.aqi}`)
-                                        .openPopup();
-                                }
-                            }
+                                mapInstance.setView([latCoord, lngCoord], 12);
+                                
+                                // Clear old pins to keep tracking layout clear
+                                mapInstance.eachLayer((layer) => {
+                                    if (layer instanceof L.Marker) {
+                                        mapInstance.removeLayer(layer);
+                                    }
+                                });
 
-                            console.log("Telemetry matrix synced successfully to target node:", nodeData.city.name);
+                                L.marker([latCoord, lngCoord])
+                                    .addTo(mapInstance)
+                                    .bindPopup(`<b>${nodeData.city.name.split(',')[0]} Station</b><br>AQI Score: ${nodeData.aqi}`)
+                                    .openPopup();
+                            }
                         }
                     })
-                    .catch(err => console.error("Telemetry Node Connection Error:", err));
+                    .catch(err => console.error("Telemetry Core Sync Break:", err));
             }
 
             // Auto-run when the DOM structure finishes building
