@@ -702,7 +702,7 @@
                 } catch(e) {}
             }
 
-            // 🔍 SEARCH RECOMMENDATIONS ENGINE WITH MODERN INTERFACE BINDING
+            // 🔍 SEARCH RECOMMENDATIONS ENGINE: INDIAN CITIES PRIORITY FILTER
             const searchInput = document.getElementById('citySearchInput');
             const dropdown = document.getElementById('searchDropdown');
             let searchTimeout = null;
@@ -710,42 +710,85 @@
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
                 clearTimeout(searchTimeout);
+                
                 if (query.length >= 2) {
                     searchTimeout = setTimeout(async () => {
                         try {
-                            // Fixed token mismatch tracking reference to use myWaqiToken
                             const res = await fetch(`https://api.waqi.info/search/?token=${myWaqiToken}&keyword=${encodeURIComponent(query)}`);
                             const data = await res.json();
-                            if (data.status === 'ok') {
+                            
+                            if (data.status === 'ok' && data.data.length > 0) {
                                 dropdown.innerHTML = '';
-                                data.data.slice(0, 6).forEach(station => {
+                                
+                                let seenCities = new Set();
+                                let cleanResults = [];
+                                
+                                // Indian Keywords to score and prioritize Indian nodes
+                                const indianKeywords = ['india', 'delhi', 'maharashtra', 'karnataka', 'telangana', 'tamil nadu', 'gujarat', 'rajasthan', 'uttar pradesh', 'west bengal', 'kerala', 'andhra pradesh', 'punjab', 'haryana', 'bihar', 'hyderabad', 'bengaluru', 'mumbai', 'chennai', 'kolkata'];
+
+                                for (let station of data.data) {
+                                    const parts = station.station.name.split(',');
+                                    let cityName = '';
+                                    
+                                    // 🏙️ Clean out the streets: Extract only the main city segment
+                                    if (parts.length >= 3) {
+                                        cityName = parts[parts.length - 2].trim();
+                                    } else if (parts.length === 2) {
+                                        cityName = parts[1].trim().toLowerCase() === 'india' ? parts[0].trim() : parts[1].trim();
+                                    } else {
+                                        cityName = parts[0].trim();
+                                    }
+                                    
+                                    // Strip any remaining station specific code parameters (: or -)
+                                    if (cityName.includes(':')) cityName = cityName.split(':')[1].trim();
+                                    if (cityName.includes('-')) cityName = cityName.split('-')[0].trim();
+                                    
+                                    // Prevent duplicate city listings in the recommendations dropdown
+                                    if (!seenCities.has(cityName) && cityName.length > 0) {
+                                        seenCities.add(cityName);
+                                        station.cleanCityName = cityName;
+                                        
+                                        const rawDataString = (station.station.name + " " + (station.station.url || "")).toLowerCase();
+                                        const isOffline = station.aqi === '-' || station.aqi === null;
+                                        
+                                        // 🇮🇳 Calculate Priority Score: Online India = 10, Online Foreign = 0
+                                        station.priorityScore = indianKeywords.some(keyword => rawDataString.includes(keyword)) ? 10 : 0;
+                                        if (isOffline) station.priorityScore -= 5; // Demote offline stations
+                                        
+                                        cleanResults.push(station);
+                                    }
+                                }
+
+                                // 🎯 Sort: Sorts Indian cities straight to the absolute top
+                                cleanResults.sort((a, b) => b.priorityScore - a.priorityScore);
+
+                                // Render the top 6 optimized modern results
+                                cleanResults.slice(0, 6).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
                                     
-                                    const cleanName = station.station.name.split(',')[0];
-                                    const rawAqi = parseInt(station.aqi, 10);
+                                    const isOffline = station.aqi === '-' || station.aqi === null;
+                                    const displayAqi = isOffline ? 'OFFLINE' : `AQI: ${station.aqi}`;
                                     
                                     let badgeColor = 'rgba(16, 185, 129, 0.15)';
                                     let textColor = '#10b981';
                                     let borderStyle = '1px solid rgba(16, 185, 129, 0.3)';
                                     
-                                    if (rawAqi > 50) {
+                                    if (parseInt(station.aqi) > 50) {
                                         badgeColor = 'rgba(245, 158, 11, 0.15)';
                                         textColor = '#f59e0b';
                                         borderStyle = '1px solid rgba(245, 158, 11, 0.3)';
                                     }
-                                    if (rawAqi > 100 || isNaN(rawAqi)) {
+                                    if (parseInt(station.aqi) > 100 || isOffline) {
                                         badgeColor = 'rgba(239, 68, 68, 0.15)';
                                         textColor = '#ef4444';
                                         borderStyle = '1px solid rgba(239, 68, 68, 0.3)';
                                     }
 
-                                    const displayAqi = isNaN(rawAqi) ? 'OFFLINE' : `AQI: ${rawAqi}`;
-
                                     item.innerHTML = `
                                         <div style="display: flex; align-items: center; gap: 10px;">
                                             <span style="font-size: 0.9rem; color: #fff;">📍</span>
-                                            <span style="font-weight: 600; font-size: 0.85rem;">${cleanName}</span>
+                                            <span style="font-weight: 600; font-size: 0.85rem;">${station.cleanCityName}</span>
                                         </div>
                                         <span class="dropdown-aqi-badge" style="background: ${badgeColor}; color: ${textColor}; border: ${borderStyle};">
                                             ${displayAqi}
@@ -753,16 +796,24 @@
                                     `;
                                     
                                     item.addEventListener('click', () => {
-                                        searchInput.value = cleanName;
+                                        searchInput.value = station.cleanCityName; 
                                         dropdown.style.display = 'none';
                                         document.getElementById('locName').innerText = "Rerouting...";
-                                        syncTelemetry(null, null, station.uid ? '@'+station.uid : station.station.name);
+                                        
+                                        if (station.uid) {
+                                            syncTelemetry(null, null, '@' + station.uid);
+                                        } else {
+                                            syncTelemetry(null, null, station.cleanCityName);
+                                        }
                                     });
                                     dropdown.appendChild(item);
                                 });
-                                dropdown.style.display = 'flex';
+                                
+                                dropdown.style.display = cleanResults.length > 0 ? 'flex' : 'none';
+                            } else {
+                                dropdown.style.display = 'none';
                             }
-                        } catch(err) {
+                        } catch (err) {
                             console.error("Autocomplete processing break:", err);
                         }
                     }, 300);
