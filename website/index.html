@@ -1082,7 +1082,7 @@
             const GEMINI_FREE_KEY = "AQ." + "Ab8RN6I3-5t3tvdnMfHS0d6VkVavVRmpBhAJ3Im4CRCfl-S9yw";
             
             // 🔍 THE FIX: Pointing to the stable v1 API path to accept the flash model profile natively
-            const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_FREE_KEY}`;
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_FREE_KEY}`;
 
             try {
                 const response = await fetch(endpoint, {
