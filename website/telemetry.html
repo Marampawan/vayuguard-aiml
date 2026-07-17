@@ -202,78 +202,81 @@
     </div>
 
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
-    <div id="forecast-7-view" class="tab-content">
-    
-    <div class="forecast-main-section-part">
-        <div class="centered-forecast-header">
-            <h2 class="modern-text" style="color: #ffffff; margin: 0; font-size: 1.7rem; letter-spacing: 0.5px;">7-Day Advanced Atmospheric & AQI Projections</h2>
-            <div style="margin-top: 8px;">
-                <span class="live-pulse-badge">Predictive Array Active</span>
-            </div>
-            <div class="user-location-badge-inline">
-                <span class="pin-icon">📍</span>
-                <span id="user-live-city">DETECTING LOCAL STATION...</span>
-            </div>
-        </div>
-
-        <div class="forecast-grid-container">
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Monday</span><div class="f-icon">☀️</div><span class="f-temp">31°C / 24°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Tuesday</span><div class="f-icon">⛅</div><span class="f-temp">30°C / 23°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Wednesday</span><div class="f-icon">🌧️</div><span class="f-temp">28°C / 22°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Thursday</span><div class="f-icon">⛈️</div><span class="f-temp">27°C / 21°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Friday</span><div class="f-icon">⛅</div><span class="f-temp">29°C / 23°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Saturday</span><div class="f-icon">☀️</div><span class="f-temp">32°C / 25°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            <div class="forecast-page-card glass-inner-card"><span class="f-day">Sunday</span><div class="f-icon">☀️</div><span class="f-temp">33°C / 26°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-        </div>
-    </div>
-
-    <div class="section-divider-break"></div>
-
-    <div class="jokes-standalone-section-part unique-widget-panel">
-        <div class="widget-header-row">
-            <div class="header-identity-left">
-                <span class="breathing-ui-dot"></span>
-                <h3 class="modern-text" style="margin: 0; color: #ffffff; font-size: 1.1rem;">🧘 Mindful Break: Fun Logs & Emojis</h3>
-            </div>
-            <span class="widget-status-badge">Flat Mode Engine</span>
-        </div>
+    <div id="forecast-7-view" class="tab-content" style="display: none; width: 100%; max-width: 1200px; margin: 0 auto; padding: 40px 20px; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
         
-        <div class="table-flat-wrapper">
-            <table class="modern-jokes-data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 80px; text-align: center;">Mood</th>
-                        <th style="width: 120px;">Category</th>
-                        <th>The Daily Chuckle Log</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="joke-center-emoji">🍅</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-blue">Classic</span></td>
-                        <td class="joke-phrase-text">"Why did the tomato blush? Because it saw the salad dressing!"</td>
-                    </tr>
-                    <tr>
-                        <td class="joke-center-emoji">🚲</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-purple">Random</span></td>
-                        <td class="joke-phrase-text">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
-                    </tr>
-                    <tr>
-                        <td class="joke-center-emoji">🦖</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-yellow">Dad Joke</span></td>
-                        <td class="joke-phrase-text">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
-                    </tr>
-                    <tr>
-                        <td class="joke-center-emoji">🥔</td>
-                        <td class="joke-tag-cell"><span class="j-tag j-green">Food</span></td>
-                        <td class="joke-phrase-text">"Why did the potato cross the road? Because it saw a fork ahead!"</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <!-- 🟦 PART 1: THE CENTERED FORECAST CARDS COMPARTMENT -->
+        <div style="display: block; width: 100%; margin: 0 auto 40px auto; text-align: center; box-sizing: border-box;">
+            
+            <!-- Header Section -->
+            <div style="text-align: center; margin-bottom: 30px; width: 100%;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">7-Day Advanced Atmospheric & AQI Projections</h2>
+                <div style="margin-top: 10px;">
+                    <span style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;">Predictive Array Active</span>
+                </div>
+            </div>
 
-</div>
+            <!-- Flat Centered Grid Matrix (No Horizontal Scroll) -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; width: 100%; max-width: 1200px; margin: 20px auto; justify-content: center; box-sizing: border-box;">
+                
+                <!-- Cards Array styled with premium slate dark background look -->
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Monday</span><div style="font-size:2rem; margin:12px 0;">☀️</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Tuesday</span><div style="font-size:2rem; margin:12px 0;">⛅</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Wednesday</span><div style="font-size:2rem; margin:12px 0;">🌧️</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Thursday</span><div style="font-size:2rem; margin:12px 0;">⛈️</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Friday</span><div style="font-size:2rem; margin:12px 0;">⛅</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Saturday</span><div style="font-size:2rem; margin:12px 0;">☀️</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                <div style="background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px 14px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Sunday</span><div style="font-size:2rem; margin:12px 0;">☀️</div><span style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span></div>
+                
+            </div>
+        </div>
+
+        <!-- 🛑 STRUCTURAL GAP FACTOR -->
+        <div style="clear: both; height: 35px; width: 100%;"></div>
+
+        <!-- 🟩 PART 2: THE STANDALONE JOKES COMPARTMENT (Breathing exercise panel layout replica) -->
+        <div style="display: block; clear: both; width: 100%; max-width: 1200px; margin: 0 auto; padding: 28px; background: rgba(24, 24, 27, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; box-shadow: 0 25px 55px rgba(0, 0, 0, 0.6); box-sizing: border-box;">
+            
+            <!-- Widget Header Row -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px rgba(16,185,129,0.5);"></span>
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px;">🧘 Mindful Break: Fun Logs & Emojis</h3>
+                </div>
+                <span style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">Flat Mode</span>
+            </div>
+            
+            <!-- Table Box -->
+            <div style="width: 100%; overflow: visible;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+                    <thead>
+                        <tr style="color: #94a3b8; font-size: 0.85rem; text-transform: uppercase; text-align: left;">
+                            <th style="width: 80px; text-align: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">Mood</th>
+                            <th style="width: 130px; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">Category</th>
+                            <th style="padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">Everyday Joke Narrative</th>
+                        </tr>
+                    </thead>
+                    <tbody style="color: #cbd5e1; font-size: 0.92rem;">
+                        <tr style="background: rgba(39, 39, 42, 0.5);">
+                            <td style="text-align: center; font-size: 1.4rem; padding: 16px 20px; border-radius: 12px 0 0 12px;">🍅</td>
+                            <td style="padding: 16px 20px;"><span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.3);">Classic</span></td>
+                            <td style="line-height: 1.5; padding: 16px 20px; white-space: normal; border-radius: 0 12px 12px 0;">"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                        </tr>
+                        <tr style="background: rgba(39, 39, 42, 0.5);">
+                            <td style="text-align: center; font-size: 1.4rem; padding: 16px 20px; border-radius: 12px 0 0 12px;">🚲</td>
+                            <td style="padding: 16px 20px;"><span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(168, 85, 247, 0.3);">Random</span></td>
+                            <td style="line-height: 1.5; padding: 16px 20px; white-space: normal; border-radius: 0 12px 12px 0;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                        </tr>
+                        <tr style="background: rgba(39, 39, 42, 0.5);">
+                            <td style="text-align: center; font-size: 1.4rem; padding: 16px 20px; border-radius: 12px 0 0 12px;">🦖</td>
+                            <td style="padding: 16px 20px;"><span style="background: rgba(234, 179, 8, 0.15); color: #facc15; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(234, 179, 8, 0.3);">Dad Joke</span></td>
+                            <td style="line-height: 1.5; padding: 16px 20px; white-space: normal; border-radius: 0 12px 12px 0;">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
 
 
     <script>
