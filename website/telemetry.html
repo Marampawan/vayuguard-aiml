@@ -72,20 +72,18 @@
         /* 🔍 INTUITIVE OVERLAY AUTOCOMPLETE DROPDOWN FIX */
         #searchDropdown {
             position: absolute !important;
-            top: 100% !important;
+            /* Shifting it down past the search box boundaries */
+            top: calc(100% + 5px) !important; 
             left: 0 !important;
             right: 0 !important;
-            background: rgba(15, 23, 42, 0.98) !important; /* Slightly more opaque glass to stand out over the map */
+            background: rgba(15, 23, 42, 0.98) !important; 
             backdrop-filter: blur(20px) !important;
             border: 1px solid rgba(255, 255, 255, 0.15) !important;
             border-radius: 16px !important;
-            margin-top: 10px !important;
             display: none;
             flex-direction: column !important;
             padding: 6px !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.1) !important;
-            
-            /* 🛑 THE CRITICAL LAYER OVERLAY FIX: FORCES IT TO POP IN FRONT OF THE MAP */
             z-index: 999999 !important; 
         }
         
