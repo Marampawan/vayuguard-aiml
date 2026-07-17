@@ -726,34 +726,21 @@
                         if (payload.status === "ok" && payload.data) {
                             const nodeData = payload.data;
                             
-                            // 🎯 THE EXACT ELEMENT OVERRIDE REMEDY:
-                            // This targets the precise container layout showing on your screen dashboard view
+                            // 🎯 SAFE TARGETS: We only update isolated inner text properties so the UI cards never get wiped out!
                             
-                            // 1. Update the station text header details
-                            const elementsToUpdate = [
-                                document.getElementById("currentLocationStatus"),
-                                document.querySelector(".live-node-summary h4"),
-                                document.querySelector(".location-name"),
-                                document.getElementById("locationStatusText")
-                            ];
-                            
-                            elementsToUpdate.forEach(el => {
-                                // This explicitly strips out "Dr. Karni Singh Shooting Range" and forces your active GPS node name!
-                                if (el) el.innerText = nodeData.city.name; 
-                            });
+                            // 1. Target the location string label inside your summary card safely
+                            const locationLabel = document.querySelector(".live-node-summary h4") || document.getElementById("locationStatusText");
+                            if (locationLabel) {
+                                locationLabel.innerText = "📍 " + nodeData.city.name;
+                            }
 
-                            // 2. Update the main total score badge text readout
-                            const scoreElements = [
-                                document.getElementById("aqiScoreText"),
-                                document.querySelector(".aqi-score-text"),
-                                document.querySelector(".live-node-summary h3")
-                            ];
-                            
-                            scoreElements.forEach(el => {
-                                if (el) el.innerText = nodeData.aqi;
-                            });
+                            // 2. Update the total AQI value score text safely
+                            const aqiLabel = document.querySelector(".live-node-summary h3") || document.getElementById("aqiScoreText");
+                            if (aqiLabel) {
+                                aqiLabel.innerText = nodeData.aqi;
+                            }
 
-                            // 3. Move the interactive Leaflet map perspective if coordinates exist
+                            // 3. Move the interactive map tracking lens to center over your location coordinates
                             if (window.map && nodeData.geo) {
                                 window.map.setView([nodeData.geo[0], nodeData.geo[1]], 12);
                             }
@@ -761,9 +748,7 @@
                             console.log("Verified system sync straight to live node:", nodeData.city.name);
                         }
                     })
-                    .catch(err => {
-                        console.error("Telemetry node linking break:", err);
-                    });
+                    .catch(err => console.error("Telemetry node linking break:", err));
             }
 
             // 🔍 MODERN AUTOCOMPLETE CITY ENGINE WITH URBAN RADAR AND TIER BALANCING
