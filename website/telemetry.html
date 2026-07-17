@@ -540,6 +540,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Unified Global Token Reference Variable
+            const myWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
+
             function fetchUserLiveLocation() {
                 const cityLabel = document.getElementById('user-live-city');
                 fetch('https://ipapi.co/json/')
@@ -551,7 +554,7 @@
                             cityLabel.innerText = 'LOCATION DETECTED';
                         }
                     })
-                    .catch(err => {
+                    .catch(() => {
                         cityLabel.innerText = 'MONITOR ACTIVE';
                     });
             }
@@ -647,7 +650,6 @@
             }
 
             async function syncTelemetry(lat = null, lon = null, cityName = null) {
-                const myWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8"; 
                 let apiUrl = `https://api.waqi.info/feed/here/?token=${myWaqiToken}`;
                 if (cityName) apiUrl = `https://api.waqi.info/feed/${cityName}/?token=${myWaqiToken}`;
                 else if (lat && lon) apiUrl = `https://api.waqi.info/feed/geo:${lat};${lon}/?token=${myWaqiToken}`;
@@ -669,7 +671,6 @@
                         updateForecastViewData(d.city.name.split(',')[0], d.aqi, d.city.geo[0], d.city.geo[1]);
                         map.flyTo([d.city.geo[0], d.city.geo[1]], 11);
 
-                        // Progress bars logic mapping
                         const dataArray = [
                             { label: 'PM2.5', val: getV('pm25'), max: 250, color: '#ef4444' },
                             { label: 'PM10', val: getV('pm10'), max: 250, color: '#f59e0b' },
@@ -701,7 +702,7 @@
                 } catch(e) {}
             }
 
-            // 🔄 MODERN SEARCH AUTOCOMPLETE LOGIC
+            // 🔍 SEARCH RECOMMENDATIONS ENGINE WITH MODERN INTERFACE BINDING
             const searchInput = document.getElementById('citySearchInput');
             const dropdown = document.getElementById('searchDropdown');
             let searchTimeout = null;
@@ -709,17 +710,14 @@
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
                 clearTimeout(searchTimeout);
-                
                 if (query.length >= 2) {
                     searchTimeout = setTimeout(async () => {
                         try {
-                            // Using the correct "myWaqiToken" variable to prevent script crashes
+                            // Fixed token mismatch tracking reference to use myWaqiToken
                             const res = await fetch(`https://api.waqi.info/search/?token=${myWaqiToken}&keyword=${encodeURIComponent(query)}`);
                             const data = await res.json();
-                            
                             if (data.status === 'ok') {
                                 dropdown.innerHTML = '';
-                                
                                 data.data.slice(0, 6).forEach(station => {
                                     const item = document.createElement('div');
                                     item.className = 'search-item';
@@ -727,7 +725,6 @@
                                     const cleanName = station.station.name.split(',')[0];
                                     const rawAqi = parseInt(station.aqi, 10);
                                     
-                                    // Determine modern color classes dynamically for recommended items
                                     let badgeColor = 'rgba(16, 185, 129, 0.15)';
                                     let textColor = '#10b981';
                                     let borderStyle = '1px solid rgba(16, 185, 129, 0.3)';
@@ -745,7 +742,6 @@
 
                                     const displayAqi = isNaN(rawAqi) ? 'OFFLINE' : `AQI: ${rawAqi}`;
 
-                                    // Render modern element components cleanly
                                     item.innerHTML = `
                                         <div style="display: flex; align-items: center; gap: 10px;">
                                             <span style="font-size: 0.9rem; color: #fff;">📍</span>
@@ -760,15 +756,14 @@
                                         searchInput.value = cleanName;
                                         dropdown.style.display = 'none';
                                         document.getElementById('locName').innerText = "Rerouting...";
-                                        syncTelemetry(null, null, station.uid ? '@' + station.uid : station.station.name);
+                                        syncTelemetry(null, null, station.uid ? '@'+station.uid : station.station.name);
                                     });
                                     dropdown.appendChild(item);
                                 });
-                                
                                 dropdown.style.display = 'flex';
                             }
-                        } catch (err) {
-                            console.error("Modern autocomplete rendering failed:", err);
+                        } catch(err) {
+                            console.error("Autocomplete processing break:", err);
                         }
                     }, 300);
                 } else {
@@ -776,11 +771,8 @@
                 }
             });
 
-            // Auto-hide the dropdown if you click outside the search box
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.search-wrapper')) {
-                    dropdown.style.display = 'none';
-                }
+                if(!e.target.closest('.search-wrapper')) dropdown.style.display = 'none';
             });
 
             document.getElementById('citySearchBtn').addEventListener('click', () => {
