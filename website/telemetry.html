@@ -23,44 +23,40 @@
             --accent-red: #ef4444;
         }
 
-        /* 🔓 MASTER LAYOUT RESET - UNLOCKS VERTICAL SCROLLING */
-        html, body {
-            height: auto !important; /* Disables fixed fullscreen boundaries */
-            min-height: 100% !important;
-            overflow-y: auto !important; /* Force browser to allow downward page scrolling */
-            overflow-x: hidden !important;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* 📦 FLEX VIEWPORT CONTROLLER FOR THE ACTIVE TAB CONTAINER */
+        /* 📦 FLEX VIEWPORT LOCK WITH INTERNAL SCROLLING ENGAGED */
         #forecast-7-view {
-            display: none; /* Controlled by active class script */
+            display: none; /* Controlled by active class script toggles */
             width: 100% !important;
-            max-width: 1300px !important;
-            margin: 0 auto !important; /* Symmetrical centering on screen */
-            padding: 40px 20px !important;
+            
+            /* The Instant Fix: Matches the screen bounds but enables inner tab scrolling */
+            height: calc(100vh - 80px) !important; /* Adjusts cleanly for upper tab navigation bar height */
+            overflow-y: auto !important; /* ENABLES INDEPENDENT INNER VERTICAL SCROLLING */
+            overflow-x: hidden !important;
+            
+            margin: 0 auto !important;
+            padding: 30px 20px 60px 20px !important; /* Generous bottom padding for breathing room */
             box-sizing: border-box !important;
             
-            /* Strict vertical stacking: forces elements downward dynamically */
+            /* Strict vertical drop down configuration */
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
             gap: 40px !important;
-            overflow: visible !important; /* Prevents hidden container clipping */
         }
 
         #forecast-7-view.active-tab {
             display: flex !important;
         }
 
-        /* 🟦 PART 1: TOP FORECAST CARD GRID */
+        /* 🟦 PART 1: TOP LAYER GRID ARCHITECTURE */
         .forecast-main-section-part {
             width: 100% !important;
+            max-width: 1200px !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
             box-sizing: border-box !important;
+            flex-shrink: 0 !important; /* Prevents flex box from squishing the layout */
         }
 
         .forecast-grid-container {
@@ -72,17 +68,18 @@
             box-sizing: border-box !important;
         }
 
-        /* 🟩 PART 2: BOTTOM STANDALONE JOKES COMPARTMENT (Breathing Panel Style) */
+        /* 🟩 PART 2: BOTTOM LAYER WIDGET (Breathing exercise panel layout) */
         .jokes-standalone-section-part.unique-widget-panel {
             width: 100% !important;
-            max-width: 1200px !important; /* Symmetrically mirrors the top cards width */
+            max-width: 1200px !important; /* Clean visual symmetry with cards */
             padding: 24px !important;
-            background: rgba(13, 20, 38, 0.95) !important; /* Premium deep carbon background */
+            background: rgba(13, 20, 38, 0.95) !important; /* Deep dark background look */
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
             border-radius: 20px !important;
             box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
             box-sizing: border-box !important;
-            overflow: visible !important; /* Completely blocks scrollbars inside the element */
+            flex-shrink: 0 !important; /* Ensures the table displays at its full native height */
+            margin-bottom: 20px !important;
         }
 
         .widget-header-row {
@@ -93,7 +90,7 @@
             width: 100% !important;
         }
 
-        /* Flat Presentation Table Settings */
+        /* Flat Non-scrolling Table Presentations */
         .modern-jokes-data-table {
             width: 100% !important;
             border-collapse: separate !important;
@@ -106,7 +103,7 @@
             font-size: 0.9rem !important;
             border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-            white-space: normal !important; /* Forces joke text sentences to wrap cleanly down */
+            white-space: normal !important; /* Forces words to wrap down cleanly */
         }
     </style>
 </head>
