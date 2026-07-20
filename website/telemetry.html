@@ -422,8 +422,18 @@
     </div>
 
     <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
-    <div id="forecast-section" class="card">
-        <h4 style="margin: 0; color: var(--text-muted); letter-spacing: 1px;">📅 7-DAY ADVANCED ATMOSPHERIC PROJECTIONS</h4>
+    <!-- 📅 7-DAY FORECAST SECTION CONTAINER -->
+    <div id="forecast-section" class="card" style="margin-top: 20px;">
+        <h4 style="margin: 0 0 15px 0; color: var(--text-muted); letter-spacing: 1px;">📅 7-DAY ADVANCED ATMOSPHERIC PROJECTIONS</h4>
+        <div class="forecast-grid-container">
+            <div class="forecast-day-card"><div>Mon</div><strong id="f-day-1" style="color:var(--accent-primary);">--</strong></div>
+            <div class="forecast-day-card"><div>Tue</div><strong id="f-day-2" style="color:var(--accent-primary);">--</strong></div>
+            <div class="forecast-day-card"><div>Wed</div><strong id="f-day-3" style="color:var(--accent-primary);">--</strong></div>
+            <div class="forecast-day-card"><div>Thu</div><strong id="f-day-4" style="color:var(--accent-primary);">--</strong></div>
+            <div class="forecast-day-card"><div>Fri</div><strong id="f-day-5" style="color:var(--accent-primary);">--</strong></div>
+            <div class="forecast-day-card"><div>Sat</div><strong id="f-day-6" style="color:var(--accent-primary);">--</strong></div>
+            <div class="forecast-day-card"><div>Sun</div><strong id="f-day-7" style="color:var(--accent-primary);">--</strong></div>
+        </div>
     </div>
     <div id="forecast-7-view" class="tab-content">
         
@@ -611,6 +621,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Unified Global Token Reference Variable
             const myWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
+
+            // 🎯 LINK FORECAST BUTTON CLICK TO SMOOTH SCROLL DOWN
+            const forecastBtn = document.getElementById("forecastProjectionsBtn") || 
+                                document.querySelectorAll("button")[1] || 
+                                document.querySelector(".search-box-container button:nth-of-type(2)");
+
+            if (forecastBtn) {
+                forecastBtn.addEventListener("click", () => {
+                    const forecastSection = document.getElementById("forecast-section");
+                    if (forecastSection) {
+                        forecastSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
+
+            initLocationSync();
 
             function fetchUserLiveLocation() {
                 const cityLabel = document.getElementById('user-live-city');
@@ -822,17 +848,6 @@
                     .catch(err => console.error("Telemetry Core Sync Break:", err));
             }
 
-            // Bind active listeners across fallbacks
-            const forecastBtn = document.getElementById("forecastProjectionsBtn");
-            if (forecastBtn) {
-                forecastBtn.addEventListener("click", () => {
-                    const forecastSection = document.getElementById("forecast-section") || document.querySelector(".card:last-of-type");
-                    if (forecastSection) {
-                        forecastSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
-            }
-            
             // Optional click handler to return view to map layer focus
             const mapBtn = document.getElementById("liveMapBtn");
             if (mapBtn) {
