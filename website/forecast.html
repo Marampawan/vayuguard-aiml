@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7-Day Forecast & Mindful Break — VayuGuard</title>
+    <style>
+        :root {
+            --bg-dark: #070d19;
+            --card-bg: #0b1528;
+            --accent-primary: #00d2ff;
+            --text-main: #ffffff;
+            --text-muted: #8a99ad;
+            --accent-joke: #ffb700;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1a2638;
+            margin-bottom: 30px;
+        }
+        .nav-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #14223a;
+            margin-bottom: 25px;
+        }
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .forecast-card {
+            background: #0d1b32;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #1a2c4d;
+        }
+        .joke-row {
+            background: #0d1b32;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-nav">
+        <h2>VayuGuard 7-Day Forecast & Mindful Hub</h2>
+        <div>
+            <a href="telemetry.html" class="nav-link" style="margin-right: 20px;">🌐 Live Map & Telemetry</a>
+            <a href="index.html" class="nav-link">🏠 Main Dashboard</a>
+        </div>
+    </div>
+
+    <!-- 📅 7-DAY FORECAST SECTION -->
+    <div class="card">
+        <h3 style="margin: 0; color: var(--accent-primary);">📅 7-Day Advanced Atmospheric & AQI Projections</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Predictive AI Array Active</p>
+
+        <div class="forecast-grid">
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">MONDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">☀️</div>
+                <strong style="font-size: 1.2rem;">28°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(0,255,204,0.15); color:#00ffcc;" class="badge">AQI: 42</span></div>
+            </div>
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">TUESDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">⛅</div>
+                <strong style="font-size: 1.2rem;">27°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(0,255,204,0.15); color:#00ffcc;" class="badge">AQI: 48</span></div>
+            </div>
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">WEDNESDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">🌧️</div>
+                <strong style="font-size: 1.2rem;">24°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(255,183,0,0.15); color:#ffb700;" class="badge">AQI: 75</span></div>
+            </div>
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">THURSDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">⛈️</div>
+                <strong style="font-size: 1.2rem;">23°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(0,210,255,0.15); color:#00d2ff;" class="badge">AQI: 35</span></div>
+            </div>
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">FRIDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">⛅</div>
+                <strong style="font-size: 1.2rem;">26°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(0,210,255,0.15); color:#00d2ff;" class="badge">AQI: 40</span></div>
+            </div>
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">SATURDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">☀️</div>
+                <strong style="font-size: 1.2rem;">29°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(255,74,74,0.15); color:#ff4a4a;" class="badge">AQI: 112</span></div>
+            </div>
+            <div class="forecast-card">
+                <div style="color: var(--text-muted); font-size: 0.85rem;">SUNDAY</div>
+                <div style="font-size: 2rem; margin: 8px 0;">☀️</div>
+                <strong style="font-size: 1.2rem;">28°C</strong>
+                <div style="margin-top: 8px;"><span style="background: rgba(0,255,204,0.15); color:#00ffcc;" class="badge">AQI: 45</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 😂 MINDFUL BREAK: JOKES PANEL -->
+    <div class="card" style="border-left: 4px solid var(--accent-joke);">
+        <h3 style="margin: 0 0 15px 0; color: var(--accent-joke);">🧘 Mindful Break: Fun Logs & Emojis</h3>
+        
+        <div class="joke-row">
+            <span style="font-size: 1.5rem;">🥚</span>
+            <span class="badge" style="background: #00d2ff;">CLASSIC</span>
+            <div style="font-style: italic;">"Why did the egg hide? Because it was a little chicken!"</div>
+        </div>
+
+        <div class="joke-row">
+            <span style="font-size: 1.5rem;">🚲</span>
+            <span class="badge" style="background: #a855f7;">RANDOM</span>
+            <div style="font-style: italic;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</div>
+        </div>
+
+        <div class="joke-row">
+            <span style="font-size: 1.5rem;">🐻</span>
+            <span class="badge" style="background: #f97316;">DAD JOKE</span>
+            <div style="font-style: italic;">"What do you call a bear with no teeth? A gummy bear!"</div>
+        </div>
+
+        <div class="joke-row">
+            <span style="font-size: 1.5rem;">☁️</span>
+            <span class="badge" style="background: #10b981;">ATMOSPHERE</span>
+            <div style="font-style: italic;">"Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!"</div>
+        </div>
+
+        <div class="joke-row">
+            <span style="font-size: 1.5rem;">🤖</span>
+            <span class="badge" style="background: #ec4899;">GEEK LOGIC</span>
+            <div style="font-style: italic;">"Why did the AI go cross-eyed? Too many input parameters to process!"</div>
+        </div>
+    </div>
+
+</body>
+</html>

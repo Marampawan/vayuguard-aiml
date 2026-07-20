@@ -339,9 +339,11 @@
         <button id="liveMapBtn" style="padding: 12px 24px; border-radius: 25px; background: #ffffff; color: #070d19; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2); display: flex; align-items: center; gap: 8px;">
             ?? Live Tracking Map
         </button>
-        <button id="forecastProjectionsBtn" style="padding: 12px 24px; border-radius: 25px; background: #0b1528; color: #8a99ad; border: 1px solid #14223a; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
-            ?? Forecast 7 Projections
-        </button>
+        <a href="forecast.html" style="text-decoration: none;">
+            <button style="padding: 10px 20px; border-radius: 20px; background: #0b1528; color: #fff; border: 1px solid #00d2ff; cursor: pointer; font-weight: bold;">
+                ?? Forecast 7 Projections
+            </button>
+        </a>
     </div>
 
     <!-- ================= TAB 1: LIVE MONITORING MAP VIEW ================= -->
@@ -621,20 +623,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Unified Global Token Reference Variable
             const myWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
-
-            // 🎯 LINK FORECAST BUTTON CLICK TO SMOOTH SCROLL DOWN
-            const forecastBtn = document.getElementById("forecastProjectionsBtn") || 
-                                document.querySelectorAll("button")[1] || 
-                                document.querySelector(".search-box-container button:nth-of-type(2)");
-
-            if (forecastBtn) {
-                forecastBtn.addEventListener("click", () => {
-                    const forecastSection = document.getElementById("forecast-section");
-                    if (forecastSection) {
-                        forecastSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
-            }
 
             initLocationSync();
 
