@@ -720,30 +720,41 @@
                 }
             }
 
-            // ?ƒöì 1. DEFINITIVE GEOLOCATION ROUTER WITH BENGALURU FALLBACK
+            // 🎯 AUTOMATIC EXACT USER LOCATION DETECTOR (GPS + IP FALLBACK)
             function initLocationSync() {
+                // 1. Try Browser High-Accuracy GPS First
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
-                            // Scenario A: Precise hardware GPS allowed
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            syncTelemetry(lat, lng, null);
+                            console.log("GPS Location acquired:", position.coords);
+                            syncTelemetry(position.coords.latitude, position.coords.longitude, null);
                         },
                         (error) => {
-                            console.warn("GPS tracking timed out or denied. Forcing Bangalore fallback node.");
-                            // Scenario B: Fallback directly to verified city keyword
-                            syncTelemetry(null, null, "bangalore");
+                            console.warn("GPS failed or blocked. Trying IP location fallback...", error);
+                            fetchIpLocationFallback();
                         },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 7000, // Wait maximum 7 seconds for precise hardware GPS coordinates
-                            maximumAge: 0
-                        }
+                        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
                     );
                 } else {
-                    syncTelemetry(null, null, "bangalore");
+                    fetchIpLocationFallback();
                 }
+            }
+
+            // 🌐 Fallback: Get User Location from IP when GPS is turned off/blocked
+            function fetchIpLocationFallback() {
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.latitude && data.longitude) {
+                            console.log("IP-based location detected:", data.city);
+                            syncTelemetry(data.latitude, data.longitude, null);
+                        } else {
+                            syncTelemetry(null, null, "bangalore");
+                        }
+                    })
+                    .catch(() => {
+                        syncTelemetry(null, null, "bangalore");
+                    });
             }
 
             // ?ƒôè 4. NON-DESTRUCTIVE TELEMETRY PANEL UPDATER (DIRECT ID MAPPING)
@@ -842,6 +853,9 @@
                     document.getElementById("map").scrollIntoView({ behavior: 'smooth', block: 'center' });
                 });
             }
+
+            // Initialize location detection on page load
+            initLocationSync();
         });
     </script>
 </body>
