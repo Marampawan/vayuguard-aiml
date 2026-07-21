@@ -356,13 +356,9 @@
                     <h4 class="section-title">Live Node Summary</h4>
                     <div class="aqi-core">
                         <div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;"><i class="fas fa-location-crosshairs"></i> Current Location Status</div>
-                            <div id="locName" style="font-weight: 600; margin-bottom: 5px; color: white;">Detecting Coordinates...</div>
-                            <div class="aqi-num" id="liveAqiNum">--</div>
-                        </div>
-                        <div class="aqi-desc">
-                            <div id="liveAqiStatus" style="font-weight: 700; font-size: 1rem; color: white;">CALIBRATING</div>
-                            <div>Total AQI Score</div>
+                            <div id="stationHeaderNode" style="font-weight: bold;">📍 NODE: DETECTING COORDINATES...</div>
+                            <div id="aqiScoreDisplay" style="font-size: 3.5rem; font-weight: bold; color: #00d2ff;">--</div>
+                            <p id="streamStatusLabel" style="color: #ffb700; font-weight: bold;">CALIBRATING ENGINE</p>
                         </div>
                     </div>
                 </div>
@@ -388,22 +384,22 @@
                     <div class="weather-grid">
                         <div class="w-card">
                             <i class="fas fa-temperature-half"></i>
-                            <div class="w-val" id="val-temp">--??C</div>
+                            <span id="tempMetricText" style="font-size: 1.5rem; font-weight: bold;">--°C</span>
                             <div class="w-label">Temperature</div>
                         </div>
                         <div class="w-card">
                             <i class="fas fa-wind"></i>
-                            <div class="w-val" id="val-wind">--</div>
+                            <span id="windMetricText" style="font-size: 1.5rem; font-weight: bold;">-- m/s</span>
                             <div class="w-label">Wind (m/s)</div>
                         </div>
                         <div class="w-card">
                             <i class="fas fa-droplet"></i>
-                            <div class="w-val" id="val-humidity">--%</div>
+                            <span id="humidMetricText" style="font-size: 1.5rem; font-weight: bold;">--%</span>
                             <div class="w-label">Humidity</div>
                         </div>
                         <div class="w-card">
                             <i class="fas fa-gauge-high"></i>
-                            <div class="w-val" id="val-pressure">--</div>
+                            <span id="pressMetricText" style="font-size: 1.5rem; font-weight: bold;">-- hPa</span>
                             <div class="w-label">Pressure (hPa)</div>
                         </div>
                     </div>
@@ -580,7 +576,7 @@
                         const statusEl = document.getElementById("streamStatusLabel") || document.querySelector("p");
                         if (statusEl) {
                             statusEl.innerText = "ACTIVE TELEMETRY STREAM";
-                            statusLabel.style.color = "#00ffcc";
+                            statusEl.style.color = "#00ffcc";
                         }
 
                         // Populate Weather Data
