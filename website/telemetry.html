@@ -504,14 +504,14 @@
         </div>
     </div>
 
-    <!-- 🛠️ ONLY REPLACE THIS SCRIPT SECTION AT THE BOTTOM -->
+    <!-- 🛠️ SPECIFIC FIX: ONLY REPLACE THIS SCRIPT AT THE BOTTOM -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let mapInstance = null;
-        let chartInstance = null;
 
         function initializeMapLayout() {
+            // Safe check for map element
             const mapEl = document.getElementById('map-canvas') || document.getElementById('map');
             if (mapEl && !mapInstance) {
                 mapInstance = L.map(mapEl).setView([20.5937, 78.9629], 5); 
@@ -522,13 +522,13 @@
             }
         }
 
-        // 🎯 1. AUTOMATIC LOCATION DETECTOR (GPS WITH IP FALLBACK)
+        // 🎯 1. GPS Detection with Automatic IP Fallback
         function initLocationSync() {
             initializeMapLayout();
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => syncTelemetry(pos.coords.latitude, pos.coords.longitude, null),
-                    (err) => fetchIpFallback(),
+                    (err) => fetchIpFallback(), // If GPS denied/failed, use IP location
                     { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
                 );
             } else {
@@ -536,7 +536,7 @@
             }
         }
 
-        // 🌐 2. IP FALLBACK (FIRES AUTOMATICALLY IF GPS IS BLOCKED/OFF)
+        // 🌐 2. IP Location Fallback
         function fetchIpFallback() {
             fetch('https://ipapi.co/json/')
                 .then(res => res.json())
@@ -550,7 +550,7 @@
                 .catch(() => syncTelemetry(null, null, "bangalore"));
         }
 
-        // 📊 3. UNIVERSAL DATA POPULATOR (TARGETS ANY MATCHING HTML TEXT)
+        // 📊 3. Robust Data Populator (Safe Query Selectors)
         function syncTelemetry(lat, lng, city) {
             const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
             let url = lat && lng 
@@ -564,37 +564,32 @@
                         const data = payload.data;
                         const cityName = data.city.name.split(',')[0].toUpperCase();
 
-                        // Update City Header Text safely
-                        const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
-                        if (header) header.innerText = `📍 NODE: ${cityName}`;
+                        // Update City Header safely
+                        const headerEls = document.querySelectorAll("h4, div");
+                        headerEls.forEach(el => {
+                            if (el.innerText && el.innerText.includes("DETECTING COORDINATES")) {
+                                el.innerText = `📍 NODE: ${cityName}`;
+                            }
+                        });
 
-                        // Update AQI Value safely
-                        const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value") || document.querySelector("h3");
-                        if (aqiEl) aqiEl.innerText = data.aqi;
+                        // Update AQI Score
+                        const aqiEls = document.querySelectorAll(".metric-value, h3, div");
+                        aqiEls.forEach(el => {
+                            if (el.innerText === "--") el.innerText = data.aqi;
+                        });
 
-                        // Update Status Tag
-                        const statusEl = document.getElementById("streamStatusLabel") || document.querySelector("p");
-                        if (statusEl) {
-                            statusEl.innerText = "ACTIVE TELEMETRY STREAM";
-                            statusEl.style.color = "#00ffcc";
-                        }
-
-                        // Populate Weather Data
+                        // Update Weather Values safely
                         if (data.iaqi) {
-                            const temp = document.getElementById("tempMetricText");
-                            if (temp) temp.innerText = data.iaqi.t ? data.iaqi.t.v + "°C" : "--°C";
-
-                            const wind = document.getElementById("windMetricText");
-                            if (wind) wind.innerText = data.iaqi.w ? data.iaqi.w.v + " m/s" : "-- m/s";
-
-                            const humid = document.getElementById("humidMetricText");
-                            if (humid) humid.innerText = data.iaqi.h ? data.iaqi.h.v + "%" : "--%";
-
-                            const press = document.getElementById("pressMetricText");
-                            if (press) press.innerText = data.iaqi.p ? data.iaqi.p.v + " hPa" : "-- hPa";
+                            const boldEls = document.querySelectorAll("strong, b, span");
+                            boldEls.forEach(el => {
+                                if (el.innerText.includes("--°C")) el.innerText = (data.iaqi.t ? data.iaqi.t.v : "--") + "°C";
+                                if (el.innerText.includes("-- m/s")) el.innerText = (data.iaqi.w ? data.iaqi.w.v : "--") + " m/s";
+                                if (el.innerText.includes("--%")) el.innerText = (data.iaqi.h ? data.iaqi.h.v : "--") + "%";
+                                if (el.innerText.includes("-- hPa")) el.innerText = (data.iaqi.p ? data.iaqi.p.v : "--") + " hPa";
+                            });
                         }
 
-                        // Move Map Camera directly over location pin
+                        // Pan Map to Location
                         if (mapInstance && data.geo) {
                             mapInstance.setView([data.geo[0], data.geo[1]], 12);
                             mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
@@ -605,42 +600,11 @@
                 .catch(err => console.error(err));
         }
 
-        // 🔍 Manual search handler
-        function handleManualSearch() {
-            const searchInput = document.getElementById("citySearchInput");
-            if (searchInput && searchInput.value.trim()) {
-                const city = searchInput.value.trim().toLowerCase();
-                syncTelemetry(null, null, city);
-            }
-        }
-
-        // 🚀 START THE TELEMETRY APP
-        function startTelemetryApp() {
-            // 1. Initialize map canvas
-            initializeMapLayout();
-
-            // 2. Begin automatic GPS + IP location sync
-            initLocationSync();
-
-            // 3. Attach search button event handlers safely
-            const analyzeBtn = document.getElementById("analyzeBtn");
-            if (analyzeBtn) {
-                analyzeBtn.addEventListener("click", handleManualSearch);
-            }
-
-            const searchInput = document.getElementById("citySearchInput");
-            if (searchInput) {
-                searchInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter") handleManualSearch();
-                });
-            }
-        }
-
-        // 🎯 ENSURE THE DOM IS 100% LOADED BEFORE RUNNING
+        // Run automatically when DOM is ready
         if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", startTelemetryApp);
+            document.addEventListener("DOMContentLoaded", initLocationSync);
         } else {
-            startTelemetryApp();
+            initLocationSync();
         }
     </script>
 </body>
