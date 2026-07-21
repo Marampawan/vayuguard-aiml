@@ -376,7 +376,7 @@
                 <div>
                     <h4 class="section-title">Predictive AQI Trend Curve</h4>
                     <div class="chart-box">
-                        <canvas id="trendChart"></canvas>
+                        <canvas id="aqiTrendChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -527,7 +527,7 @@
 
         // 📈 Render / Update Chart.js Trend Curve
         function renderTrendChart(baseAqi) {
-            const canvas = document.getElementById('trendChart');
+            const canvas = document.getElementById('aqiTrendChart');
             if (!canvas) return;
 
             const safeAqi = (baseAqi && !isNaN(baseAqi)) ? parseInt(baseAqi) : 55;
