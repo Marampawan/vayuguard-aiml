@@ -595,6 +595,28 @@
                 .catch(() => runDualFetch(fallbackLat, fallbackLng, "YELAHANKA NODE"));
         }
 
+        // 🔍 Search City Function
+        function searchCity(cityName) {
+            if (!cityName) return;
+            const waqiUrl = `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=b328782542ab121b9a449538c3960d05049d87bd`;
+
+            fetch(waqiUrl)
+                .then(res => res.json())
+                .then(payload => {
+                    if (payload.status === "ok" && payload.data && payload.data.geo) {
+                        const d = payload.data;
+                        const lat = d.geo[0];
+                        const lng = d.geo[1];
+                        const name = d.city ? d.city.name.split(',')[0].toUpperCase() : cityName.toUpperCase();
+                        const aqi = (d.aqi && !isNaN(d.aqi)) ? d.aqi : 50;
+                        runDualFetch(lat, lng, name);
+                    } else {
+                        alert("City not found. Please try another search term (e.g. Delhi, Mumbai, London).");
+                    }
+                })
+                .catch(err => console.error("Search API Error:", err));
+        }
+
         function runDualFetch(lat, lng, locationLabel) {
             initMap(lat, lng);
 
@@ -665,28 +687,30 @@
                 });
         }
 
-        // Attach listener to Search Button and Enter key
-        document.getElementById("analyzeBtn")?.addEventListener("click", () => {
-            const city = document.getElementById("citySearchInput").value.trim();
-            if (city) {
-                runDualFetch(null, null, city);
-            }
-        });
-
-        document.getElementById("citySearchInput")?.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                const city = e.target.value.trim();
-                if (city) {
-                    runDualFetch(null, null, city);
-                }
-            }
-        });
-
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", startTelemetrySync);
-        } else {
+        // 🔘 Corrected Event Handlers for Search
+        window.addEventListener('DOMContentLoaded', () => {
             startTelemetrySync();
-        }
+
+            // 1. Corrected ID targeting: "analyzeBtn"
+            const analyzeBtn = document.getElementById("analyzeBtn");
+            const searchInput = document.getElementById("citySearchInput");
+
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener("click", () => {
+                    const cityName = searchInput ? searchInput.value.trim() : "";
+                    if (cityName) searchCity(cityName);
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") {
+                        const cityName = searchInput.value.trim();
+                        if (cityName) searchCity(cityName);
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
