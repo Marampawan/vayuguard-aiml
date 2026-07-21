@@ -329,10 +329,12 @@
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
-    <div class="search-wrapper">
-        <input type="text" id="citySearchInput" placeholder="Search for a city (e.g., Delhi, Mumbai)..." style="background: transparent; border: none; color: #fff; width: 85%; outline: none; font-size: 1rem;">
-        <button id="citySearchBtn" style="background: transparent; border: none; cursor: pointer; font-size: 1.2rem;">?ƒöì</button>
-        <div id="searchDropdown"></div>
+    <!-- 🔍 SEARCH CONSOLE WITH SEARCH ICON -->
+    <div class="search-box-container" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto;">
+        <input type="text" id="citySearchInput" class="search-input" placeholder="Search for a city (e.g., Delhi, Mumbai)..." list="globalCitiesList" style="padding: 12px 20px; width: 320px; border-radius: 25px; border: 1px solid #00d2ff; background: #0b1528; color: #fff; outline: none;">
+        <button id="analyzeBtn" class="analyze-btn" style="padding: 12px 22px; border-radius: 25px; background: #00d2ff; color: #070d19; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            🔍 <span>Search</span>
+        </button>
     </div>
 
     <!-- ?? REPAIRED INTERACTIVE CONTROLS CONTAINER -->
@@ -662,6 +664,23 @@
                     renderTrendChart(55);
                 });
         }
+
+        // Attach listener to Search Button and Enter key
+        document.getElementById("analyzeBtn")?.addEventListener("click", () => {
+            const city = document.getElementById("citySearchInput").value.trim();
+            if (city) {
+                runDualFetch(null, null, city);
+            }
+        });
+
+        document.getElementById("citySearchInput")?.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                const city = e.target.value.trim();
+                if (city) {
+                    runDualFetch(null, null, city);
+                }
+            }
+        });
 
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", startTelemetrySync);
