@@ -14,312 +14,123 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
+        /* Modern Dark Glassmorphism Theme */
         :root {
-            --bg-glass: rgba(13, 20, 38, 0.65);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-green: #34d399;
-            --accent-yellow: #fbbf24;
-            --accent-red: #f87171;
-            --bg-dark: #0a0f1d;
+            --bg-dark: #080d1a;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(0, 210, 255, 0.18);
+            --accent-glow: #00d2ff;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
         }
 
-        /* GLOBAL CYBERPUNK SLATE WORKSPACE */
-        html, body {
-            background-color: var(--bg-dark) !important;
-            color: var(--text-main) !important;
-            font-family: 'Inter', sans-serif;
-            margin: 0; padding: 0;
-            
-            min-height: 100vh;
-            overflow-x: hidden;
-            letter-spacing: -0.2px;
-        }
-
-        /* PREMIUM FROSTED GLASSMORPHIC HEADER BAR */
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 40px; background: rgba(10, 15, 29, 0.7);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-glass);
-        }
-
-        .logo-title { 
-            margin: 0; font-size: 1.6rem; font-weight: 800; 
-            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .dashboard-btn { 
-            color: var(--accent-blue); text-decoration: none; font-weight: 600; font-size: 0.85rem; 
-            padding: 8px 18px; border-radius: 50px; background: rgba(56, 189, 248, 0.06);
-            border: 1px solid rgba(56, 189, 248, 0.2); transition: all 0.2s ease; 
-        }
-        .dashboard-btn:hover { background: var(--accent-blue); color: #0a0f1d; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
-
-        /* ULTRA-GLOSSY LAYER-ISOLATED SEARCH CAPSULE WRAPPER */
-        .search-wrapper {
-            max-width: 520px; 
-            margin: 30px auto; 
-            display: flex; 
-            align-items: center;
-            background: rgba(15, 23, 42, 0.4); 
-            border: 1px solid var(--border-glass);
-            padding: 12px 24px; 
-            border-radius: 50px; 
-            position: relative;
-            backdrop-filter: blur(8px); 
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            
-            /* FORCES THE ENTIRE SEARCH AREA TO STAY ON TOP OF THE MAP CANVAS GRID */
-            z-index: 999999 !important; 
-            overflow: visible !important; 
-        }
-        .search-wrapper:focus-within {
-            border-color: rgba(56, 189, 248, 0.4);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
-        }
-
-        /* OVERLAY AUTOCOMPLETE DROPDOWN */
-        #searchDropdown {
-            position: absolute !important;
-            top: calc(100% + 8px) !important; /* Positions it perfectly below the pill shape input wrapper */
-            left: 0 !important;
-            right: 0 !important;
-            background: rgba(10, 15, 29, 0.98) !important; /* Opaque slate glass for clean layout readability */
-            backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important; 
-            border-radius: 20px !important;
-            display: none;
-            flex-direction: column !important;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(56, 189, 248, 0.15) !important; 
-            padding: 8px !important;
-            
-            /* GUARANTEES DROPDOWN FLIES ABOVE ALL MAP LAYERS */
-            z-index: 1000000 !important; 
-        }
-        
-        .search-item {
-            padding: 14px 18px !important; cursor: pointer; display: flex;
-            justify-content: space-between; align-items: center; 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            color: #fff !important; border-radius: 12px !important; margin-bottom: 3px;
-        }
-        .search-item:hover { background: rgba(56, 189, 248, 0.12) !important; transform: translateX(6px); }
-
-        /* CAPSULE RADAR NAVIGATION TAB CONTROLLERS */
-        .tab-navigation-bar { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
-        
-        .tab-link {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass);
-            color: var(--text-muted); padding: 12px 26px; border-radius: 50px;
-            cursor: pointer; font-weight: 700; font-size: 0.85rem;
-            display: flex; align-items: center; gap: 10px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .tab-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
-        .tab-link.active-tab { background: #fff; color: #0a0f1d; border-color: #fff; font-weight: 800; box-shadow: 0 10px 25px rgba(255,255,255,0.15); }
-
-        /* CLEAN SINGLE-VIEWPORT DASHBOARD GRID GRID SYSTEM */
-        #live-tracking-view {
-            display: none;
-            width: 100%;
-            height: calc(100vh - 190px) !important; /* Locks parent height tightly to window limits */
-            padding: 0 24px 20px 24px;
-            box-sizing: border-box;
-            overflow: hidden !important; /* Destroys duplicate parent scrollbars */
-        }
-        
-        #live-tracking-view.view-active {
-            display: grid !important;
-            grid-template-columns: 350px 1fr 350px;
-            gap: 20px;
-            align-items: stretch;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-            border-radius: 24px;
-            border: 1px solid var(--border-glass);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
-            position: relative !important;
-            z-index: 1;
-        }
-
-        .ui-layer {
-            display: contents;
-            pointer-events: none;
-        }
-
-        /* PERFECT-FIT DATA PANELS (SCROLLBARS COMPLETELY REMOVED) */
-        .modern-panel {
-            width: 100% !important;
-            height: 100% !important;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 28px;
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(0, 255, 204, 0.06) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
             padding: 20px;
+        }
+
+        /* Modern Floating Search Bar */
+        .search-wrapper {
             display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* Dynamic layout spatial distribution */
+            justify-content: center;
+            align-items: center;
             gap: 12px;
-            pointer-events: auto;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
-            box-sizing: border-box;
-            
-            /* The Scroll Killer Matrix Rules */
-            overflow: hidden !important; 
-            max-height: 100% !important;
+            margin: 20px auto 30px auto;
+            position: relative;
+            max-width: 520px;
         }
 
-        /* Adjusted element heights to ensure a clean inline layout fit */
-        .chart-box { 
-            background: rgba(0,0,0,0.15); 
-            border-radius: 18px; 
-            padding: 10px; 
-            height: 105px !important; /* Scaled down slightly to prevent clipping boundaries */
-            position: relative; 
-            border: 1px solid var(--border-glass); 
+        .search-input-box {
+            position: relative;
+            width: 100%;
         }
 
-        .metric-row { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            margin-bottom: 8px; /* Tighter vertical spacing rows */
-            font-size: 0.8rem; 
-        }
-
-        .weather-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 10px; 
-        }
-        
-        .w-card { 
-            padding: 10px 8px; 
-            border-radius: 16px;
-        }
-
-        .section-title {
-            margin: 0 0 4px 0; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;
-        }
-
-        .aqi-core {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255, 255, 255, 0.02); padding: 18px; border-radius: 20px;
-            border: 1px solid var(--border-glass); margin-top: 10px;
-        }
-        .aqi-num { font-size: 2.6rem; font-weight: 900; letter-spacing: -1px; }
-        .aqi-desc { text-align: right; display: flex; flex-direction: column; justify-content: center; }
-
-        .metric-label { width: 50px; color: var(--text-muted); font-weight: 700; }
-        .metric-bar-bg { flex: 1; height: 7px; background: rgba(255, 255, 255, 0.04); border-radius: 4px; overflow: hidden; }
-        .metric-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .metric-val { width: 35px; text-align: right; color: #fff; font-weight: 700; }
-
-        /* DYNAMIC 7-DAY FORECAST GRAPH MATRIX VIEW PANEL */
-        #forecast-7-view {
-            width: 100% !important; max-width: 1350px !important; margin: 0 auto !important;
-            padding: 40px 24px 60px 24px !important; box-sizing: border-box !important;
-            display: none; flex-direction: column !important; align-items: center !important; gap: 45px !important;
-        }
-        #forecast-7-view.active-tab { display: flex !important; }
-
-        .forecast-main-section-part { width: 100% !important; max-width: 1250px !important; display: flex !important; flex-direction: column !important; align-items: center !important; box-sizing: border-box !important; }
-        .forecast-grid-container { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)) !important; gap: 18px !important; width: 100% !important; justify-content: center !important; box-sizing: border-box !important; }
-
-        .forecast-page-card {
-            background: rgba(15, 23, 42, 0.5) !important; border: 1px solid var(--border-glass) !important;
-            border-radius: 22px !important; padding: 24px 16px !important; text-align: center !important;
-            backdrop-filter: blur(10px); box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important; 
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease !important;
-        }
-        .forecast-page-card:hover { 
-            transform: translateY(-6px) scale(1.02) !important; 
-            border-color: rgba(255,255,255,0.2) !important;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6) !important;
-        }
-
-        .forecast-aqi-badge { 
-            display: inline-block; margin-top: 10px; padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; 
-            letter-spacing: 0.3px; text-transform: uppercase;
-        }
-        .aqi-good { background: rgba(52, 211, 153, 0.12) !important; color: var(--accent-green) !important; border: 1px solid rgba(52, 211, 153, 0.25) !important; }
-        .aqi-moderate { background: rgba(251, 191, 36, 0.12) !important; color: var(--accent-yellow) !important; border: 1px solid rgba(251, 191, 36, 0.25) !important; }
-        .aqi-poor { background: rgba(248, 113, 113, 0.12) !important; color: var(--accent-red) !important; border: 1px solid rgba(248, 113, 113, 0.25) !important; }
-
-        .f-metrics { 
-            margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.05); 
-            font-size: 0.72rem; text-align: left; color: var(--text-muted); line-height: 1.6; 
-        }
-        .f-metrics div { margin-bottom: 4px; display: flex; justify-content: space-between; }
-        .f-metrics span { color: rgba(255, 255, 255, 0.35); }
-
-        /* HIGH-GLOW LIGHT CONTRAST JOKES SECTION WRAPPER */
-        .jokes-standalone-section-part.unique-widget-panel {
-            width: 100% !important; 
-            max-width: 1250px !important; 
-            padding: 32px !important;
-            background: rgba(248, 250, 252, 0.92) !important; /* Premium bright frosted light canvas */
-            border: 2px solid #38bdf8 !important; /* Strong neon blue border highlight */
-            border-radius: 28px !important; 
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3), 0 20px 40px rgba(0, 0, 0, 0.4) !important; 
-            backdrop-filter: blur(16px); 
-            box-sizing: border-box !important;
-            margin-top: 25px;
-        }
-
-        .widget-header-row h3 {
-            color: #0f172a !important; /* Dark slate header text for light background contrast */
-        }
-
-        .modern-jokes-data-table { width: 100% !important; border-collapse: separate !important; border-spacing: 0 10px !important; }
-        .modern-jokes-data-table th { padding: 0 16px 10px 16px; font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.2px; color: #475569; }
-        
-        .modern-jokes-data-table tbody tr {
-            background: rgba(15, 23, 42, 0.04) !important; /* Subtle dark rows to contrast the light panel */
-            transition: all 0.25s ease !important;
-        }
-        .modern-jokes-data-table tbody tr:hover {
-            background: rgba(56, 189, 248, 0.12) !important; /* Light blue row hover highlight */
-            transform: scale(1.005);
-        }
-        
-        .modern-jokes-data-table td {
-            padding: 18px 16px !important; 
-            color: #1e293b !important; /* Deep, clear dark text for maximum readability */
+        .search-input-box input {
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 30px;
+            border: 1px solid var(--card-border);
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
             font-size: 0.95rem;
-            font-weight: 500;
-            border-top: 1px solid rgba(15, 23, 42, 0.06) !important; 
-            border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
-            white-space: normal !important;
+            outline: none;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
         }
-        .modern-jokes-data-table td:first-child { border-left: 1px solid rgba(15, 23, 42, 0.06) !important; border-radius: 14px 0 0 14px !important; }
-        .modern-jokes-data-table td:last-child { border-right: 1px solid rgba(15, 23, 42, 0.06) !important; border-radius: 0 14px 14px 0 !important; }
 
-        /* CLEAN RICH PREMIUM TAG SYSTEM */
-        .j-tag { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; display: inline-block; }
-        .j-blue { background: #0284c7 !important; color: #ffffff !important; }
-        .j-purple { background: #7c3aed !important; color: #ffffff !important; }
-        .j-yellow { background: #d97706 !important; color: #ffffff !important; }
-        .j-green { background: #059669 !important; color: #ffffff !important; }
-        .j-pink { background: #db2777 !important; color: #ffffff !important; }
-
-        .breathing-ui-dot {
-            width: 12px; height: 12px; background: var(--accent-green); border-radius: 50%; display: inline-block;
-            box-shadow: 0 0 12px rgba(52,211,153,0.4); animation: widget-breathe 3s infinite ease-in-out;
+        .search-input-box input:focus {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
         }
-        @keyframes widget-breathe {
-            0% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(52,211,153,0.4); }
-            50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 12px 6px rgba(52,211,153,0); }
-            100% { transform: scale(0.9); opacity: 0.5; box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+
+        .search-btn {
+            padding: 14px 28px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+        }
+
+        /* Live Dropdown Panel */
+        #searchResultsDropdown {
+            display: none;
+            position: absolute;
+            top: 55px;
+            left: 0;
+            width: 100%;
+            background: rgba(11, 21, 40, 0.95);
+            border: 1px solid var(--accent-glow);
+            border-radius: 16px;
+            max-height: 260px;
+            overflow-y: auto;
+            z-index: 9999;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Modern Glass Cards */
+        .card, .telemetry-card, .metric-box {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 20px !important;
+            backdrop-filter: blur(16px) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+            transition: transform 0.3s ease, border-color 0.3s ease !important;
+        }
+
+        .card:hover, .telemetry-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 210, 255, 0.4) !important;
+        }
+
+        /* Leaflet Map Rounded Styling */
+        #map-canvas, #map {
+            border-radius: 20px !important;
+            border: 1px solid var(--card-border) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
         }
     </style>
 </head>
@@ -330,15 +141,13 @@
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
-    <!-- GLOBAL CITY SEARCH WITH LIVE DROPDOWN -->
-    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto; position: relative; max-width: 500px;">
-        <div style="position: relative; width: 360px;">
-            <input type="text" id="citySearchInput" autocomplete="off" placeholder="Search any city, town, or village in the world..." style="padding: 12px 20px; width: 100%; border-radius: 25px; border: 1px solid #00d2ff; background: #0b1528; color: #fff; outline: none; box-sizing: border-box;">
-            <!-- Live suggestions dropdown -->
-            <div id="searchResultsDropdown" style="display: none; position: absolute; top: 48px; left: 0; width: 100%; background: #0b1528; border: 1px solid #00d2ff; border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 8px 16px rgba(0,0,0,0.5);"></div>
+    <!-- 🌐 MODERN FLOATING SEARCH BAR -->
+    <div class="search-wrapper">
+        <div class="search-input-box">
+            <input type="text" id="citySearchInput" autocomplete="off" placeholder="Search any city, town, or village globally...">
+            <div id="searchResultsDropdown"></div>
         </div>
-
-        <button id="analyzeBtn" style="padding: 12px 22px; border-radius: 25px; background: #00d2ff; color: #070d19; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+        <button id="analyzeBtn" class="search-btn">
             🔍 <span>Search</span>
         </button>
     </div>
