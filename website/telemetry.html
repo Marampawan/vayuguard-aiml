@@ -329,10 +329,15 @@
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
-    <!-- 🔍 SEARCH CONSOLE WITH SEARCH ICON -->
-    <div class="search-box-container" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto;">
-        <input type="text" id="citySearchInput" class="search-input" placeholder="Search for a city (e.g., Delhi, Mumbai)..." list="globalCitiesList" style="padding: 12px 20px; width: 320px; border-radius: 25px; border: 1px solid #00d2ff; background: #0b1528; color: #fff; outline: none;">
-        <button id="analyzeBtn" class="analyze-btn" style="padding: 12px 22px; border-radius: 25px; background: #00d2ff; color: #070d19; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+    <!-- 🌐 GLOBAL CITY SEARCH WITH LIVE DROPDOWN -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto; position: relative; max-width: 500px;">
+        <div style="position: relative; width: 360px;">
+            <input type="text" id="citySearchInput" autocomplete="off" placeholder="Search any city, town, or village in the world..." style="padding: 12px 20px; width: 100%; border-radius: 25px; border: 1px solid #00d2ff; background: #0b1528; color: #fff; outline: none; box-sizing: border-box;">
+            <!-- Live suggestions dropdown -->
+            <div id="searchResultsDropdown" style="display: none; position: absolute; top: 48px; left: 0; width: 100%; background: #0b1528; border: 1px solid #00d2ff; border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 8px 16px rgba(0,0,0,0.5);"></div>
+        </div>
+
+        <button id="analyzeBtn" style="padding: 12px 22px; border-radius: 25px; background: #00d2ff; color: #070d19; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
             🔍 <span>Search</span>
         </button>
     </div>
@@ -595,33 +600,31 @@
                 .catch(() => runDualFetch(fallbackLat, fallbackLng, "YELAHANKA NODE"));
         }
 
-        // 🔍 Search City Function
-        function searchCity(cityName) {
-            if (!cityName) return;
-            const waqiUrl = `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=b328782542ab121b9a449538c3960d05049d87bd`;
+        const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
 
-            fetch(waqiUrl)
-                .then(res => res.json())
-                .then(payload => {
-                    if (payload.status === "ok" && payload.data && payload.data.geo) {
-                        const d = payload.data;
-                        const lat = d.geo[0];
-                        const lng = d.geo[1];
-                        const name = d.city ? d.city.name.split(',')[0].toUpperCase() : cityName.toUpperCase();
-                        const aqi = (d.aqi && !isNaN(d.aqi)) ? d.aqi : 50;
-                        runDualFetch(lat, lng, name);
-                    } else {
-                        alert("City not found. Please try another search term (e.g. Delhi, Mumbai, London).");
-                    }
+        // 🌐 Search & Fly to Coordinates
+        function executeSearchByCoords(lat, lng, displayName) {
+            // Hide suggestions dropdown
+            const dropdown = document.getElementById("searchResultsDropdown");
+            if (dropdown) dropdown.style.display = "none";
+
+            // Fetch AQI for exact location
+            fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
+                .then(r => r.json())
+                .then(p => {
+                    const aqi = (p.data && p.data.aqi && !isNaN(p.data.aqi)) ? p.data.aqi : 50;
+                    updateMetricsByCoords(lat, lng, displayName, aqi);
                 })
-                .catch(err => console.error("Search API Error:", err));
+                .catch(() => updateMetricsByCoords(lat, lng, displayName, 50));
         }
 
-        function runDualFetch(lat, lng, locationLabel) {
+        // 📊 Update Metrics by Coordinates
+        function updateMetricsByCoords(lat, lng, cityName, aqiVal) {
             initMap(lat, lng);
 
-            // 1. Fetch Atmospheric Weather (Open-Meteo)
+            // Fetch Weather from Open-Meteo
             const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`;
+
             fetch(weatherUrl)
                 .then(res => res.json())
                 .then(wData => {
@@ -633,83 +636,107 @@
                         if (document.getElementById("pressMetricText")) document.getElementById("pressMetricText").innerText = Math.round(c.surface_pressure) + " hPa";
                     }
                 })
-                .catch(err => console.error("Weather Error:", err));
+                .catch(err => console.error("Weather Fetch Error:", err));
 
-            // 2. Fetch Air Quality Index (WAQI)
-            const token = "b328782542ab121b9a449538c3960d05049d87bd";
-            const waqiUrl = `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}`;
+            // Update Text Elements
+            const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
+            if (header) header.innerText = "📍 NODE: " + cityName;
 
-            fetch(waqiUrl)
+            const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value");
+            if (aqiEl) aqiEl.innerText = aqiVal;
+
+            const statusP = document.getElementById("streamStatusLabel") || document.querySelector("p");
+            if (statusP) {
+                statusP.innerText = "ACTIVE TELEMETRY STREAM";
+                statusP.style.color = "#00ffcc";
+            }
+
+            renderTrendChart(aqiVal);
+
+            // Update Map Marker
+            mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
+            L.marker([lat, lng]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${aqiVal}`).openPopup();
+        }
+
+        // ⌨️ Fetch Live Results for ANY Location in the World (India Prioritized First)
+        function fetchLiveDropdownSuggestions(text) {
+            const dropdown = document.getElementById("searchResultsDropdown");
+            if (!dropdown) return;
+
+            if (!text || text.length < 2) {
+                dropdown.style.display = "none";
+                return;
+            }
+
+            fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(text)}&count=12&language=en&format=json`)
                 .then(res => res.json())
-                .then(payload => {
-                    let stationName = locationLabel;
-                    let aqiVal = 58; // Fallback typical Bengaluru AQI if station is offline
+                .then(data => {
+                    if (data.results && data.results.length > 0) {
+                        // 🇮🇳 Sort: Put all Indian locations at the top of the list
+                        const sorted = data.results.sort((a, b) => (a.country_code === 'IN' ? -1 : 1));
 
-                    if (payload.status === "ok" && payload.data) {
-                        const d = payload.data;
-                        if (d.city && d.city.name) {
-                            stationName = d.city.name.split(',')[0].toUpperCase();
-                        }
-                        if (d.aqi && !isNaN(d.aqi)) {
-                            aqiVal = d.aqi;
-                        } else if (d.iaqi && d.iaqi.pm25) {
-                            aqiVal = d.iaqi.pm25.v;
-                        }
+                        dropdown.innerHTML = sorted.map(p => {
+                            const countryStr = p.country ? `, ${p.country}` : '';
+                            const stateStr = p.admin1 ? `, ${p.admin1}` : '';
+                            const fullLabel = `${p.name}${stateStr}${countryStr}`;
+                            const isIndia = p.country_code === 'IN';
+
+                            return `
+                                <div class="search-item" onclick="executeSearchByCoords(${p.latitude}, ${p.longitude}, '${p.name.toUpperCase()}')" style="padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #14223a; color: #fff; font-size: 0.9rem; text-align: left; transition: background 0.2s;" onmouseover="this.style.background='#142642'" onmouseout="this.style.background='transparent'">
+                                    ${isIndia ? '🇮🇳 ' : '🌐 '}<strong>${p.name}</strong><span style="color: #8a99ad; font-size: 0.8rem;">${stateStr}${countryStr}</span>
+                                </div>
+                            `;
+                        }).join('');
+
+                        dropdown.style.display = "block";
+                    } else {
+                        dropdown.innerHTML = `<div style="padding: 12px; color: #8a99ad; font-size: 0.85rem;">No places found globally.</div>`;
+                        dropdown.style.display = "block";
                     }
-
-                    // Update DOM text
-                    const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
-                    if (header) header.innerText = "📍 NODE: " + stationName;
-
-                    const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value");
-                    if (aqiEl) aqiEl.innerText = aqiVal;
-
-                    const statusP = document.getElementById("streamStatusLabel") || document.querySelector("p");
-                    if (statusP) {
-                        statusP.innerText = "ACTIVE TELEMETRY STREAM";
-                        statusP.style.color = "#00ffcc";
-                    }
-
-                    const recBox = document.getElementById("recommendationText");
-                    if (recBox) {
-                        recBox.innerText = `PM2.5 / PM10 density synchronized. Node index at ${aqiVal} AQI. Nominal outdoor conditions.`;
-                    }
-
-                    // Render Chart & Leaflet Marker
-                    renderTrendChart(aqiVal);
-
-                    mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
-                    L.marker([lat, lng]).addTo(mapInstance).bindPopup(`<b>${stationName}</b><br>AQI: ${aqiVal}`).openPopup();
                 })
-                .catch(err => {
-                    console.error("WAQI Error:", err);
-                    renderTrendChart(55);
+                .catch(() => {
+                    dropdown.style.display = "none";
                 });
         }
 
-        // 🔘 Corrected Event Handlers for Search
+        // 🔘 Event Handlers for Live Typing & Click Outside
         window.addEventListener('DOMContentLoaded', () => {
             startTelemetrySync();
 
-            // 1. Corrected ID targeting: "analyzeBtn"
-            const analyzeBtn = document.getElementById("analyzeBtn");
             const searchInput = document.getElementById("citySearchInput");
-
-            if (analyzeBtn) {
-                analyzeBtn.addEventListener("click", () => {
-                    const cityName = searchInput ? searchInput.value.trim() : "";
-                    if (cityName) searchCity(cityName);
-                });
-            }
+            const searchBtn = document.getElementById("analyzeBtn");
+            const dropdown = document.getElementById("searchResultsDropdown");
 
             if (searchInput) {
+                let debounceTimer;
+                searchInput.addEventListener("input", (e) => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        fetchLiveDropdownSuggestions(e.target.value.trim());
+                    }, 200);
+                });
+
                 searchInput.addEventListener("keypress", (e) => {
                     if (e.key === "Enter") {
-                        const cityName = searchInput.value.trim();
-                        if (cityName) searchCity(cityName);
+                        const firstResult = dropdown.querySelector('.search-item');
+                        if (firstResult) firstResult.click();
                     }
                 });
             }
+
+            if (searchBtn) {
+                searchBtn.addEventListener("click", () => {
+                    const firstResult = dropdown.querySelector('.search-item');
+                    if (firstResult) firstResult.click();
+                });
+            }
+
+            // Close dropdown when clicking outside search bar
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest("#citySearchInput") && !e.target.closest("#searchResultsDropdown")) {
+                    if (dropdown) dropdown.style.display = "none";
+                }
+            });
         });
     </script>
 </body>
