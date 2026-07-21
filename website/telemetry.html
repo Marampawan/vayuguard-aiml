@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Monitor ?Çö VayuGuard</title>
+    <title>Advanced Monitor - VayuGuard</title>
     <link rel="icon" href="data:,">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,12 +26,13 @@
             --bg-dark: #0a0f1d;
         }
 
-        /* ?ƒîî GLOBAL CYBERPUNK SLATE WORKSPACE */
+        /* GLOBAL CYBERPUNK SLATE WORKSPACE */
         html, body {
             background-color: var(--bg-dark) !important;
             color: var(--text-main) !important;
             font-family: 'Inter', sans-serif;
             margin: 0; padding: 0;
+            
             min-height: 100vh;
             overflow-x: hidden;
             letter-spacing: -0.2px;
@@ -60,7 +61,7 @@
         }
         .dashboard-btn:hover { background: var(--accent-blue); color: #0a0f1d; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
 
-        /* ?ƒöì ULTRA-GLOSSY LAYER-ISOLATED SEARCH CAPSULE WRAPPER */
+        /* ULTRA-GLOSSY LAYER-ISOLATED SEARCH CAPSULE WRAPPER */
         .search-wrapper {
             max-width: 520px; 
             margin: 30px auto; 
@@ -74,7 +75,7 @@
             backdrop-filter: blur(8px); 
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             
-            /* ?ƒ¢æ FORCES THE ENTIRE SEARCH AREA TO STAY ON TOP OF THE MAP CANVAS GRID */
+            /* FORCES THE ENTIRE SEARCH AREA TO STAY ON TOP OF THE MAP CANVAS GRID */
             z-index: 999999 !important; 
             overflow: visible !important; 
         }
@@ -83,7 +84,7 @@
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
         }
 
-        /* ?ƒöì OVERLAY AUTOCOMPLETE DROPDOWN */
+        /* OVERLAY AUTOCOMPLETE DROPDOWN */
         #searchDropdown {
             position: absolute !important;
             top: calc(100% + 8px) !important; /* Positions it perfectly below the pill shape input wrapper */
@@ -98,7 +99,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(56, 189, 248, 0.15) !important; 
             padding: 8px !important;
             
-            /* ?ƒ¢æ GUARANTEES DROPDOWN FLIES ABOVE ALL MAP LAYERS */
+            /* GUARANTEES DROPDOWN FLIES ABOVE ALL MAP LAYERS */
             z-index: 1000000 !important; 
         }
         
@@ -122,7 +123,7 @@
         .tab-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
         .tab-link.active-tab { background: #fff; color: #0a0f1d; border-color: #fff; font-weight: 800; box-shadow: 0 10px 25px rgba(255,255,255,0.15); }
 
-        /* ?ƒîÉ CLEAN SINGLE-VIEWPORT DASHBOARD GRID GRID SYSTEM */
+        /* CLEAN SINGLE-VIEWPORT DASHBOARD GRID GRID SYSTEM */
         #live-tracking-view {
             display: none;
             width: 100%;
@@ -154,7 +155,7 @@
             pointer-events: none;
         }
 
-        /* ?ƒôª PERFECT-FIT DATA PANELS (SCROLLBARS COMPLETELY REMOVED) */
+        /* PERFECT-FIT DATA PANELS (SCROLLBARS COMPLETELY REMOVED) */
         .modern-panel {
             width: 100% !important;
             height: 100% !important;
@@ -223,7 +224,7 @@
         .metric-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .metric-val { width: 35px; text-align: right; color: #fff; font-weight: 700; }
 
-        /* ?ƒôª DYNAMIC 7-DAY FORECAST GRAPH MATRIX VIEW PANEL */
+        /* DYNAMIC 7-DAY FORECAST GRAPH MATRIX VIEW PANEL */
         #forecast-7-view {
             width: 100% !important; max-width: 1350px !important; margin: 0 auto !important;
             padding: 40px 24px 60px 24px !important; box-sizing: border-box !important;
@@ -261,7 +262,7 @@
         .f-metrics div { margin-bottom: 4px; display: flex; justify-content: space-between; }
         .f-metrics span { color: rgba(255, 255, 255, 0.35); }
 
-        /* ?ƒºÿ HIGH-GLOW LIGHT CONTRAST JOKES SECTION WRAPPER */
+        /* HIGH-GLOW LIGHT CONTRAST JOKES SECTION WRAPPER */
         .jokes-standalone-section-part.unique-widget-panel {
             width: 100% !important; 
             max-width: 1250px !important; 
@@ -303,7 +304,7 @@
         .modern-jokes-data-table td:first-child { border-left: 1px solid rgba(15, 23, 42, 0.06) !important; border-radius: 14px 0 0 14px !important; }
         .modern-jokes-data-table td:last-child { border-right: 1px solid rgba(15, 23, 42, 0.06) !important; border-radius: 0 14px 14px 0 !important; }
 
-        /* ?ƒÆí CLEAN RICH PREMIUM TAG SYSTEM */
+        /* CLEAN RICH PREMIUM TAG SYSTEM */
         .j-tag { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; display: inline-block; }
         .j-blue { background: #0284c7 !important; color: #ffffff !important; }
         .j-purple { background: #7c3aed !important; color: #ffffff !important; }
@@ -329,7 +330,7 @@
         <a href="index.html" class="dashboard-btn">Return to Main Dashboard</a>
     </div>
 
-    <!-- 🌐 GLOBAL CITY SEARCH WITH LIVE DROPDOWN -->
+    <!-- GLOBAL CITY SEARCH WITH LIVE DROPDOWN -->
     <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 20px auto; position: relative; max-width: 500px;">
         <div style="position: relative; width: 360px;">
             <input type="text" id="citySearchInput" autocomplete="off" placeholder="Search any city, town, or village in the world..." style="padding: 12px 20px; width: 100%; border-radius: 25px; border: 1px solid #00d2ff; background: #0b1528; color: #fff; outline: none; box-sizing: border-box;">
@@ -342,14 +343,14 @@
         </button>
     </div>
 
-    <!-- ?? REPAIRED INTERACTIVE CONTROLS CONTAINER -->
+    <!-- REPAIRED INTERACTIVE CONTROLS CONTAINER -->
     <div class="view-toggle-container" style="text-align: center; margin: 20px auto; display: flex; justify-content: center; gap: 15px;">
         <button id="liveMapBtn" style="padding: 12px 24px; border-radius: 25px; background: #ffffff; color: #070d19; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2); display: flex; align-items: center; gap: 8px;">
-            ?? Live Tracking Map
+            🗺️ Live Tracking Map
         </button>
         <a href="forecast.html" style="text-decoration: none;">
             <button style="padding: 10px 20px; border-radius: 20px; background: #0b1528; color: #fff; border: 1px solid #00d2ff; cursor: pointer; font-weight: bold;">
-                ?? Forecast 7 Projections
+                📊 Forecast 7 Projections
             </button>
         </a>
     </div>
@@ -429,7 +430,7 @@
     </div>
     <div id="forecast-7-view" class="tab-content">
         
-        <!-- ?ƒƒª PART 1: THE CENTERED FORECAST CARDS COMPARTMENT -->
+        <!-- PART 1: THE CENTERED FORECAST CARDS COMPARTMENT -->
         <div class="forecast-main-section-part">
             <div style="text-align: center; margin-bottom: 30px; width: 100%;">
                 <h2 style="color: #ffffff; margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">7-Day Advanced Atmospheric & AQI Projections</h2>
@@ -437,32 +438,32 @@
                     <span style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;">Predictive Array Active</span>
                 </div>
                 <div style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 16px; border-radius: 30px;">
-                    <span>?ƒôì</span>
+                    <span>📍</span>
                     <span id="user-live-city" style="color: #38bdf8; font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">LOADING TELEMETRY NETWORK...</span>
                 </div>
             </div>
 
             <!-- Flat Centered Grid Matrix -->
             <div class="forecast-grid-container">
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Monday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?ÿÇ??Å</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Tuesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?¢à</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Wednesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?ƒîº??Å</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Thursday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?¢ê??Å</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Friday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?¢à</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Saturday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?ÿÇ??Å</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Sunday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">?ÿÇ??Å</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--??C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Monday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Tuesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☁️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Wednesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">🌤️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Thursday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">🌥️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Friday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☁️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Saturday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
+                <div class="forecast-page-card"><span style="color:#a1a1aa; font-weight:700; font-size:0.8rem; text-transform:uppercase;">Sunday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:#fff; display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
             </div>
         </div>
 
-        <!-- ?ƒ¢æ STRUCTURAL GAP FACTOR -->
+        <!-- STRUCTURAL GAP FACTOR -->
         <div style="clear: both; height: 10px; width: 100%;"></div>
 
-        <!-- ?ƒƒ? PART 2: THE STANDALONE JOKES COMPARTMENT (HIGHLIGTED MODEL WRAPPER) -->
+        <!-- PART 2: THE STANDALONE JOKES COMPARTMENT (HIGHLIGTED MODEL WRAPPER) -->
         <div class="jokes-standalone-section-part unique-widget-panel">
             <div class="widget-header-row">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span class="breathing-ui-dot"></span>
-                    <h3 style="margin: 0; color: #ffffff; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px;">?ƒºÿ Mindful Break: Fun Logs & Emojis</h3>
+                    <h3 style="margin: 0; color: #ffffff; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px;">📿 Mindful Break: Fun Logs & Emojis</h3>
                 </div>
                 <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Highlighted Focus</span>
             </div>
@@ -478,27 +479,27 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">?ƒìà</td>
+                            <td style="text-align: center; font-size: 1.4rem;">😂</td>
                             <td><span class="j-tag j-blue">Classic</span></td>
                             <td>"Why did the tomato blush? Because it saw the salad dressing!"</td>
                         </tr>
                         <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">?ƒÜ?</td>
+                            <td style="text-align: center; font-size: 1.4rem;">🤪</td>
                             <td><span class="j-tag j-purple">Random</span></td>
                             <td>"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
                         </tr>
                         <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">?ƒªû</td>
+                            <td style="text-align: center; font-size: 1.4rem;">😝</td>
                             <td><span class="j-tag j-yellow">Dad Joke</span></td>
                             <td>"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
                         </tr>
                         <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">?ÿü??Å</td>
+                            <td style="text-align: center; font-size: 1.4rem;">🌤️</td>
                             <td><span class="j-tag j-green">Atmosphere</span></td>
                             <td>"Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!"</td>
                         </tr>
                         <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">?ƒÆ?</td>
+                            <td style="text-align: center; font-size: 1.4rem;">💡</td>
                             <td><span class="j-tag j-pink">Geek Logic</span></td>
                             <td>"There are 10 types of people in the world: those who understand binary, and those who don't."</td>
                         </tr>
@@ -508,35 +509,38 @@
         </div>
     </div>
 
-    <!-- 🛠️ SPECIFIC FIX: ONLY REPLACE THIS SCRIPT AT THE BOTTOM -->
+    <!-- SPECIFIC FIX: ONLY REPLACE THIS SCRIPT AT THE BOTTOM -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let mapInstance = null;
         let chartInstance = null;
 
+        const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
+
+        // 1. Initialize Leaflet Map
         function initMap(lat, lng) {
             const container = document.getElementById('map-canvas') || document.getElementById('map');
             if (!container) return;
-            
+
             if (!mapInstance) {
-                mapInstance = L.map(container).setView([lat, lng], 11);
+                mapInstance = L.map(container).setView([lat, lng], 10);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(mapInstance);
             } else {
-                mapInstance.setView([lat, lng], 11);
+                mapInstance.setView([lat, lng], 10);
             }
         }
 
-        // 📈 Render / Update Chart.js Trend Curve
+        // 2. Render Trend Chart
         function renderTrendChart(baseAqi) {
             const canvas = document.getElementById('aqiTrendChart');
             if (!canvas) return;
 
-            const safeAqi = (baseAqi && !isNaN(baseAqi)) ? parseInt(baseAqi) : 55;
-            const trendData = [-8, -3, 2, 8, 4, -2, -5].map(offset => Math.max(10, safeAqi + offset));
+            const safeAqi = (!isNaN(baseAqi) && baseAqi !== "--") ? parseInt(baseAqi) : 50;
+            const trendData = [-8, -3, 2, 8, 4, -2, -5].map(v => Math.max(10, safeAqi + v));
             const hours = ["06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "00:00"];
 
             if (chartInstance) {
@@ -548,7 +552,6 @@
                     data: {
                         labels: hours,
                         datasets: [{
-                            label: 'AQI Trend',
                             data: trendData,
                             borderColor: '#00d2ff',
                             backgroundColor: 'rgba(0, 210, 255, 0.1)',
@@ -570,55 +573,7 @@
             }
         }
 
-        function startTelemetrySync() {
-            const defaultLat = 13.0998; // Yelahanka / North Bengaluru
-            const defaultLng = 77.5971;
-
-            initMap(defaultLat, defaultLng);
-
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => runDualFetch(pos.coords.latitude, pos.coords.longitude, "YELAHANKA"),
-                    (err) => fetchIPFallback(defaultLat, defaultLng),
-                    { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
-                );
-            } else {
-                fetchIPFallback(defaultLat, defaultLng);
-            }
-        }
-
-        function fetchIPFallback(fallbackLat, fallbackLng) {
-            fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.latitude && data.longitude) {
-                        runDualFetch(data.latitude, data.longitude, (data.city || "LOCAL NODE").toUpperCase());
-                    } else {
-                        runDualFetch(fallbackLat, fallbackLng, "YELAHANKA NODE");
-                    }
-                })
-                .catch(() => runDualFetch(fallbackLat, fallbackLng, "YELAHANKA NODE"));
-        }
-
-        const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
-
-        // 🌐 Search & Fly to Coordinates
-        function executeSearchByCoords(lat, lng, displayName) {
-            // Hide suggestions dropdown
-            const dropdown = document.getElementById("searchResultsDropdown");
-            if (dropdown) dropdown.style.display = "none";
-
-            // Fetch AQI for exact location
-            fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
-                .then(r => r.json())
-                .then(p => {
-                    const aqi = (p.data && p.data.aqi && !isNaN(p.data.aqi)) ? p.data.aqi : 50;
-                    updateMetricsByCoords(lat, lng, displayName, aqi);
-                })
-                .catch(() => updateMetricsByCoords(lat, lng, displayName, 50));
-        }
-
-        // 📊 Update Metrics by Coordinates
+        // 3. Update Dashboard Metrics & Weather
         function updateMetricsByCoords(lat, lng, cityName, aqiVal) {
             initMap(lat, lng);
 
@@ -638,7 +593,7 @@
                 })
                 .catch(err => console.error("Weather Fetch Error:", err));
 
-            // Update Text Elements
+            // Update Text Labels
             const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
             if (header) header.innerText = "📍 NODE: " + cityName;
 
@@ -654,11 +609,27 @@
             renderTrendChart(aqiVal);
 
             // Update Map Marker
-            mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
-            L.marker([lat, lng]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${aqiVal}`).openPopup();
+            if (mapInstance) {
+                mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
+                L.marker([lat, lng]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${aqiVal}`).openPopup();
+            }
         }
 
-        // ⌨️ Fetch Live Results for ANY Location in the World (India Prioritized First)
+        // 4. Handle User Selected Search Result
+        function executeSearchByCoords(lat, lng, displayName) {
+            const dropdown = document.getElementById("searchResultsDropdown");
+            if (dropdown) dropdown.style.display = "none";
+
+            fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
+                .then(r => r.json())
+                .then(p => {
+                    const aqi = (p.data && p.data.aqi && !isNaN(p.data.aqi)) ? p.data.aqi : 50;
+                    updateMetricsByCoords(lat, lng, displayName, aqi);
+                })
+                .catch(() => updateMetricsByCoords(lat, lng, displayName, 50));
+        }
+
+        // 5. Fetch Live Autocomplete Suggestions (India First)
         function fetchLiveDropdownSuggestions(text) {
             const dropdown = document.getElementById("searchResultsDropdown");
             if (!dropdown) return;
@@ -672,13 +643,11 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.results && data.results.length > 0) {
-                        // 🇮🇳 Sort: Put all Indian locations at the top of the list
                         const sorted = data.results.sort((a, b) => (a.country_code === 'IN' ? -1 : 1));
 
                         dropdown.innerHTML = sorted.map(p => {
                             const countryStr = p.country ? `, ${p.country}` : '';
                             const stateStr = p.admin1 ? `, ${p.admin1}` : '';
-                            const fullLabel = `${p.name}${stateStr}${countryStr}`;
                             const isIndia = p.country_code === 'IN';
 
                             return `
@@ -699,7 +668,34 @@
                 });
         }
 
-        // 🔘 Event Handlers for Live Typing & Click Outside
+        // 6. Initial Load: Detect Current User Location First
+        function startTelemetrySync() {
+            const defaultLat = 12.9716;
+            const defaultLng = 77.5946;
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
+                            .then(r => r.json())
+                            .then(p => {
+                                const name = (p.data && p.data.city) ? p.data.city.name.split(',')[0].toUpperCase() : "YOUR LOCATION";
+                                const aqi = (p.data && p.data.aqi) ? p.data.aqi : 55;
+                                updateMetricsByCoords(lat, lng, name, aqi);
+                            })
+                            .catch(() => updateMetricsByCoords(lat, lng, "LOCAL NODE", 55));
+                    },
+                    () => executeSearchByCoords(defaultLat, defaultLng, "BENGALURU"),
+                    { timeout: 5000 }
+                );
+            } else {
+                executeSearchByCoords(defaultLat, defaultLng, "BENGALURU");
+            }
+        }
+
+        // 7. Event Listeners
         window.addEventListener('DOMContentLoaded', () => {
             startTelemetrySync();
 
@@ -717,8 +713,8 @@
                 });
 
                 searchInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter") {
-                        const firstResult = dropdown.querySelector('.search-item');
+                    if (e.key === "Enter" && searchInput.value.trim()) {
+                        const firstResult = dropdown ? dropdown.querySelector('.search-item') : null;
                         if (firstResult) firstResult.click();
                     }
                 });
@@ -726,12 +722,11 @@
 
             if (searchBtn) {
                 searchBtn.addEventListener("click", () => {
-                    const firstResult = dropdown.querySelector('.search-item');
+                    const firstResult = dropdown ? dropdown.querySelector('.search-item') : null;
                     if (firstResult) firstResult.click();
                 });
             }
 
-            // Close dropdown when clicking outside search bar
             document.addEventListener("click", (e) => {
                 if (!e.target.closest("#citySearchInput") && !e.target.closest("#searchResultsDropdown")) {
                     if (dropdown) dropdown.style.display = "none";
