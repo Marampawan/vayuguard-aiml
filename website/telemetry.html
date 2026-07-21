@@ -506,51 +506,61 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let mapInstance = null;
+        let chartInstance = null;
 
-        function initializeMapLayout() {
-            // Safe check for map element
-            const mapEl = document.getElementById('map-canvas') || document.getElementById('map');
-            if (mapEl && !mapInstance) {
-                mapInstance = L.map(mapEl).setView([20.5937, 78.9629], 5); 
+        // 1. Initialize Map
+        function initMap(lat, lng) {
+            const container = document.getElementById('map-canvas') || document.getElementById('map');
+            if (!container) return;
+            
+            if (!mapInstance) {
+                mapInstance = L.map(container).setView([lat, lng], 11);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
                 }).addTo(mapInstance);
+            } else {
+                mapInstance.setView([lat, lng], 11);
             }
         }
 
-        // 🎯 1. GPS Detection with Automatic IP Fallback
-        function initLocationSync() {
-            initializeMapLayout();
+        // 2. Main Location Handler (GPS -> IP Fallback -> Default)
+        function startTelemetrySync() {
+            const defaultLat = 12.9716; // Bengaluru
+            const defaultLng = 77.5946;
+
+            initMap(defaultLat, defaultLng);
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => syncTelemetry(pos.coords.latitude, pos.coords.longitude, null),
-                    (err) => fetchIpFallback(), // If GPS denied/failed, use IP location
-                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    (pos) => fetchWAQI(pos.coords.latitude, pos.coords.longitude, null),
+                    (err) => fetchIPFallback(defaultLat, defaultLng),
+                    { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
                 );
             } else {
-                fetchIpFallback();
+                fetchIPFallback(defaultLat, defaultLng);
             }
         }
 
-        // 🌐 2. IP Location Fallback
-        function fetchIpFallback() {
+        // 3. Fallback to IP Geolocation
+        function fetchIPFallback(fallbackLat, fallbackLng) {
             fetch('https://ipapi.co/json/')
                 .then(res => res.json())
                 .then(data => {
                     if (data.latitude && data.longitude) {
-                        syncTelemetry(data.latitude, data.longitude, null);
+                        fetchWAQI(data.latitude, data.longitude, null);
                     } else {
-                        syncTelemetry(null, null, "bangalore");
+                        fetchWAQI(fallbackLat, fallbackLng, "bangalore");
                     }
                 })
-                .catch(() => syncTelemetry(null, null, "bangalore"));
+                .catch(() => fetchWAQI(fallbackLat, fallbackLng, "bangalore"));
         }
 
-        // 📊 3. Robust Data Populator (Safe Query Selectors)
-        function syncTelemetry(lat, lng, city) {
+        // 4. Fetch & Populate WAQI Data
+        function fetchWAQI(lat, lng, city) {
+            // Your WAQI API Token
             const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
-            let url = lat && lng 
+            const url = (lat && lng) 
                 ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}` 
                 : `https://api.waqi.info/feed/${city || 'bangalore'}/?token=${token}`;
 
@@ -558,50 +568,55 @@
                 .then(res => res.json())
                 .then(payload => {
                     if (payload.status === "ok" && payload.data) {
-                        const data = payload.data;
-                        const cityName = data.city.name.split(',')[0].toUpperCase();
+                        const d = payload.data;
+                        const cityName = d.city.name.split(',')[0].toUpperCase();
 
-                        // Update City Header safely
-                        const headerEls = document.querySelectorAll("h4, div");
-                        headerEls.forEach(el => {
-                            if (el.innerText && el.innerText.includes("DETECTING COORDINATES")) {
-                                el.innerText = `📍 NODE: ${cityName}`;
-                            }
-                        });
+                        // Update Node Title
+                        const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
+                        if (header) header.innerText = "📍 NODE: " + cityName;
 
-                        // Update AQI Score
-                        const aqiEls = document.querySelectorAll(".metric-value, h3, div");
-                        aqiEls.forEach(el => {
-                            if (el.innerText === "--") el.innerText = data.aqi;
-                        });
+                        // Update AQI
+                        const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value");
+                        if (aqiEl) aqiEl.innerText = d.aqi;
 
-                        // Update Weather Values safely
-                        if (data.iaqi) {
-                            const boldEls = document.querySelectorAll("strong, b, span");
-                            boldEls.forEach(el => {
-                                if (el.innerText.includes("--°C")) el.innerText = (data.iaqi.t ? data.iaqi.t.v : "--") + "°C";
-                                if (el.innerText.includes("-- m/s")) el.innerText = (data.iaqi.w ? data.iaqi.w.v : "--") + " m/s";
-                                if (el.innerText.includes("--%")) el.innerText = (data.iaqi.h ? data.iaqi.h.v : "--") + "%";
-                                if (el.innerText.includes("-- hPa")) el.innerText = (data.iaqi.p ? data.iaqi.p.v : "--") + " hPa";
-                            });
+                        // Update Status Tag
+                        const statusP = document.getElementById("streamStatusLabel") || document.querySelector("p");
+                        if (statusP) {
+                            statusP.innerText = "ACTIVE TELEMETRY STREAM";
+                            statusP.style.color = "#00ffcc";
                         }
 
-                        // Pan Map to Location
-                        if (mapInstance && data.geo) {
-                            mapInstance.setView([data.geo[0], data.geo[1]], 12);
+                        // Populate Weather Cards
+                        if (d.iaqi) {
+                            const tempEl = document.getElementById("tempMetricText");
+                            if (tempEl) tempEl.innerText = (d.iaqi.t ? d.iaqi.t.v : "--") + "°C";
+
+                            const windEl = document.getElementById("windMetricText");
+                            if (windEl) windEl.innerText = (d.iaqi.w ? d.iaqi.w.v : "--") + " m/s";
+
+                            const humidEl = document.getElementById("humidMetricText");
+                            if (humidEl) humidEl.innerText = (d.iaqi.h ? d.iaqi.h.v : "--") + "%";
+
+                            const pressEl = document.getElementById("pressMetricText");
+                            if (pressEl) pressEl.innerText = (d.iaqi.p ? d.iaqi.p.v : "--") + " hPa";
+                        }
+
+                        // Move Map Pin to coordinates
+                        if (mapInstance && d.geo) {
+                            initMap(d.geo[0], d.geo[1]);
                             mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
-                            L.marker([data.geo[0], data.geo[1]]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${data.aqi}`).openPopup();
+                            L.marker([d.geo[0], d.geo[1]]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${d.aqi}`).openPopup();
                         }
                     }
                 })
-                .catch(err => console.error(err));
+                .catch(err => console.error("Telemetry fetch failed:", err));
         }
 
         // Run automatically when DOM is ready
         if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", initLocationSync);
+            document.addEventListener("DOMContentLoaded", startTelemetrySync);
         } else {
-            initLocationSync();
+            startTelemetrySync();
         }
     </script>
 </body>
