@@ -605,10 +605,43 @@
                 .catch(err => console.error(err));
         }
 
-        // 🚀 EXECUTE IMMEDIATELY ON TAB OPEN
-        window.addEventListener('DOMContentLoaded', () => {
+        // 🔍 Manual search handler
+        function handleManualSearch() {
+            const searchInput = document.getElementById("citySearchInput");
+            if (searchInput && searchInput.value.trim()) {
+                const city = searchInput.value.trim().toLowerCase();
+                syncTelemetry(null, null, city);
+            }
+        }
+
+        // 🚀 START THE TELEMETRY APP
+        function startTelemetryApp() {
+            // 1. Initialize map canvas
+            initializeMapLayout();
+
+            // 2. Begin automatic GPS + IP location sync
             initLocationSync();
-        });
+
+            // 3. Attach search button event handlers safely
+            const analyzeBtn = document.getElementById("analyzeBtn");
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener("click", handleManualSearch);
+            }
+
+            const searchInput = document.getElementById("citySearchInput");
+            if (searchInput) {
+                searchInput.addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") handleManualSearch();
+                });
+            }
+        }
+
+        // 🎯 ENSURE THE DOM IS 100% LOADED BEFORE RUNNING
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", startTelemetryApp);
+        } else {
+            startTelemetryApp();
+        }
     </script>
 </body>
 </html>
