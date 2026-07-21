@@ -508,353 +508,109 @@
         </div>
     </div>
 
-    <!-- ================= JAVASCRIPT APP MATRIX LOGIC ================= -->
+    <!-- 🛠️ ONLY REPLACE THIS SCRIPT SECTION AT THE BOTTOM -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        function switchTab(evt, tabId) {
-            const tabContents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove('view-active');
-                tabContents[i].classList.remove('active-tab');
-            }
+        let mapInstance = null;
+        let chartInstance = null;
 
-            const tabLinks = document.getElementsByClassName('tab-link');
-            for (let i = 0; i < tabLinks.length; i++) {
-                tabLinks[i].classList.remove('active-tab');
-            }
-
-            const targetPanel = document.getElementById(tabId);
-            targetPanel.classList.add('view-active');
-            targetPanel.classList.add('active-tab');
-            evt.currentTarget.classList.add('active-tab');
-
-            if (tabId === 'live-tracking-view' && window.telemetryMap) {
-                setTimeout(() => window.telemetryMap.invalidateSize(), 100);
-            }
-            
-            // ?ƒÄ? Trigger the randomizer engine whenever the user enters the forecast tab
-            if (tabId === 'forecast-7-view') {
-                generateRandomJokes();
+        function initializeMapLayout() {
+            const mapEl = document.getElementById('map-canvas') || document.getElementById('map');
+            if (mapEl && !mapInstance) {
+                mapInstance = L.map(mapEl).setView([20.5937, 78.9629], 5); 
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(mapInstance);
             }
         }
 
-        // ?ƒºá DATA POOL AND RANDOMIZATION SYSTEM
-        function generateRandomJokes() {
-            // Expanded comedy repository matrix
-            const classicPool = [
-                { emoji: "?ƒìà", narrative: '"Why did the tomato blush? Because it saw the salad dressing!"' },
-                { emoji: "?ƒÑÜ", narrative: '"Why did the egg hide? Because it was a little chicken!"' },
-                { emoji: "?ƒÑò", narrative: '"What do you call a carrot that wins an award? A root success!"' }
-            ];
-
-            const randomPool = [
-                { emoji: "?ƒÜ?", narrative: '"Why can\'t a bicycle stand up by itself? Because it\'s two-tired!"' },
-                { emoji: "?ƒæƒ", narrative: '"Why do shoes go to school? To get a little sole conditioning!"' },
-                { emoji: "?ƒöæ", narrative: '"What kind of key opens a banana? A mon-key!"' }
-            ];
-
-            const dadPool = [
-                { emoji: "?ƒªû", narrative: '"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"' },
-                { emoji: "?ƒÉ?", narrative: '"What do you call a bear with no teeth? A gummy bear!"' },
-                { emoji: "?ƒªü", narrative: '"Why don\'t lions play cards in the jungle? Too many cheetahs!"' }
-            ];
-
-            const atmospherePool = [
-                { emoji: "?ÿü??Å", narrative: '"Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!"' },
-                { emoji: "?Üí", narrative: '"What did the lightning bolt say to the solar panels? You electrify me!"' },
-                { emoji: "?ƒî¼??Å", narrative: '"Why did the wind go to jail? For blowing away the competition!"' }
-            ];
-
-            const geekPool = [
-                { emoji: "?ƒÆ?", narrative: '"There are 10 types of people in the world: those who understand binary, and those who don\'t."' },
-                { emoji: "?ƒñû", narrative: '"Why did the AI go cross-eyed? Too many input parameters to process!"' },
-                { emoji: "?ƒöî", narrative: '"Why did the developer go broke? Because he used up all his cache!"' }
-            ];
-
-            // Safely select one random index item from each distinct category track
-            const cItem = classicPool[Math.floor(Math.random() * classicPool.length)];
-            const rItem = randomPool[Math.floor(Math.random() * randomPool.length)];
-            const dItem = dadPool[Math.floor(Math.random() * dadPool.length)];
-            const aItem = atmospherePool[Math.floor(Math.random() * atmospherePool.length)];
-            const gItem = geekPool[Math.floor(Math.random() * geekPool.length)];
-
-            // Inject the dynamic rows into your table's body element container securely
-            const tableBody = document.querySelector('.modern-jokes-data-table tbody');
-            if (tableBody) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td style="text-align: center; font-size: 1.4rem;">${cItem.emoji}</td>
-                        <td><span class="j-tag j-blue">Classic</span></td>
-                        <td>${cItem.narrative}</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: center; font-size: 1.4rem;">${rItem.emoji}</td>
-                        <td><span class="j-tag j-purple">Random</span></td>
-                        <td>${rItem.narrative}</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: center; font-size: 1.4rem;">${dItem.emoji}</td>
-                        <td><span class="j-tag j-yellow">Dad Joke</span></td>
-                        <td>${dItem.narrative}</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: center; font-size: 1.4rem;">${aItem.emoji}</td>
-                        <td><span class="j-tag j-green">Atmosphere</span></td>
-                        <td>${aItem.narrative}</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: center; font-size: 1.4rem;">${gItem.emoji}</td>
-                        <td><span class="j-tag j-pink">Geek Logic</span></td>
-                        <td>${gItem.narrative}</td>
-                    </tr>
-                `;
+        // 🎯 1. AUTOMATIC LOCATION DETECTOR (GPS WITH IP FALLBACK)
+        function initLocationSync() {
+            initializeMapLayout();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => syncTelemetry(pos.coords.latitude, pos.coords.longitude, null),
+                    (err) => fetchIpFallback(),
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                );
+            } else {
+                fetchIpFallback();
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Unified Global Token Reference Variable
-            const myWaqiToken = "910a9885ec86122fed0883569f159ff84f270ab8";
-
-            function fetchUserLiveLocation() {
-                const cityLabel = document.getElementById('user-live-city');
-                fetch('https://ipapi.co/json/')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.city) {
-                            cityLabel.innerText = `${data.city}, ${data.region}`.toUpperCase();
-                        } else {
-                            cityLabel.innerText = 'LOCATION DETECTED';
-                        }
-                    })
-                    .catch(() => {
-                        cityLabel.innerText = 'MONITOR ACTIVE';
-                    });
-            }
-
-            fetchUserLiveLocation();
-
-            const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
-            window.telemetryMap = map;
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-                subdomains: 'abcd',
-                maxZoom: 20
-            }).addTo(map);
-            L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-            Chart.defaults.color = '#94a3b8';
-            Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
-            Chart.defaults.font.family = 'Inter';
-
-            const ctxTrend = document.getElementById('trendChart').getContext('2d');
-            const trendChart = new Chart(ctxTrend, {
-                type: 'line',
-                data: { labels: ['Current', '+6h', '+12h', '+18h', '+24h'], datasets: [{ data: [0,0,0,0,0], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.15)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
-            });
-
-            const ctxGas = document.getElementById('gasChart').getContext('2d');
-            const gasChart = new Chart(ctxGas, {
-                type: 'bar',
-                data: { labels: ['PM2.5', 'PM10', 'O3', 'NO2', 'SO2'], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#10b981'], borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } } }
-            });
-
-            function updateForecastViewData(cityName, currentAqi, lat, lon) {
-                const locationNode = document.getElementById('user-live-city');
-                if (locationNode) locationNode.innerText = cityName.toUpperCase();
-
-                const baseAqi = parseInt(currentAqi, 10) || 50;
-                const cards = document.querySelectorAll('.forecast-page-card');
-                const targetLat = lat ?? 12.97;
-                const targetLon = lon ?? 77.59;
-                
-                let dataMap = {
-                    temp_offsets: [0, -1, -3, -4, -2, 1, 2],
-                    wind_offsets: [0, -2, 4, 8, -3, -5, -1],
-                    sunrise_shift_mins: [0, 1, 1, 2, 2, 3, 4],
-                    sunset_shift_mins: [0, -1, -1, -2, -3, -3, -4],
-                    aqi_offsets: [0, 12, -8, 25, -15, 5, -3]
-                };
-
-                fetch('quantum_data.json')
-                    .then(res => res.json())
-                    .then(payload => {
-                        if (payload?.temp_offsets) dataMap = payload;
-                        fetchLiveWeatherData();
-                    })
-                    .catch(() => fetchLiveWeatherData());
-
-                function fetchLiveWeatherData() {
-                    const openWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(targetLat)}&longitude=${encodeURIComponent(targetLon)}&current=temperature_2m,wind_speed_10m&daily=sunrise,sunset&timezone=auto`;
-                    fetch(openWeatherUrl)
-                        .then(res => res.json())
-                        .then(realTimeData => {
-                            applyCalculations(realTimeData.current.temperature_2m, realTimeData.current.wind_speed_10m, 42, 38);
-                        })
-                        .catch(() => applyCalculations(30, 12, 42, 38));
-                }
-
-                function applyCalculations(baseTemp, baseWind, baseSunriseMin, baseSunsetMin) {
-                    const weatherIcons = ['?ÿÇ??Å', '?¢à', '?ƒîº??Å', '?¢ê??Å', '?¢à', '?ÿÇ??Å', '?ÿÇ??Å'];
-                    cards.forEach((card, index) => {
-                        let dailyAqi = baseAqi + dataMap.aqi_offsets[index];
-                        if (dailyAqi < 0) dailyAqi = 15;
-
-                        let aqiClass = dailyAqi > 100 ? 'aqi-poor' : (dailyAqi > 50 ? 'aqi-moderate' : 'aqi-good');
-                        card.querySelectorAll('.forecast-aqi-badge').forEach(b => {
-                            b.className = `forecast-aqi-badge ${aqiClass}`;
-                            b.innerText = `AQI: ${dailyAqi}`;
-                        });
-
-                        card.querySelectorAll('.f-icon').forEach(i => i.innerText = weatherIcons[index]);
-                        card.querySelectorAll('.f-temp').forEach(t => t.innerText = `${Math.round(baseTemp + dataMap.temp_offsets[index])}??C`);
-                        
-                        card.querySelectorAll('.f-metrics').forEach(m => {
-                            m.innerHTML = `
-                                <div>?ƒîà Sunrise: 05:${45+index} AM</div>
-                                <div>?ƒîç Sunset: 06:${30-index} PM</div>
-                                <div>?ƒÆ¿ Wind: ${Math.round(baseWind + dataMap.wind_offsets[index])} km/h</div>
-                            `;
-                        });
-                    });
-                }
-            }
-
-            // 🎯 AUTOMATIC EXACT USER LOCATION DETECTOR (GPS + IP FALLBACK)
-            function initLocationSync() {
-                // 1. Try Browser High-Accuracy GPS First
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            console.log("GPS Location acquired:", position.coords);
-                            syncTelemetry(position.coords.latitude, position.coords.longitude, null);
-                        },
-                        (error) => {
-                            console.warn("GPS failed or blocked. Trying IP location fallback...", error);
-                            fetchIpLocationFallback();
-                        },
-                        { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
-                    );
-                } else {
-                    fetchIpLocationFallback();
-                }
-            }
-
-            // 🌐 Fallback: Get User Location from IP when GPS is turned off/blocked
-            function fetchIpLocationFallback() {
-                fetch('https://ipapi.co/json/')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.latitude && data.longitude) {
-                            console.log("IP-based location detected:", data.city);
-                            syncTelemetry(data.latitude, data.longitude, null);
-                        } else {
-                            syncTelemetry(null, null, "bangalore");
-                        }
-                    })
-                    .catch(() => {
+        // 🌐 2. IP FALLBACK (FIRES AUTOMATICALLY IF GPS IS BLOCKED/OFF)
+        function fetchIpFallback() {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.latitude && data.longitude) {
+                        syncTelemetry(data.latitude, data.longitude, null);
+                    } else {
                         syncTelemetry(null, null, "bangalore");
-                    });
-            }
-
-            // ?ƒôè 4. NON-DESTRUCTIVE TELEMETRY PANEL UPDATER (DIRECT ID MAPPING)
-            function syncTelemetry(lat, lng, city) {
-                const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
-                let url = "";
-
-                if (lat && lng) {
-                    url = `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}`;
-                } else if (city) {
-                    url = `https://api.waqi.info/feed/${city}/?token=${token}`;
-                } else {
-                    url = `https://api.waqi.info/feed/bangalore/?token=${token}`;
-                }
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(payload => {
-                        if (payload.status === "ok" && payload.data) {
-                            const nodeData = payload.data;
-                            const formattedCityName = nodeData.city.name.split(',')[0].toUpperCase();
-                            
-                            // A. DIRECTLY TARGET LOCATION CONTAINER INDEPENDICIES BY ID
-                            const nodeHeader = document.getElementById("stationHeaderNode");
-                            if (nodeHeader) {
-                                nodeHeader.innerText = `?ƒôì NODE: ${formattedCityName}`;
-                            }
-
-                            // B. DIRECTLY TARGET AQI SCORE DISPLAY CARD
-                            const aqiDisplay = document.getElementById("aqiScoreDisplay");
-                            if (aqiDisplay) {
-                                aqiDisplay.innerText = nodeData.aqi;
-                            }
-                            
-                            // Update calibrating stream label color text properties
-                            const statusLabel = document.getElementById("streamStatusLabel");
-                            if (statusLabel) {
-                                statusLabel.innerText = "ACTIVE TELEMETRY STREAM";
-                                statusLabel.style.color = "#00ffcc";
-                            }
-
-                            // C. TARGET EVERY ATMOSPHERIC VALUE DIRECTLY BY ID (WITHOUT LOOPING WORDS)
-                            if (nodeData.iaqi) {
-                                const tempEl = document.getElementById("tempMetricText");
-                                if (tempEl) tempEl.innerText = nodeData.iaqi.t ? nodeData.iaqi.t.v + "??C" : "--??C";
-
-                                const windEl = document.getElementById("windMetricText");
-                                if (windEl) windEl.innerText = nodeData.iaqi.w ? nodeData.iaqi.w.v + " m/s" : "-- m/s";
-
-                                const humidEl = document.getElementById("humidMetricText");
-                                if (humidEl) humidEl.innerText = nodeData.iaqi.h ? nodeData.iaqi.h.v + "%" : "--%";
-
-                                const pressEl = document.getElementById("pressMetricText");
-                                if (pressEl) pressEl.innerText = nodeData.iaqi.p ? nodeData.iaqi.p.v + " hPa" : "-- hPa";
-                            }
-
-                            // D. PAN & FOCUS LEAFLET MAP perspective focus directly over coordinates
-                            if (window.telemetryMap && nodeData.geo) {
-                                const latCoord = nodeData.geo[0];
-                                const lngCoord = nodeData.geo[1];
-                                
-                                window.telemetryMap.setView([latCoord, lngCoord], 12);
-                                
-                                // Clear old pins to keep tracking layout clear
-                                window.telemetryMap.eachLayer((layer) => {
-                                    if (layer instanceof L.Marker) {
-                                        window.telemetryMap.removeLayer(layer);
-                                    }
-                                });
-
-                                L.marker([latCoord, lngCoord])
-                                    .addTo(window.telemetryMap)
-                                    .bindPopup(`<b>${nodeData.city.name.split(',')[0]} Station</b><br>AQI Score: ${nodeData.aqi}`)
-                                    .openPopup();
-                            }
-                        }
-                    })
-                    .catch(err => console.error("Telemetry Core Sync Break:", err));
-            }
-
-            // Bind active listeners across fallbacks
-            const forecastBtn = document.getElementById("forecastProjectionsBtn");
-            if (forecastBtn) {
-                forecastBtn.addEventListener("click", () => {
-                    const forecastSection = document.getElementById("forecast-section") || document.querySelector(".card:last-of-type");
-                    if (forecastSection) {
-                        forecastSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                });
-            }
-            
-            // Optional click handler to return view to map layer focus
-            const mapBtn = document.getElementById("liveMapBtn");
-            if (mapBtn) {
-                mapBtn.addEventListener("click", () => {
-                    document.getElementById("map").scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            }
+                })
+                .catch(() => syncTelemetry(null, null, "bangalore"));
+        }
 
-            // Initialize location detection on page load
+        // 📊 3. UNIVERSAL DATA POPULATOR (TARGETS ANY MATCHING HTML TEXT)
+        function syncTelemetry(lat, lng, city) {
+            const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
+            let url = lat && lng 
+                ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}` 
+                : `https://api.waqi.info/feed/${city || 'bangalore'}/?token=${token}`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(payload => {
+                    if (payload.status === "ok" && payload.data) {
+                        const data = payload.data;
+                        const cityName = data.city.name.split(',')[0].toUpperCase();
+
+                        // Update City Header Text safely
+                        const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
+                        if (header) header.innerText = `📍 NODE: ${cityName}`;
+
+                        // Update AQI Value safely
+                        const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value") || document.querySelector("h3");
+                        if (aqiEl) aqiEl.innerText = data.aqi;
+
+                        // Update Status Tag
+                        const statusEl = document.getElementById("streamStatusLabel") || document.querySelector("p");
+                        if (statusEl) {
+                            statusEl.innerText = "ACTIVE TELEMETRY STREAM";
+                            statusLabel.style.color = "#00ffcc";
+                        }
+
+                        // Populate Weather Data
+                        if (data.iaqi) {
+                            const temp = document.getElementById("tempMetricText");
+                            if (temp) temp.innerText = data.iaqi.t ? data.iaqi.t.v + "°C" : "--°C";
+
+                            const wind = document.getElementById("windMetricText");
+                            if (wind) wind.innerText = data.iaqi.w ? data.iaqi.w.v + " m/s" : "-- m/s";
+
+                            const humid = document.getElementById("humidMetricText");
+                            if (humid) humid.innerText = data.iaqi.h ? data.iaqi.h.v + "%" : "--%";
+
+                            const press = document.getElementById("pressMetricText");
+                            if (press) press.innerText = data.iaqi.p ? data.iaqi.p.v + " hPa" : "-- hPa";
+                        }
+
+                        // Move Map Camera directly over location pin
+                        if (mapInstance && data.geo) {
+                            mapInstance.setView([data.geo[0], data.geo[1]], 12);
+                            mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
+                            L.marker([data.geo[0], data.geo[1]]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${data.aqi}`).openPopup();
+                        }
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        // 🚀 EXECUTE IMMEDIATELY ON TAB OPEN
+        window.addEventListener('DOMContentLoaded', () => {
             initLocationSync();
         });
     </script>
