@@ -506,7 +506,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let mapInstance = null;
-        let chartInstance = null;
 
         // 1. Initialize Map
         function initMap(lat, lng) {
@@ -524,16 +523,16 @@
             }
         }
 
-        // 2. Main Location Handler (GPS -> IP Fallback -> Default)
+        // 2. Start Sync (GPS -> IP Fallback -> Default Bengaluru)
         function startTelemetrySync() {
-            const defaultLat = 12.9716; // Bengaluru
+            const defaultLat = 12.9716;
             const defaultLng = 77.5946;
 
             initMap(defaultLat, defaultLng);
 
-            if (navigator.geolocation) {
+            if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => fetchWAQI(pos.coords.latitude, pos.coords.longitude, null),
+                    (pos) => runDualFetch(pos.coords.latitude, pos.coords.longitude, "YOUR LOCATION"),
                     (err) => fetchIPFallback(defaultLat, defaultLng),
                     { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
                 );
@@ -542,77 +541,89 @@
             }
         }
 
-        // 3. Fallback to IP Geolocation
+        // 3. Fallback to IP Geolocation if GPS is turned off
         function fetchIPFallback(fallbackLat, fallbackLng) {
             fetch('https://ipapi.co/json/')
                 .then(res => res.json())
                 .then(data => {
                     if (data.latitude && data.longitude) {
-                        fetchWAQI(data.latitude, data.longitude, null);
+                        runDualFetch(data.latitude, data.longitude, (data.city || "LOCAL NODE").toUpperCase());
                     } else {
-                        fetchWAQI(fallbackLat, fallbackLng, "bangalore");
+                        runDualFetch(fallbackLat, fallbackLng, "BENGALURU NODE");
                     }
                 })
-                .catch(() => fetchWAQI(fallbackLat, fallbackLng, "bangalore"));
+                .catch(() => runDualFetch(fallbackLat, fallbackLng, "BENGALURU NODE"));
         }
 
-        // 4. Fetch & Populate WAQI Data
-        function fetchWAQI(lat, lng, city) {
-            // Your WAQI API Token
-            const token = "b328782542ab121b9a449538c3960d05049d87bd"; 
-            const url = (lat && lng) 
-                ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}` 
-                : `https://api.waqi.info/feed/${city || 'bangalore'}/?token=${token}`;
+        // 4. Combined Fetch: Open-Meteo (Weather) + WAQI (AQI)
+        function runDualFetch(lat, lng, locationLabel) {
+            initMap(lat, lng);
 
-            fetch(url)
+            // A. Fetch Weather Data (Open-Meteo)
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`;
+            
+            fetch(weatherUrl)
+                .then(res => res.json())
+                .then(wData => {
+                    if (wData && wData.current) {
+                        const c = wData.current;
+                        
+                        const tempEl = document.getElementById("tempMetricText");
+                        if (tempEl) tempEl.innerText = Math.round(c.temperature_2m) + "°C";
+
+                        const windEl = document.getElementById("windMetricText");
+                        if (windEl) windEl.innerText = c.wind_speed_10m + " m/s";
+
+                        const humidEl = document.getElementById("humidMetricText");
+                        if (humidEl) humidEl.innerText = c.relative_humidity_2m + "%";
+
+                        const pressEl = document.getElementById("pressMetricText");
+                        if (pressEl) pressEl.innerText = Math.round(c.surface_pressure) + " hPa";
+                    }
+                })
+                .catch(err => console.error("Weather fetch error:", err));
+
+            // B. Fetch AQI Data (WAQI)
+            const token = "b328782542ab121b9a449538c3960d05049d87bd";
+            const waqiUrl = `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${token}`;
+
+            fetch(waqiUrl)
                 .then(res => res.json())
                 .then(payload => {
+                    let stationName = locationLabel;
+                    let aqiVal = "--";
+
                     if (payload.status === "ok" && payload.data) {
                         const d = payload.data;
-                        const cityName = d.city.name.split(',')[0].toUpperCase();
-
-                        // Update Node Title
-                        const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
-                        if (header) header.innerText = "📍 NODE: " + cityName;
-
-                        // Update AQI
-                        const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value");
-                        if (aqiEl) aqiEl.innerText = d.aqi;
-
-                        // Update Status Tag
-                        const statusP = document.getElementById("streamStatusLabel") || document.querySelector("p");
-                        if (statusP) {
-                            statusP.innerText = "ACTIVE TELEMETRY STREAM";
-                            statusP.style.color = "#00ffcc";
+                        if (d.city && d.city.name) {
+                            stationName = d.city.name.split(',')[0].toUpperCase();
                         }
-
-                        // Populate Weather Cards
-                        if (d.iaqi) {
-                            const tempEl = document.getElementById("tempMetricText");
-                            if (tempEl) tempEl.innerText = (d.iaqi.t ? d.iaqi.t.v : "--") + "°C";
-
-                            const windEl = document.getElementById("windMetricText");
-                            if (windEl) windEl.innerText = (d.iaqi.w ? d.iaqi.w.v : "--") + " m/s";
-
-                            const humidEl = document.getElementById("humidMetricText");
-                            if (humidEl) humidEl.innerText = (d.iaqi.h ? d.iaqi.h.v : "--") + "%";
-
-                            const pressEl = document.getElementById("pressMetricText");
-                            if (pressEl) pressEl.innerText = (d.iaqi.p ? d.iaqi.p.v : "--") + " hPa";
-                        }
-
-                        // Move Map Pin to coordinates
-                        if (mapInstance && d.geo) {
-                            initMap(d.geo[0], d.geo[1]);
-                            mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
-                            L.marker([d.geo[0], d.geo[1]]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${d.aqi}`).openPopup();
-                        }
+                        aqiVal = d.aqi;
                     }
+
+                    // Update Header
+                    const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
+                    if (header) header.innerText = "📍 NODE: " + stationName;
+
+                    // Update AQI Value
+                    const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value");
+                    if (aqiEl) aqiEl.innerText = aqiVal;
+
+                    // Update Status Indicator
+                    const statusP = document.getElementById("streamStatusLabel") || document.querySelector("p");
+                    if (statusP) {
+                        statusP.innerText = "ACTIVE TELEMETRY STREAM";
+                        statusP.style.color = "#00ffcc";
+                    }
+
+                    // Update Leaflet Marker
+                    mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
+                    L.marker([lat, lng]).addTo(mapInstance).bindPopup(`<b>${stationName}</b><br>AQI: ${aqiVal}`).openPopup();
                 })
-                .catch(err => console.error("Telemetry fetch failed:", err));
+                .catch(err => console.error("WAQI fetch error:", err));
         }
 
-        // Run automatically when DOM is ready
+        // Execute immediately on load
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", startTelemetrySync);
         } else {
