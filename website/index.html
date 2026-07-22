@@ -1055,66 +1055,51 @@
         };
     }
 
-    // 🏙️ 2. Validated WAQI City Feeds & Coordinates
+    // 🏙️ 2. Validated City Feeds & Coordinates Mapping
     const cityStations = {
-        "bengaluru": { name: "BENGALURU, IN", feeds: ["bangalore", "@8000"], lat: 12.9716, lng: 77.5946 },
-        "delhi":     { name: "DELHI, IN", feeds: ["delhi"], lat: 28.6139, lng: 77.2090 },
-        "newyork":   { name: "NEW YORK, US", feeds: ["newyork", "new-york"], lat: 40.7128, lng: -74.0060 }
+        "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946, defaultAqi: 35 },
+        "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090, defaultAqi: 156 },
+        "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060, defaultAqi: 88 }
     };
 
-    // 🌐 3. Fetch Live AQI Directly from Network
+    // 🌐 3. Live AQI Fetch & Quantum Pipeline Execution
     function fetchLiveCityAQI(cityKey) {
-        const key = cityKey.toLowerCase().replace(/[^a-z]/g, "");
-        const city = cityStations[key] || cityStations["bengaluru"];
+        const key = (cityKey || "").toLowerCase().replace(/[^a-z]/g, "");
+        let city = cityStations["bengaluru"];
+        if (key.includes("delhi")) city = cityStations["delhi"];
+        else if (key.includes("york")) city = cityStations["newyork"];
+
         const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
 
-        // Query by explicit GPS coordinates for highest live accuracy
         fetch(`https://api.waqi.info/feed/geo:${city.lat};${city.lng}/?token=${WAQI_TOKEN}`)
             .then(res => res.json())
             .then(data => {
-                let liveAqi = null;
-                if (data && data.status === "ok" && data.data && typeof data.data.aqi === 'number') {
-                    liveAqi = data.data.aqi;
-                }
+                const liveAqi = (data && data.status === "ok" && data.data && typeof data.data.aqi === 'number') 
+                    ? data.data.aqi 
+                    : city.defaultAqi;
 
-                if (liveAqi !== null) {
-                    updateUIWithLiveAQI(city.name, liveAqi, city.lat, city.lng);
-                } else {
-                    // Secondary backup query using station feed handle
-                    fetch(`https://api.waqi.info/feed/${city.feeds[0]}/?token=${WAQI_TOKEN}`)
-                        .then(r => r.json())
-                        .then(backupData => {
-                            const fallbackAqi = (backupData && backupData.data && typeof backupData.data.aqi === 'number') 
-                                ? backupData.data.aqi 
-                                : 35;
-                            updateUIWithLiveAQI(city.name, fallbackAqi, city.lat, city.lng);
-                        });
-                }
+                updateUIAndQuantumCards(city.name, liveAqi, city.lat, city.lng);
             })
             .catch(() => {
-                // If API is blocked or offline, use city station baseline
-                updateUIWithLiveAQI(city.name, 35, city.lat, city.lng);
+                updateUIAndQuantumCards(city.name, city.defaultAqi, city.lat, city.lng);
             });
     }
 
-    // 🌐 Update Top Banner & Run Quantum Prediction Model
-    function updateUIWithLiveAQI(cityName, liveAqi, lat, lng) {
-        // 1. Explicitly update Top Banner Elements by ID
-        const topValEl = document.getElementById("topAqiValue");
-        const topCityEl = document.getElementById("topCityName");
+    // Helper: Safely Update UI elements without throwing null errors
+    function updateUIAndQuantumCards(cityName, liveAqi, lat, lng) {
+        // Update top banner if elements exist
+        const topVal = document.getElementById("topAqiValue") || document.getElementById("topAqiVal");
+        const topCity = document.getElementById("topCityName") || document.getElementById("topAqiCity");
 
-        if (topValEl) {
-            topValEl.innerText = liveAqi;
-            // Dynamically shift banner text color based on severity
-            topValEl.style.color = liveAqi <= 50 ? "#00ffcc" : (liveAqi <= 100 ? "#00d2ff" : "#ffcc00");
+        if (topVal) {
+            topVal.innerText = liveAqi;
+            topVal.style.color = liveAqi <= 50 ? "#00ffcc" : (liveAqi <= 100 ? "#00d2ff" : "#ffcc00");
         }
-        if (topCityEl) {
-            topCityEl.innerText = cityName.toUpperCase();
-        }
+        if (topCity) topCity.innerText = cityName;
 
-        // 2. Compute and update bottom Quantum Prediction Cards (+24h, +42h, +72h)
+        // Fetch Weather and Calculate Quantum Forecasts
         fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`)
-            .then(res => res.json())
+            .then(r => r.json())
             .then(wData => {
                 const cur = wData.current || {};
                 const temp = cur.temperature_2m || 25;
@@ -1124,28 +1109,31 @@
 
                 const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
 
-                if (document.getElementById("q24Val")) document.getElementById("q24Val").innerText = qResults.h24;
-                if (document.getElementById("q42Val")) document.getElementById("q42Val").innerText = qResults.h42;
-                if (document.getElementById("q72Val")) document.getElementById("q72Val").innerText = qResults.h72;
-            });
+                const el24 = document.getElementById("q24Val");
+                const el42 = document.getElementById("q42Val");
+                const el72 = document.getElementById("q72Val");
+
+                if (el24) el24.innerText = qResults.h24;
+                if (el42) el42.innerText = qResults.h42;
+                if (el72) el72.innerText = qResults.h72;
+            })
+            .catch(() => {});
     }
 
-    // 📍 Safe Event Listener Binding
+    // 📍 4. Fail-Safe Event Listener Setup
     document.addEventListener("DOMContentLoaded", () => {
-        // Initial fetch on page load
+        // Initial fetch
         fetchLiveCityAQI("bengaluru");
 
-        // Safely query the location select dropdown
-        const selectEl = document.getElementById("locationSelect") || document.querySelector("select");
-
-        // Add optional chaining (?.) or an explicit null check before addEventListener
-        if (selectEl) {
-            selectEl.addEventListener("change", (e) => {
-                fetchLiveCityAQI(e.target.value);
-            });
-        } else {
-            console.warn("locationSelect element not found in DOM.");
-        }
+        // Safely query all select dropdown elements
+        const selects = document.querySelectorAll("select");
+        selects.forEach(selectEl => {
+            if (selectEl) {
+                selectEl.addEventListener("change", (e) => {
+                    fetchLiveCityAQI(e.target.value);
+                });
+            }
+        });
     });
 </script>
 
