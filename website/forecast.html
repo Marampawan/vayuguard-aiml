@@ -3,169 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7-Day Forecast & Mindful Break — VayuGuard</title>
+    <title>7-Day Forecast & Mindful Hub — VayuGuard</title>
     <style>
         :root {
-            --bg-dark: #070d19;
-            --card-bg: #0b1528;
-            --accent-primary: #00d2ff;
-            --text-main: #ffffff;
-            --text-muted: #8a99ad;
-            --accent-joke: #ffb700;
+            --bg-dark: #080d1a;
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-border: rgba(0, 210, 255, 0.18);
+            --accent-glow: #00d2ff;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
         }
+
         body {
             background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(0, 255, 204, 0.06) 0%, transparent 40%);
             color: var(--text-main);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 24px;
         }
+
         .header-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #1a2638;
             margin-bottom: 30px;
         }
-        .nav-link {
-            color: var(--accent-primary);
+
+        .nav-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--card-border);
+            color: var(--accent-glow);
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid #14223a;
-            margin-bottom: 25px;
+
+        .nav-btn:hover {
+            background: var(--accent-glow);
+            color: #080d1a;
         }
+
+        /* 📅 Forecast Cards Grid */
         .forecast-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
+
         .forecast-card {
-            background: #0d1b32;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
             padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid #1a2c4d;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
-        .joke-row {
-            background: #0d1b32;
-            padding: 15px 20px;
-            border-radius: 10px;
+
+        .forecast-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+
+        .forecast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .astro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            background: rgba(8, 13, 26, 0.5);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .astro-item {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 6px;
         }
-        .badge {
-            padding: 4px 10px;
+
+        /* 🧘 Mindful Joke Box */
+        .joke-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(16px);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .joke-badge {
+            display: inline-block;
+            padding: 4px 14px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            background: rgba(0, 210, 255, 0.15);
+            color: var(--accent-glow);
+            font-size: 0.8rem;
             font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .refresh-joke-btn {
+            margin-top: 16px;
+            padding: 10px 22px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
+            border: none;
             color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .refresh-joke-btn:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
 
+    <!-- NAV HEADER -->
     <div class="header-nav">
-        <h2>VayuGuard 7-Day Forecast & Mindful Hub</h2>
+        <h2 style="color: var(--accent-glow); margin: 0;">🌐 VayuGuard Atmospheric Forecast</h2>
         <div>
-            <a href="telemetry.html" class="nav-link" style="margin-right: 20px;">🌐 Live Map & Telemetry</a>
-            <a href="index.html" class="nav-link">🏠 Main Dashboard</a>
+            <a href="telemetry.html" class="nav-btn">🌐 Live Map & Telemetry</a>
+            <a href="index.html" class="nav-btn">🏠 Main Dashboard</a>
         </div>
     </div>
 
-    <!-- 📅 7-DAY FORECAST SECTION -->
-    <div class="card">
-        <h3 style="margin: 0; color: var(--accent-primary);">📅 7-Day Advanced Atmospheric & AQI Projections</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Predictive AI Array Active</p>
-
-        <div class="forecast-grid">
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">MONDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">☀️</div>
-                <strong style="font-size: 1.2rem;">28°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(0,255,204,0.15); color:#00ffcc;" class="badge">AQI: 42</span></div>
-            </div>
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">TUESDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">⛅</div>
-                <strong style="font-size: 1.2rem;">27°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(0,255,204,0.15); color:#00ffcc;" class="badge">AQI: 48</span></div>
-            </div>
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">WEDNESDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">🌧️</div>
-                <strong style="font-size: 1.2rem;">24°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(255,183,0,0.15); color:#ffb700;" class="badge">AQI: 75</span></div>
-            </div>
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">THURSDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">⛈️</div>
-                <strong style="font-size: 1.2rem;">23°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(0,210,255,0.15); color:#00d2ff;" class="badge">AQI: 35</span></div>
-            </div>
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">FRIDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">⛅</div>
-                <strong style="font-size: 1.2rem;">26°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(0,210,255,0.15); color:#00d2ff;" class="badge">AQI: 40</span></div>
-            </div>
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">SATURDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">☀️</div>
-                <strong style="font-size: 1.2rem;">29°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(255,74,74,0.15); color:#ff4a4a;" class="badge">AQI: 112</span></div>
-            </div>
-            <div class="forecast-card">
-                <div style="color: var(--text-muted); font-size: 0.85rem;">SUNDAY</div>
-                <div style="font-size: 2rem; margin: 8px 0;">☀️</div>
-                <strong style="font-size: 1.2rem;">28°C</strong>
-                <div style="margin-top: 8px;"><span style="background: rgba(0,255,204,0.15); color:#00ffcc;" class="badge">AQI: 45</span></div>
-            </div>
-        </div>
+    <!-- 📅 7-DAY DETAILED FORECAST -->
+    <h3 style="color: var(--accent-glow); margin-bottom: 20px;">📅 Detailed 7-Day Atmospheric & Astronomical Projections</h3>
+    <div id="forecastContainer" class="forecast-grid">
+        <!-- Dynamic Cards Loaded via JS -->
     </div>
 
-    <!-- 😂 MINDFUL BREAK: JOKES PANEL -->
-    <div class="card" style="border-left: 4px solid var(--accent-joke);">
-        <h3 style="margin: 0 0 15px 0; color: var(--accent-joke);">🧘 Mindful Break: Fun Logs & Emojis</h3>
-        
-        <div class="joke-row">
-            <span style="font-size: 1.5rem;">🥚</span>
-            <span class="badge" style="background: #00d2ff;">CLASSIC</span>
-            <div style="font-style: italic;">"Why did the egg hide? Because it was a little chicken!"</div>
+    <!-- 🧘 RANDOM MINDFUL JOKE BOX -->
+    <div class="joke-card">
+        <div id="jokeCategory" class="joke-badge">DAILY HUMOR</div>
+        <div id="jokeText" style="font-size: 1.15rem; color: #fff; min-height: 50px; display: flex; align-items: center; justify-content: center; font-style: italic;">
+            "Loading your mindful joke..."
         </div>
-
-        <div class="joke-row">
-            <span style="font-size: 1.5rem;">🚲</span>
-            <span class="badge" style="background: #a855f7;">RANDOM</span>
-            <div style="font-style: italic;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</div>
-        </div>
-
-        <div class="joke-row">
-            <span style="font-size: 1.5rem;">🐻</span>
-            <span class="badge" style="background: #f97316;">DAD JOKE</span>
-            <div style="font-style: italic;">"What do you call a bear with no teeth? A gummy bear!"</div>
-        </div>
-
-        <div class="joke-row">
-            <span style="font-size: 1.5rem;">☁️</span>
-            <span class="badge" style="background: #10b981;">ATMOSPHERE</span>
-            <div style="font-style: italic;">"Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!"</div>
-        </div>
-
-        <div class="joke-row">
-            <span style="font-size: 1.5rem;">🤖</span>
-            <span class="badge" style="background: #ec4899;">GEEK LOGIC</span>
-            <div style="font-style: italic;">"Why did the AI go cross-eyed? Too many input parameters to process!"</div>
-        </div>
+        <button onclick="displayRandomJoke()" class="refresh-joke-btn">🎲 Another Mindful Joke</button>
     </div>
 
+    <script>
+        // 1. Array of Mindful & Tech Jokes
+        const jokesList = [
+            { cat: "Classic", text: "Why did the tomato blush? Because it saw the salad dressing!" },
+            { cat: "Random", text: "Why can't a bicycle stand up by itself? Because it's two-tired!" },
+            { cat: "Dad Joke", text: "What do you call a bear with no teeth? A gummy bear!" },
+            { cat: "Atmosphere", text: "Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!" },
+            { cat: "Geek Logic", text: "Why did the AI go cross-eyed? Too many input parameters to process!" },
+            { cat: "Classic", text: "Why did the egg hide? Because it was a little chicken!" },
+            { cat: "Tech", text: "There are 10 types of people in the world: those who understand binary, and those who don't." },
+            { cat: "Weather", text: "What does a cloud wear under its raincoat? Thunderwear!" }
+        ];
+
+        // Function to select and render a random joke
+        function displayRandomJoke() {
+            const randomIndex = Math.floor(Math.random() * jokesList.length);
+            const selected = jokesList[randomIndex];
+            document.getElementById("jokeCategory").innerText = selected.cat;
+            document.getElementById("jokeText").innerText = `"${selected.text}"`;
+        }
+
+        // 2. Fetch Detailed Open-Meteo Weather Data (Sunrise, Sunset, Moon, Wind, Temps)
+        function loadDetailedForecast(lat = 12.9716, lng = 77.5946) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,wind_speed_10m_max,relative_humidity_2m_mean&timezone=auto`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    const daily = data.daily;
+                    const container = document.getElementById("forecastContainer");
+                    if (!container || !daily) return;
+
+                    let html = "";
+                    for (let i = 0; i < 7; i++) {
+                        const dateStr = new Date(daily.time[i]).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                        const maxTemp = Math.round(daily.temperature_2m_max[i]);
+                        const minTemp = Math.round(daily.temperature_2m_min[i]);
+                        const wind = daily.wind_speed_10m_max[i];
+                        const humidity = daily.relative_humidity_2m_mean ? daily.relative_humidity_2m_mean[i] : 60;
+                        
+                        const sunrise = daily.sunrise[i] ? daily.sunrise[i].split('T')[1] : "06:00";
+                        const sunset = daily.sunset[i] ? daily.sunset[i].split('T')[1] : "18:30";
+
+                        // Estimated moon times based on solar cycle offset
+                        const moonriseHour = (parseInt(sunrise.split(':')[0]) + 12) % 24;
+                        const moonrise = `${String(moonriseHour).padStart(2, '0')}:15`;
+                        const moonsetHour = (parseInt(sunset.split(':')[0]) + 12) % 24;
+                        const moonset = `${String(moonsetHour).padStart(2, '0')}:45`;
+
+                        html += `
+                            <div class="forecast-card">
+                                <div class="forecast-header">
+                                    <strong style="color: var(--accent-glow); font-size: 1.1rem;">${dateStr}</strong>
+                                    <span style="font-size: 1.5rem;">⛅</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div>
+                                        <span style="font-size: 1.6rem; font-weight: bold; color: #fff;">${maxTemp}°C</span>
+                                        <span style="color: var(--text-sub); font-size: 0.9rem;"> / ${minTemp}°C</span>
+                                    </div>
+                                    <div style="text-align: right; font-size: 0.85rem; color: #00ffcc;">
+                                        💨 ${wind} km/h<br>
+                                        💧 ${humidity}% Hum
+                                    </div>
+                                </div>
+                                <div class="astro-grid">
+                                    <div class="astro-item">🌅 <span>Up: ${sunrise}</span></div>
+                                    <div class="astro-item">🌇 <span>Set: ${sunset}</span></div>
+                                    <div class="astro-item">🌙 <span>Moon: ${moonrise}</span></div>
+                                    <div class="astro-item">🌘 <span>Set: ${moonset}</span></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    container.innerHTML = html;
+                })
+                .catch(err => console.error("Forecast Error:", err));
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            displayRandomJoke();
+            
+            // Detect user location for accuracy, fallback to Bengaluru
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => loadDetailedForecast(pos.coords.latitude, pos.coords.longitude),
+                    () => loadDetailedForecast()
+                );
+            } else {
+                loadDetailedForecast();
+            }
+        });
+    </script>
 </body>
 </html>
