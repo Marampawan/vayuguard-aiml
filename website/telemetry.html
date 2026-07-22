@@ -144,158 +144,45 @@
         </div>
     </div>
 
-    <!-- ================= TAB 1: LIVE MONITORING MAP VIEW ================= -->
-    <div id="live-tracking-view" class="tab-content view-active">
-        <div id="map"></div>
-        <div class="ui-layer">
-        
-            <div class="panel modern-panel glass-sidebar">
-                <div>
-                    <h4 class="section-title">Live Node Summary</h4>
-                    <div class="aqi-core">
-                        <div>
-                            <div id="stationHeaderNode" style="font-weight: bold; color: var(--dark);">📍 NODE: DETECTING COORDINATES...</div>
-                            <div id="aqiScoreDisplay" style="font-size: 3.5rem; font-weight: bold; color: var(--primary);">--</div>
-                            <p id="streamStatusLabel" style="color: var(--warning); font-weight: bold;">CALIBRATING ENGINE</p>
-                        </div>
-                    </div>
-                </div>
+    <!-- 🗺️ MAP & CONTENT DISPLAY AREA -->
+    <div id="map-canvas" style="height: 420px; width: 100%; border-radius: 20px; border: 1px solid rgba(0, 210, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); margin-bottom: 30px;"></div>
 
-                <div>
-                    <h4 class="section-title">Telemetry Density Breakdown</h4>
-                    <div id="pollutantBars">
-                        <div style="text-align: center; color: var(--gray); font-size: 0.85rem; padding: 1rem 0;">Synchronizing physical sensors...</div>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="section-title">Predictive AQI Trend Curve</h4>
-                    <div class="chart-box">
-                        <canvas id="aqiTrendChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel modern-panel glass-sidebar">
-                <div>
-                    <h4 style="color: var(--gray); font-size: 0.85rem;">ATMOSPHERIC CONTEXT TELEMETRY</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px;">
-                        <div style="background: var(--light); padding: 12px; border-radius: 8px; text-align: center;">
-                            <span id="tempMetricText" style="font-size: 1.4rem; font-weight: bold; color: var(--primary); display: block;">--°C</span>
-                            <div style="color: var(--gray); font-size: 0.85rem;">Temperature</div>
-                        </div>
-                        <div style="background: var(--light); padding: 12px; border-radius: 8px; text-align: center;">
-                            <span id="windMetricText" style="font-size: 1.4rem; font-weight: bold; color: var(--primary); display: block;">-- m/s</span>
-                            <div style="color: var(--gray); font-size: 0.85rem;">Wind speed</div>
-                        </div>
-                        <div style="background: var(--light); padding: 12px; border-radius: 8px; text-align: center;">
-                            <span id="humidMetricText" style="font-size: 1.4rem; font-weight: bold; color: var(--primary); display: block;">--%</span>
-                            <div style="color: var(--gray); font-size: 0.85rem;">Humidity</div>
-                        </div>
-                        <div style="background: var(--light); padding: 12px; border-radius: 8px; text-align: center;">
-                            <span id="pressMetricText" style="font-size: 1.4rem; font-weight: bold; color: var(--primary); display: block;">-- hPa</span>
-                            <div style="color: var(--gray); font-size: 0.85rem;">Pressure (hPa)</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="section-title">Gas Concentration Indexes</h4>
-                    <div class="chart-box">
-                        <canvas id="gasChart"></canvas>
-                    </div>
-                </div>
-                
-                <div style="font-size: 0.7rem; color: var(--gray); text-align: center; margin-top: auto;">
-                    Map interface rendering real-world geographic data. Pollutant streams tied directly to active air tracking stations.
-                </div>
-            </div>
-        </div>
+    <!-- 📊 FORECAST 7 PROJECTIONS VIEW (Hidden by default) -->
+    <div id="forecastView" style="display: none; margin-top: 20px;">
+        <h2 style="color: #00d2ff; margin-bottom: 15px;">📅 7-Day Advanced Atmospheric & AQI Projections</h2>
+        <p style="color: #8a99ad; margin-bottom: 20px;"><i>Predictive Array Active</i></p>
+        <div id="forecastCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px;"></div>
     </div>
 
-    <!-- ================= TAB 2: ADVANCED FORECAST 7 VIEW ================= -->
-    <div id="forecast-section" class="card">
-        <h4 style="margin: 0; color: var(--gray); letter-spacing: 1px;">📅 7-DAY ADVANCED ATMOSPHERIC PROJECTIONS</h4>
-    </div>
-    <div id="forecast-7-view" class="tab-content">
-        
-        <!-- PART 1: THE CENTERED FORECAST CARDS COMPARTMENT -->
-        <div class="forecast-main-section-part">
-            <div style="text-align: center; margin-bottom: 30px; width: 100%;">
-                <h2 style="color: var(--dark); margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px;">7-Day Advanced Atmospheric & AQI Projections</h2>
-                <div style="margin-top: 10px;">
-                    <span style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;">Predictive Array Active</span>
-                </div>
-                <div style="margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; background: var(--light); border: 1px solid #e2e8f0; padding: 6px 16px; border-radius: 30px;">
-                    <span>📍</span>
-                    <span id="user-live-city" style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase;">LOADING TELEMETRY NETWORK...</span>
-                </div>
-            </div>
-
-            <!-- Flat Centered Grid Matrix -->
-            <div class="forecast-grid-container">
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Monday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Tuesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☁️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Wednesday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">🌤️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Thursday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">🌥️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Friday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☁️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Saturday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-                <div class="forecast-page-card"><span style="color:var(--gray); font-weight:700; font-size:0.8rem; text-transform:uppercase;">Sunday</span><div class="f-icon" style="font-size:2rem; margin:12px 0;">☀️</div><span class="f-temp" style="font-size:1.1rem; font-weight:700; color:var(--dark); display:block;">--°C</span><span class="forecast-aqi-badge aqi-good">AQI: --</span><div class="f-metrics"></div></div>
-            </div>
-        </div>
-
-        <!-- STRUCTURAL GAP FACTOR -->
-        <div style="clear: both; height: 10px; width: 100%;"></div>
-
-        <!-- PART 2: THE STANDALONE JOKES COMPARTMENT (HIGHLIGTED MODEL WRAPPER) -->
-        <div class="jokes-standalone-section-part unique-widget-panel">
-            <div class="widget-header-row">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span class="breathing-ui-dot"></span>
-                    <h3 style="margin: 0; color: var(--dark); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px;">📿 Mindful Break: Fun Logs & Emojis</h3>
-                </div>
-                <span style="background: rgba(6, 182, 212, 0.15); border: 1px solid var(--accent); color: var(--accent); padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Highlighted Focus</span>
-            </div>
-            
-            <div style="width: 100%; overflow: visible;">
-                <table class="modern-jokes-data-table">
-                    <thead>
-                        <tr style="color: var(--gray); font-size: 0.85rem; text-transform: uppercase; text-align: left;">
-                            <th style="width: 90px; text-align: center;">Mood</th>
-                            <th style="width: 140px;">Category</th>
-                            <th>Everyday Joke Narrative</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">😂</td>
-                            <td><span class="j-tag j-blue">Classic</span></td>
-                            <td>"Why did the tomato blush? Because it saw the salad dressing!"</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">🤪</td>
-                            <td><span class="j-tag j-purple">Random</span></td>
-                            <td>"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">😝</td>
-                            <td><span class="j-tag j-yellow">Dad Joke</span></td>
-                            <td>"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">🌤️</td>
-                            <td><span class="j-tag j-green">Atmosphere</span></td>
-                            <td>"Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!"</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center; font-size: 1.4rem;">💡</td>
-                            <td><span class="j-tag j-pink">Geek Logic</span></td>
-                            <td>"There are 10 types of people in the world: those who understand binary, and those who don't."</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <!-- 📿 MINDFUL BREAK (SINGLE INSTANCE) -->
+    <div class="card" style="padding: 20px; margin-top: 30px; border-radius: 20px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 210, 255, 0.18);">
+        <h3 style="color: #00d2ff; margin-top: 0;">📿 Mindful Break: Fun Logs & Emojis</h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left; color: #f1f5f9;">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(0, 210, 255, 0.2); color: #00d2ff;">
+                    <th style="padding: 10px;">Mood</th>
+                    <th style="padding: 10px;">Category</th>
+                    <th style="padding: 10px;">Everyday Joke Narrative</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                    <td style="padding: 10px;">😂</td>
+                    <td style="padding: 10px;">Classic</td>
+                    <td style="padding: 10px;">"Why did the tomato blush? Because it saw the salad dressing!"</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                    <td style="padding: 10px;">🤪</td>
+                    <td style="padding: 10px;">Random</td>
+                    <td style="padding: 10px;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                    <td style="padding: 10px;">😝</td>
+                    <td style="padding: 10px;">Dad Joke</td>
+                    <td style="padding: 10px;">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- SPECIFIC FIX: ONLY REPLACE THIS SCRIPT AT THE BOTTOM -->
@@ -309,11 +196,11 @@
 
         // 1. Initialize Leaflet Map
         function initMap(lat, lng) {
-            const container = document.getElementById('map-canvas') || document.getElementById('map');
+            const container = document.getElementById('map-canvas');
             if (!container) return;
 
             if (!mapInstance) {
-                mapInstance = L.map(container).setView([lat, lng], 10);
+                mapInstance = L.map('map-canvas').setView([lat, lng], 10);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; OpenStreetMap contributors'
@@ -321,9 +208,33 @@
             } else {
                 mapInstance.setView([lat, lng], 10);
             }
+            setTimeout(() => mapInstance.invalidateSize(), 200);
         }
 
-        // 2. Render Trend Chart
+        // 2. Switch View Function
+        function switchView(viewName) {
+            const mapView = document.getElementById("map-canvas");
+            const forecastView = document.getElementById("forecastView");
+            const mapBtn = document.getElementById("liveMapBtn");
+            const forecastBtn = document.getElementById("showForecastBtn");
+
+            if (viewName === 'map') {
+                if (mapView) mapView.style.display = "block";
+                if (forecastView) forecastView.style.display = "none";
+                if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 100);
+                
+                if (mapBtn) { mapBtn.style.background = "#00d2ff"; mapBtn.style.color = "#070d19"; }
+                if (forecastBtn) { forecastBtn.style.background = "#14223a"; forecastBtn.style.color = "#8a99ad"; }
+            } else {
+                if (mapView) mapView.style.display = "none";
+                if (forecastView) forecastView.style.display = "block";
+                
+                if (forecastBtn) { forecastBtn.style.background = "#00d2ff"; forecastBtn.style.color = "#070d19"; }
+                if (mapBtn) { mapBtn.style.background = "#14223a"; mapBtn.style.color = "#8a99ad"; }
+            }
+        }
+
+        // 3. Render Trend Chart
         function renderTrendChart(baseAqi) {
             const canvas = document.getElementById('aqiTrendChart');
             if (!canvas) return;
@@ -362,7 +273,7 @@
             }
         }
 
-        // 3. Update Dashboard Metrics & Weather
+        // 4. Update Dashboard Metrics & Weather
         function updateMetricsByCoords(lat, lng, cityName, aqiVal) {
             initMap(lat, lng);
 
@@ -404,7 +315,7 @@
             }
         }
 
-        // 4. Handle User Selected Search Result
+        // 5. Handle User Selected Search Result
         function executeSearchByCoords(lat, lng, displayName) {
             const dropdown = document.getElementById("searchResultsDropdown");
             if (dropdown) dropdown.style.display = "none";
@@ -418,7 +329,7 @@
                 .catch(() => updateMetricsByCoords(lat, lng, displayName, 50));
         }
 
-        // 5. Fetch Live Autocomplete Suggestions (India First)
+        // 6. Fetch Live Autocomplete Suggestions (India First)
         function fetchLiveDropdownSuggestions(text) {
             const dropdown = document.getElementById("searchResultsDropdown");
             if (!dropdown) return;
@@ -457,7 +368,7 @@
                 });
         }
 
-        // 6. Initial Load: Detect Current User Location First
+        // 7. Initial Load: Detect Current User Location First
         function startTelemetrySync() {
             const defaultLat = 12.9716;
             const defaultLng = 77.5946;
@@ -484,13 +395,20 @@
             }
         }
 
-        // 7. Event Listeners
+        // 8. Event Listeners
         window.addEventListener('DOMContentLoaded', () => {
             startTelemetrySync();
 
             const searchInput = document.getElementById("citySearchInput");
             const searchBtn = document.getElementById("analyzeBtn");
             const dropdown = document.getElementById("searchResultsDropdown");
+            const liveMapBtn = document.getElementById("liveMapBtn");
+
+            if (liveMapBtn) {
+                liveMapBtn.addEventListener("click", () => {
+                    switchView('map');
+                });
+            }
 
             if (searchInput) {
                 let debounceTimer;
