@@ -1036,18 +1036,15 @@
     <script>
     // ⚛️ 1. Quantum State Vector Simulator (Ry/Rz Rotations & CNOT Entanglement)
     function runQuantumCircuit(temp, humidity, pressure, wind, currentAqi) {
-        // Map classical weather features into quantum rotation angles (radians)
         const theta1 = (temp / 50) * Math.PI;
         const theta2 = (humidity / 100) * Math.PI;
         const theta3 = (pressure / 1100) * Math.PI;
         const theta4 = (wind / 50) * Math.PI;
 
-        // Quantum State Calculations (Simulating 4-qubit Hilbert space)
         const state0 = Math.cos(theta1 / 2) * Math.cos(theta2 / 2);
         const state1 = Math.sin(theta1 / 2) * Math.sin(theta3 / 2);
         const entanglementPhase = Math.sin(theta1 + theta2) * Math.cos(theta3 - theta4);
 
-        // Compute Quantum Expectation Shift
         const expectationValue = (state0 - state1 + entanglementPhase);
         const quantumShift = Math.round(expectationValue * 22);
 
@@ -1060,17 +1057,20 @@
 
     // 🏙️ 2. Coordinates Mapping Table
     const cityCoords = {
-        "bengaluru": { lat: 12.9716, lng: 77.5946, defaultAqi: 63 },
-        "delhi":     { lat: 28.6139, lng: 77.2090, defaultAqi: 156 },
-        "newyork":   { lat: 40.7128, lng: -74.0060, defaultAqi: 42 }
+        "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946, defaultAqi: 63 },
+        "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090, defaultAqi: 156 },
+        "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060, defaultAqi: 42 }
     };
 
-    // 🌐 3. Fetch Telemetry and Execute Quantum Model
+    // 🌐 3. Fetch Live Telemetry and Update Top Live AQI Banner + Quantum Cards
     function executeQuantumPredictionPipeline(cityKey) {
         const key = cityKey.toLowerCase().replace(/[^a-z]/g, "");
         const city = cityCoords[key] || cityCoords["bengaluru"];
 
-        // Step A: Fetch Live Weather Telemetry from Open-Meteo
+        // Update Top Widget Header Text
+        const topHeaderEl = document.querySelector("h3, div") ? Array.from(document.querySelectorAll("*")).find(e => e.innerText && e.innerText.includes("LIVE AQI -")) : null;
+
+        // Step A: Fetch Live Weather Telemetry
         fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`)
             .then(res => res.json())
             .then(wData => {
@@ -1086,25 +1086,41 @@
                     .then(aqiData => {
                         const liveAqi = (aqiData.data && aqiData.data.aqi) ? parseInt(aqiData.data.aqi) : city.defaultAqi;
 
-                        // Step C: Compute Quantum State Predictions
-                        const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
+                        // 🔴 UPDATE TOP LIVE AQI BANNER VALUES
+                        updateTopAqiBanner(city.name, liveAqi);
 
-                        // Step D: Update UI
-                        document.getElementById("q24Val").innerText = qResults.h24;
-                        document.getElementById("q42Val").innerText = qResults.h42;
-                        document.getElementById("q72Val").innerText = qResults.h72;
+                        // ⚛️ COMPUTE & UPDATE QUANTUM CARDS
+                        const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
+                        if (document.getElementById("q24Val")) document.getElementById("q24Val").innerText = qResults.h24;
+                        if (document.getElementById("q42Val")) document.getElementById("q42Val").innerText = qResults.h42;
+                        if (document.getElementById("q72Val")) document.getElementById("q72Val").innerText = qResults.h72;
                     })
                     .catch(() => {
-                        // Fallback calculation if WAQI API times out
+                        // Fallback if WAQI API times out
+                        updateTopAqiBanner(city.name, city.defaultAqi);
                         const qResults = runQuantumCircuit(temp, humidity, pressure, wind, city.defaultAqi);
-                        document.getElementById("q24Val").innerText = qResults.h24;
-                        document.getElementById("q42Val").innerText = qResults.h42;
-                        document.getElementById("q72Val").innerText = qResults.h72;
+                        if (document.getElementById("q24Val")) document.getElementById("q24Val").innerText = qResults.h24;
+                        if (document.getElementById("q42Val")) document.getElementById("q42Val").innerText = qResults.h42;
+                        if (document.getElementById("q72Val")) document.getElementById("q72Val").innerText = qResults.h72;
                     });
             });
     }
 
-    // 📍 4. Bind Dropdown Event Listeners
+    // Helper Function to safely update the top banner elements
+    function updateTopAqiBanner(cityName, aqiValue) {
+        // Target elements inside the top Live AQI card
+        const allElements = Array.from(document.querySelectorAll("div, span, h3, h2, h1, p"));
+        
+        // Find the banner score text container
+        allElements.forEach(el => {
+            if (el.innerText === "--" || el.innerText === "LOADING...") {
+                el.innerText = aqiValue;
+                el.style.color = aqiValue <= 50 ? "#00ffcc" : (aqiValue <= 100 ? "#00d2ff" : "#ffcc00");
+            }
+        });
+    }
+
+    // 📍 4. Event Listeners
     document.addEventListener("DOMContentLoaded", () => {
         executeQuantumPredictionPipeline("bengaluru");
 
