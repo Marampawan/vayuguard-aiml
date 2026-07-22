@@ -5,24 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>7-Day Forecast & Mindful Hub — VayuGuard</title>
     <style>
+        /* 🌌 Lighter Glassmorphism & Neon-Border Theme */
         :root {
-            --bg-dark: #080d1a;
-            --card-bg: rgba(15, 23, 42, 0.75);
-            --card-border: rgba(0, 210, 255, 0.18);
+            --bg-light-dark: #121c33; /* Lighter background tone */
+            --card-bg: rgba(26, 38, 66, 0.75); /* Lighter card background */
+            --card-border: rgba(0, 210, 255, 0.45); /* Enhanced vibrant border */
             --accent-glow: #00d2ff;
-            --text-main: #f1f5f9;
-            --text-sub: #94a3b8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-light-dark);
             background-image: 
-                radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 80%, rgba(0, 255, 204, 0.06) 0%, transparent 40%);
+                radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(0, 255, 204, 0.12) 0%, transparent 45%);
             color: var(--text-main);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             margin: 0;
             padding: 24px;
+            min-height: 100vh;
         }
 
         .header-nav {
@@ -35,17 +37,19 @@
         .nav-btn {
             padding: 10px 20px;
             border-radius: 20px;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(26, 38, 66, 0.85);
             border: 1px solid var(--card-border);
             color: var(--accent-glow);
             text-decoration: none;
             font-weight: 600;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
             transition: all 0.3s ease;
         }
 
         .nav-btn:hover {
             background: var(--accent-glow);
             color: #080d1a;
+            box-shadow: 0 0 18px rgba(0, 210, 255, 0.5);
         }
 
         /* 📅 Forecast Cards Grid */
@@ -58,24 +62,25 @@
 
         .forecast-card {
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
+            border: 1px solid var(--card-border); /* Enhanced bright border */
             border-radius: 20px;
             padding: 20px;
             backdrop-filter: blur(16px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.37);
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.05); /* Outer + Inner glow */
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .forecast-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(0, 210, 255, 0.4);
+            transform: translateY(-5px);
+            border-color: #00ffcc;
+            box-shadow: 0 12px 30px rgba(0, 210, 255, 0.35), inset 0 0 15px rgba(0, 255, 204, 0.1);
         }
 
         .forecast-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
             padding-bottom: 12px;
             margin-bottom: 14px;
         }
@@ -87,9 +92,10 @@
             margin-top: 12px;
             font-size: 0.85rem;
             color: var(--text-sub);
-            background: rgba(8, 13, 26, 0.5);
-            padding: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px;
             border-radius: 12px;
+            border: 1px solid rgba(0, 210, 255, 0.2); /* Enhanced inner card border */
         }
 
         .astro-item {
@@ -103,19 +109,20 @@
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 24px;
+            padding: 26px;
             backdrop-filter: blur(16px);
             text-align: center;
             max-width: 700px;
             margin: 0 auto;
-            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         }
 
         .joke-badge {
             display: inline-block;
             padding: 4px 14px;
             border-radius: 12px;
-            background: rgba(0, 210, 255, 0.15);
+            background: rgba(0, 210, 255, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.4);
             color: var(--accent-glow);
             font-size: 0.8rem;
             font-weight: bold;
@@ -125,18 +132,20 @@
 
         .refresh-joke-btn {
             margin-top: 16px;
-            padding: 10px 22px;
+            padding: 10px 24px;
             border-radius: 20px;
             background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
             border: none;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .refresh-joke-btn:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
         }
     </style>
 </head>
