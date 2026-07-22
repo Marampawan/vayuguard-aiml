@@ -154,35 +154,44 @@
         <div id="forecastCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px;"></div>
     </div>
 
-    <!-- 📿 MINDFUL BREAK (SINGLE INSTANCE) -->
-    <div class="card" style="padding: 20px; margin-top: 30px; border-radius: 20px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 210, 255, 0.18);">
-        <h3 style="color: #00d2ff; margin-top: 0;">📿 Mindful Break: Fun Logs & Emojis</h3>
-        <table style="width: 100%; border-collapse: collapse; text-align: left; color: #f1f5f9;">
-            <thead>
-                <tr style="border-bottom: 1px solid rgba(0, 210, 255, 0.2); color: #00d2ff;">
-                    <th style="padding: 10px;">Mood</th>
-                    <th style="padding: 10px;">Category</th>
-                    <th style="padding: 10px;">Everyday Joke Narrative</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                    <td style="padding: 10px;">😂</td>
-                    <td style="padding: 10px;">Classic</td>
-                    <td style="padding: 10px;">"Why did the tomato blush? Because it saw the salad dressing!"</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                    <td style="padding: 10px;">🤪</td>
-                    <td style="padding: 10px;">Random</td>
-                    <td style="padding: 10px;">"Why can't a bicycle stand up by itself? Because it's two-tired!"</td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                    <td style="padding: 10px;">😝</td>
-                    <td style="padding: 10px;">Dad Joke</td>
-                    <td style="padding: 10px;">"What do you call a dinosaur that is a noisy sleeper? A Tyrannosaurus Snore!"</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- 🧪 AQI POLLUTANT PARAMETERS & CONCENTRATION CHART -->
+    <div class="card" style="padding: 24px; margin-top: 30px; border-radius: 20px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 210, 255, 0.18);">
+        <h3 style="color: #00d2ff; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+            🧪 <span>Detailed Pollutant Parameters</span>
+        </h3>
+
+        <!-- Pollutant Live Parameter Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;">
+            <div style="background: rgba(20, 34, 58, 0.6); padding: 15px; border-radius: 14px; border: 1px solid rgba(0, 210, 255, 0.1); text-align: center;">
+                <div style="font-size: 0.8rem; color: #8a99ad;">PM2.5</div>
+                <div id="pm25Val" style="font-size: 1.4rem; font-weight: bold; color: #00ffcc; margin-top: 4px;">-- µg/m³</div>
+            </div>
+            <div style="background: rgba(20, 34, 58, 0.6); padding: 15px; border-radius: 14px; border: 1px solid rgba(0, 210, 255, 0.1); text-align: center;">
+                <div style="font-size: 0.8rem; color: #8a99ad;">PM10</div>
+                <div id="pm10Val" style="font-size: 1.4rem; font-weight: bold; color: #00ffcc; margin-top: 4px;">-- µg/m³</div>
+            </div>
+            <div style="background: rgba(20, 34, 58, 0.6); padding: 15px; border-radius: 14px; border: 1px solid rgba(0, 210, 255, 0.1); text-align: center;">
+                <div style="font-size: 0.8rem; color: #8a99ad;">NO₂</div>
+                <div id="no2Val" style="font-size: 1.4rem; font-weight: bold; color: #00d2ff; margin-top: 4px;">-- ppb</div>
+            </div>
+            <div style="background: rgba(20, 34, 58, 0.6); padding: 15px; border-radius: 14px; border: 1px solid rgba(0, 210, 255, 0.1); text-align: center;">
+                <div style="font-size: 0.8rem; color: #8a99ad;">O₃</div>
+                <div id="o3Val" style="font-size: 1.4rem; font-weight: bold; color: #00d2ff; margin-top: 4px;">-- ppb</div>
+            </div>
+            <div style="background: rgba(20, 34, 58, 0.6); padding: 15px; border-radius: 14px; border: 1px solid rgba(0, 210, 255, 0.1); text-align: center;">
+                <div style="font-size: 0.8rem; color: #8a99ad;">SO₂</div>
+                <div id="so2Val" style="font-size: 1.4rem; font-weight: bold; color: #00d2ff; margin-top: 4px;">-- ppb</div>
+            </div>
+            <div style="background: rgba(20, 34, 58, 0.6); padding: 15px; border-radius: 14px; border: 1px solid rgba(0, 210, 255, 0.1); text-align: center;">
+                <div style="font-size: 0.8rem; color: #8a99ad;">CO</div>
+                <div id="coVal" style="font-size: 1.4rem; font-weight: bold; color: #00d2ff; margin-top: 4px;">-- ppm</div>
+            </div>
+        </div>
+
+        <!-- Pollutant Concentration Chart -->
+        <div style="height: 260px; width: 100%; position: relative;">
+            <canvas id="pollutantsBarChart"></canvas>
+        </div>
     </div>
 
     <!-- SPECIFIC FIX: ONLY REPLACE THIS SCRIPT AT THE BOTTOM -->
@@ -191,6 +200,7 @@
     <script>
         let mapInstance = null;
         let chartInstance = null;
+        let pollutantChartInstance = null;
 
         const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
 
@@ -234,7 +244,59 @@
             }
         }
 
-        // 3. Render Trend Chart
+        // 3. Render Pollutants Chart
+        function renderPollutantsChart(pm25, pm10, no2, o3, so2, co) {
+            const canvas = document.getElementById('pollutantsBarChart');
+            if (!canvas) return;
+
+            // Update text elements
+            if (document.getElementById('pm25Val')) document.getElementById('pm25Val').innerText = pm25 + " µg/m³";
+            if (document.getElementById('pm10Val')) document.getElementById('pm10Val').innerText = pm10 + " µg/m³";
+            if (document.getElementById('no2Val')) document.getElementById('no2Val').innerText = no2 + " ppb";
+            if (document.getElementById('o3Val')) document.getElementById('o3Val').innerText = o3 + " ppb";
+            if (document.getElementById('so2Val')) document.getElementById('so2Val').innerText = so2 + " ppb";
+            if (document.getElementById('coVal')) document.getElementById('coVal').innerText = co + " ppm";
+
+            const data = [pm25, pm10, no2, o3, so2, co];
+            const labels = ['PM2.5', 'PM10', 'NO2', 'O3', 'SO2', 'CO'];
+
+            if (pollutantChartInstance) {
+                pollutantChartInstance.data.datasets[0].data = data;
+                pollutantChartInstance.update();
+            } else {
+                pollutantChartInstance = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pollutant Level',
+                            data: data,
+                            backgroundColor: [
+                                'rgba(0, 255, 204, 0.7)',
+                                'rgba(0, 210, 255, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)',
+                                'rgba(255, 99, 132, 0.7)'
+                            ],
+                            borderRadius: 8,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: '#14223a' }, ticks: { color: '#8a99ad' } },
+                            x: { grid: { color: '#14223a' }, ticks: { color: '#8a99ad' } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 4. Render Trend Chart
         function renderTrendChart(baseAqi) {
             const canvas = document.getElementById('aqiTrendChart');
             if (!canvas) return;
@@ -273,7 +335,7 @@
             }
         }
 
-        // 4. Update Dashboard Metrics & Weather
+        // 5. Update Dashboard Metrics & Weather
         function updateMetricsByCoords(lat, lng, cityName, aqiVal) {
             initMap(lat, lng);
 
@@ -315,7 +377,7 @@
             }
         }
 
-        // 5. Handle User Selected Search Result
+        // 6. Handle User Selected Search Result
         function executeSearchByCoords(lat, lng, displayName) {
             const dropdown = document.getElementById("searchResultsDropdown");
             if (dropdown) dropdown.style.display = "none";
@@ -325,11 +387,27 @@
                 .then(p => {
                     const aqi = (p.data && p.data.aqi && !isNaN(p.data.aqi)) ? p.data.aqi : 50;
                     updateMetricsByCoords(lat, lng, displayName, aqi);
+                    
+                    // Extract pollutant data from WAQI API
+                    const iaqi = (p.data && p.data.iaqi) ? p.data.iaqi : {};
+                    const baseAqi = (aqi && !isNaN(aqi)) ? parseInt(aqi) : 50;
+
+                    const pm25 = iaqi.pm25 ? iaqi.pm25.v : Math.round(baseAqi * 0.8);
+                    const pm10 = iaqi.pm10 ? iaqi.pm10.v : Math.round(baseAqi * 1.2);
+                    const no2 = iaqi.no2 ? iaqi.no2.v : Math.round(baseAqi * 0.3);
+                    const o3 = iaqi.o3 ? iaqi.o3.v : Math.round(baseAqi * 0.25);
+                    const so2 = iaqi.so2 ? iaqi.so2.v : Math.round(baseAqi * 0.15);
+                    const co = iaqi.co ? iaqi.co.v : Math.round(baseAqi * 0.05);
+
+                    renderPollutantsChart(pm25, pm10, no2, o3, so2, co);
                 })
-                .catch(() => updateMetricsByCoords(lat, lng, displayName, 50));
+                .catch(() => {
+                    updateMetricsByCoords(lat, lng, displayName, 50);
+                    renderPollutantsChart(40, 60, 15, 12, 8, 3);
+                });
         }
 
-        // 6. Fetch Live Autocomplete Suggestions (India First)
+        // 7. Fetch Live Autocomplete Suggestions (India First)
         function fetchLiveDropdownSuggestions(text) {
             const dropdown = document.getElementById("searchResultsDropdown");
             if (!dropdown) return;
@@ -368,7 +446,7 @@
                 });
         }
 
-        // 7. Initial Load: Detect Current User Location First
+        // 8. Initial Load: Detect Current User Location First
         function startTelemetrySync() {
             const defaultLat = 12.9716;
             const defaultLng = 77.5946;
@@ -384,8 +462,24 @@
                                 const name = (p.data && p.data.city) ? p.data.city.name.split(',')[0].toUpperCase() : "YOUR LOCATION";
                                 const aqi = (p.data && p.data.aqi) ? p.data.aqi : 55;
                                 updateMetricsByCoords(lat, lng, name, aqi);
+                                
+                                // Extract pollutant data from WAQI API
+                                const iaqi = (p.data && p.data.iaqi) ? p.data.iaqi : {};
+                                const baseAqi = (aqi && !isNaN(aqi)) ? parseInt(aqi) : 50;
+
+                                const pm25 = iaqi.pm25 ? iaqi.pm25.v : Math.round(baseAqi * 0.8);
+                                const pm10 = iaqi.pm10 ? iaqi.pm10.v : Math.round(baseAqi * 1.2);
+                                const no2 = iaqi.no2 ? iaqi.no2.v : Math.round(baseAqi * 0.3);
+                                const o3 = iaqi.o3 ? iaqi.o3.v : Math.round(baseAqi * 0.25);
+                                const so2 = iaqi.so2 ? iaqi.so2.v : Math.round(baseAqi * 0.15);
+                                const co = iaqi.co ? iaqi.co.v : Math.round(baseAqi * 0.05);
+
+                                renderPollutantsChart(pm25, pm10, no2, o3, so2, co);
                             })
-                            .catch(() => updateMetricsByCoords(lat, lng, "LOCAL NODE", 55));
+                            .catch(() => {
+                                updateMetricsByCoords(lat, lng, "LOCAL NODE", 55);
+                                renderPollutantsChart(40, 60, 15, 12, 8, 3);
+                            });
                     },
                     () => executeSearchByCoords(defaultLat, defaultLng, "BENGALURU"),
                     { timeout: 5000 }
@@ -395,7 +489,7 @@
             }
         }
 
-        // 8. Event Listeners
+        // 9. Event Listeners
         window.addEventListener('DOMContentLoaded', () => {
             startTelemetrySync();
 
