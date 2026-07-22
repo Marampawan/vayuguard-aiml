@@ -272,9 +272,9 @@
         </div>
         <div class="hero-visual">
             <div class="aqi-card" style="text-align: center; padding: 2.5rem 2rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.5);">
-                <div class="aqi-label" style="color: #475569; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;">LIVE AQI - <span id="topAqiCity">BENGALURU, IN</span></div>
+                <div class="aqi-label" style="color: #475569; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;">LIVE AQI - <span id="topCityName" style="color: #00d2ff;">BENGALURU, IN</span></div>
                 
-                <h1 id="topAqiVal" style="font-size: 3.5rem; margin: 10px 0; color: #00d2ff;">--</h1>
+                <h1 id="topAqiValue" style="font-size: 3.8rem; margin: 12px 0; color: #00d2ff;">35</h1>
                 
                 <div id="liveAqiStatus" class="aqi-status good" style="display: inline-block; background: #d1fae5; color: #047857; padding: 0.4rem 1.2rem; border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-top: 0.5rem; border: 1px solid #a7f3d0;">LOADING...</div>
                 
@@ -1097,15 +1097,22 @@
             });
     }
 
-    // Helper: Update UI Cards & Compute Quantum Predictions
+    // 🌐 Update Top Banner & Run Quantum Prediction Model
     function updateUIWithLiveAQI(cityName, liveAqi, lat, lng) {
-        // Update Top Banner
-        const topValEl = document.getElementById("topAqiVal");
-        const topCityEl = document.getElementById("topAqiCity");
-        if (topValEl) topValEl.innerText = liveAqi;
-        if (topCityEl) topCityEl.innerText = cityName;
+        // 1. Explicitly update Top Banner Elements by ID
+        const topValEl = document.getElementById("topAqiValue");
+        const topCityEl = document.getElementById("topCityName");
 
-        // Fetch Current Weather to Run Quantum Matrix
+        if (topValEl) {
+            topValEl.innerText = liveAqi;
+            // Dynamically shift banner text color based on severity
+            topValEl.style.color = liveAqi <= 50 ? "#00ffcc" : (liveAqi <= 100 ? "#00d2ff" : "#ffcc00");
+        }
+        if (topCityEl) {
+            topCityEl.innerText = cityName.toUpperCase();
+        }
+
+        // 2. Compute and update bottom Quantum Prediction Cards (+24h, +42h, +72h)
         fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`)
             .then(res => res.json())
             .then(wData => {
@@ -1117,12 +1124,6 @@
 
                 const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
 
-                if (document.getElementById("q24Val")) document.getElementById("q24Val").innerText = qResults.h24;
-                if (document.getElementById("q42Val")) document.getElementById("q42Val").innerText = qResults.h42;
-                if (document.getElementById("q72Val")) document.getElementById("q72Val").innerText = qResults.h72;
-            })
-            .catch(() => {
-                const qResults = runQuantumCircuit(25, 60, 1013, 10, liveAqi);
                 if (document.getElementById("q24Val")) document.getElementById("q24Val").innerText = qResults.h24;
                 if (document.getElementById("q42Val")) document.getElementById("q42Val").innerText = qResults.h42;
                 if (document.getElementById("q72Val")) document.getElementById("q72Val").innerText = qResults.h72;
