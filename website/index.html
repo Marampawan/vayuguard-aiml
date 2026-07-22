@@ -1059,8 +1059,8 @@
             };
         }
 
-        // 🌐 2. Execute Real-Time Telemetry & Update DOM
-        function runQuantumPredictionPipeline(lat = 12.9716, lng = 77.5946) {
+        // 🌐 2. Execute Telemetry & Update Cards for Specific Coords
+        function runQuantumPredictionPipeline(lat, lng) {
             const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
 
             fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
@@ -1077,13 +1077,13 @@
                             const pressure = current.surface_pressure || 1013;
                             const wind = current.wind_speed_10m || 10;
 
-                            // Calculate Quantum Predictions
+                            // Calculate Quantum Predictions based on selected city's weather & AQI
                             const predictions = calculateQuantumAQIPredictions(temp, humidity, pressure, wind, baseAqi);
 
-                            // Safely Target DOM Elements
-                            const el24 = document.getElementById("q24Val") || document.querySelectorAll("h1")[1];
-                            const el42 = document.getElementById("q42Val") || document.querySelectorAll("h1")[2];
-                            const el72 = document.getElementById("q72Val") || document.querySelectorAll("h1")[3];
+                            // Update Prediction Cards
+                            const el24 = document.getElementById("q24Val");
+                            const el42 = document.getElementById("q42Val");
+                            const el72 = document.getElementById("q72Val");
 
                             if (el24) el24.innerText = predictions.aqi24;
                             if (el42) el42.innerText = predictions.aqi42;
@@ -1094,15 +1094,33 @@
                 .catch(err => console.error("AQI fetch error:", err));
         }
 
-        // 📍 3. Trigger on Load
+        // 🏙️ 3. City Coordinates Mapping Table
+        const cityCoordinates = {
+            "bengaluru": { lat: 12.9716, lng: 77.5946 },
+            "delhi": { lat: 28.6139, lng: 77.2090 },
+            "newyork": { lat: 40.7128, lng: -74.0060 }
+        };
+
+        // 📍 4. Event Listener for City Dropdown & Initial Load
         window.addEventListener('DOMContentLoaded', () => {
+            const citySelect = document.getElementById("cityForecastSelect") || document.querySelector("select");
+
+            if (citySelect) {
+                citySelect.addEventListener("change", (e) => {
+                    const selected = e.target.value.toLowerCase().replace(/[^a-z]/g, "");
+                    const coords = cityCoordinates[selected] || cityCoordinates["bengaluru"];
+                    runQuantumPredictionPipeline(coords.lat, coords.lng);
+                });
+            }
+
+            // Detect user live location on load or fallback to Bengaluru
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => runQuantumPredictionPipeline(pos.coords.latitude, pos.coords.longitude),
-                    () => runQuantumPredictionPipeline()
+                    () => runQuantumPredictionPipeline(12.9716, 77.5946)
                 );
             } else {
-                runQuantumPredictionPipeline();
+                runQuantumPredictionPipeline(12.9716, 77.5946);
             }
         });
     </script>
