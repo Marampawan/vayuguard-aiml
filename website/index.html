@@ -1048,25 +1048,35 @@
             const state1 = Math.sin(theta1 / 2) * Math.sin(theta3 / 2);
             const entanglementPhase = Math.sin(theta1 + theta2) * Math.cos(theta3 - theta4);
 
-            // State expectation calculation
+            // Expectation calculation with scaling based on city baseline
             const quantumExpectation = (state0 - state1 + entanglementPhase);
-            const qShift = Math.round(quantumExpectation * 14);
+            const qShift = Math.round(quantumExpectation * 18);
 
             return {
                 aqi24: Math.max(15, Math.min(500, baseAqi + qShift)),
-                aqi42: Math.max(15, Math.min(500, baseAqi + Math.round(qShift * 1.35))),
-                aqi72: Math.max(15, Math.min(500, baseAqi + Math.round(qShift * 1.7)))
+                aqi42: Math.max(15, Math.min(500, Math.round(baseAqi * 0.85) + qShift)),
+                aqi72: Math.max(15, Math.min(500, Math.round(baseAqi * 1.25) + qShift))
             };
         }
 
-        // 🌐 2. Execute Telemetry & Update Cards for Specific Coords
+        // 🏙️ 2. Direct Coordinates Mapping
+        const cityCoordinates = {
+            "bengaluru": { lat: 12.9716, lng: 77.5946 },
+            "delhi": { lat: 28.6139, lng: 77.2090 },
+            "new york": { lat: 40.7128, lng: -74.0060 },
+            "newyork": { lat: 40.7128, lng: -74.0060 }
+        };
+
+        // 🌐 3. Fetch Telemetry & Force DOM Card Update
         function runQuantumPredictionPipeline(lat, lng) {
             const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
 
             fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
                 .then(res => res.json())
                 .then(aqiData => {
-                    const baseAqi = (aqiData.data && aqiData.data.aqi) ? parseInt(aqiData.data.aqi) : 63;
+                    const baseAqi = (aqiData.data && aqiData.data.aqi && !isNaN(aqiData.data.aqi)) 
+                        ? parseInt(aqiData.data.aqi) 
+                        : 63;
 
                     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`)
                         .then(res => res.json())
@@ -1077,13 +1087,25 @@
                             const pressure = current.surface_pressure || 1013;
                             const wind = current.wind_speed_10m || 10;
 
-                            // Calculate Quantum Predictions based on selected city's weather & AQI
+                            // Calculate dynamic predictions for this specific location
                             const predictions = calculateQuantumAQIPredictions(temp, humidity, pressure, wind, baseAqi);
 
-                            // Update Prediction Cards
-                            const el24 = document.getElementById("q24Val");
-                            const el42 = document.getElementById("q42Val");
-                            const el72 = document.getElementById("q72Val");
+                            // Find elements by ID or fallback to the 3 forecast cards
+                            const cards = document.querySelectorAll(".metric-value, h1");
+                            let el24 = document.getElementById("q24Val");
+                            let el42 = document.getElementById("q42Val");
+                            let el72 = document.getElementById("q72Val");
+
+                            // If explicit IDs aren't present in HTML, target the card headers directly
+                            if (!el24) {
+                                const allH1 = Array.from(document.querySelectorAll("h1"));
+                                allH1.forEach(h => {
+                                    const parentText = h.parentElement ? h.parentElement.innerText : "";
+                                    if (parentText.includes("+24")) el24 = h;
+                                    if (parentText.includes("+42")) el42 = h;
+                                    if (parentText.includes("+72")) el72 = h;
+                                });
+                            }
 
                             if (el24) el24.innerText = predictions.aqi24;
                             if (el42) el42.innerText = predictions.aqi42;
@@ -1094,30 +1116,29 @@
                 .catch(err => console.error("AQI fetch error:", err));
         }
 
-        // 🏙️ 3. City Coordinates Mapping Table
-        const cityCoordinates = {
-            "bengaluru": { lat: 12.9716, lng: 77.5946 },
-            "delhi": { lat: 28.6139, lng: 77.2090 },
-            "newyork": { lat: 40.7128, lng: -74.0060 }
-        };
-
-        // 📍 4. Event Listener for City Dropdown & Initial Load
+        // 📍 4. Bind Event Listeners on DOM Load
         window.addEventListener('DOMContentLoaded', () => {
-            const citySelect = document.getElementById("cityForecastSelect") || document.querySelector("select");
+            // Find dropdown menu dynamically regardless of ID/class
+            const dropdowns = document.querySelectorAll("select");
+            dropdowns.forEach(selectEl => {
+                selectEl.addEventListener("change", (e) => {
+                    const val = e.target.value.toLowerCase();
+                    let matchedCoords = cityCoordinates["bengaluru"];
 
-            if (citySelect) {
-                citySelect.addEventListener("change", (e) => {
-                    const selected = e.target.value.toLowerCase().replace(/[^a-z]/g, "");
-                    const coords = cityCoordinates[selected] || cityCoordinates["bengaluru"];
-                    runQuantumPredictionPipeline(coords.lat, coords.lng);
+                    if (val.includes("delhi")) matchedCoords = cityCoordinates["delhi"];
+                    else if (val.includes("york")) matchedCoords = cityCoordinates["newyork"];
+                    else if (val.includes("bengaluru")) matchedCoords = cityCoordinates["bengaluru"];
+
+                    runQuantumPredictionPipeline(matchedCoords.lat, matchedCoords.lng);
                 });
-            }
+            });
 
-            // Detect user live location on load or fallback to Bengaluru
+            // Initial Load (Default: User Location or Bengaluru)
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => runQuantumPredictionPipeline(pos.coords.latitude, pos.coords.longitude),
-                    () => runQuantumPredictionPipeline(12.9716, 77.5946)
+                    () => runQuantumPredictionPipeline(12.9716, 77.5946),
+                    { timeout: 4000 }
                 );
             } else {
                 runQuantumPredictionPipeline(12.9716, 77.5946);
