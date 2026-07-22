@@ -1130,17 +1130,21 @@
             });
     }
 
-    // 📍 4. Event Listeners
+    // 📍 Safe Event Listener Binding
     document.addEventListener("DOMContentLoaded", () => {
-        // Load Bengaluru Live AQI on start
+        // Initial fetch on page load
         fetchLiveCityAQI("bengaluru");
 
-        // Bind location select dropdown
-        const locationSelect = document.getElementById("locationSelect") || document.querySelector("select");
-        if (locationSelect) {
-            locationSelect.addEventListener("change", (e) => {
+        // Safely query the location select dropdown
+        const selectEl = document.getElementById("locationSelect") || document.querySelector("select");
+
+        // Add optional chaining (?.) or an explicit null check before addEventListener
+        if (selectEl) {
+            selectEl.addEventListener("change", (e) => {
                 fetchLiveCityAQI(e.target.value);
             });
+        } else {
+            console.warn("locationSelect element not found in DOM.");
         }
     });
 </script>
