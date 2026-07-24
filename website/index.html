@@ -847,7 +847,7 @@
             modal.classList.add('hidden');
         });
 
-        // 🌌 INTERACTIVE BREATHING GAME ENGINE
+    // 🌌 INTERACTIVE BREATHING GAME ENGINE
         let breathIntervals = {};
         window.toggleBreathingGame = function(type) {
             const btn = document.getElementById(`btn-${type}`);
@@ -901,114 +901,6 @@
                 breathIntervals[type] = setInterval(cycle, 2000);
             }
         }
-
-        // 🌍 UNIFIED LIVE API & DYNAMIC FORECAST ENGINE
-        async function updateCityData(citySelectValue) {
-            const apiToken = 'demo';
-            let apiCity = 'bangalore';
-
-            if (citySelectValue === 'delhi') apiCity = 'delhi';
-            if (citySelectValue === 'newyork') apiCity = 'newyork';
-
-            const valueEl = document.getElementById('liveAqiValue');
-            const statusEl = document.getElementById('liveAqiStatus');
-            const needleEl = document.getElementById('aqiNeedle');
-            const forecastGrid = document.getElementById('dynamicForecastGrid');
-
-            try {
-                valueEl.innerText = '⚛️';
-                valueEl.style.fontSize = '3.5rem';
-                valueEl.style.color = '#8b5cf6';
-                statusEl.innerText = 'CONNECTING TO QBRAID CLOUD...';
-                statusEl.style.backgroundColor = '#f3e8ff';
-                statusEl.style.color = '#6d28d9';
-                statusEl.style.borderColor = '#8b5cf6';
-
-                await new Promise(resolve => setTimeout(resolve, 1200));
-
-                const response = await fetch(`https://api.waqi.info/feed/${apiCity}/?token=${apiToken}`);
-                const result = await response.json();
-
-                if (result.status === 'ok') {
-                    const currentAqi = result.data.aqi;
-
-                    const getAqiStyle = (aqi) => {
-                        if (aqi <= 50) return { text: 'GOOD', color: '#10b981', bg: '#d1fae5', border: '#a7f3d0' };
-                        if (aqi <= 100) return { text: 'MODERATE', color: '#f59e0b', bg: '#fef3c7', border: '#fde68a' };
-                        if (aqi <= 150) return { text: 'SENSITIVE', color: '#f97316', bg: '#ffedd5', border: '#fdba74' };
-                        if (aqi <= 200) return { text: 'UNHEALTHY', color: '#ef4444', bg: '#fee2e2', border: '#fecaca' };
-                        if (aqi <= 300) return { text: 'VERY UNHEALTHY', color: '#8b5cf6', bg: '#f3e8ff', border: '#d8b4fe' };
-                        return { text: 'HAZARDOUS', color: '#e11d48', bg: '#ffe4e6', border: '#fecdd3' };
-                    };
-
-                    valueEl.style.fontSize = '5rem';
-                    valueEl.innerText = currentAqi;
-
-                    const liveStyle = getAqiStyle(currentAqi);
-                    valueEl.style.color = liveStyle.color;
-                    statusEl.innerText = liveStyle.text;
-                    statusEl.style.color = liveStyle.color;
-                    statusEl.style.backgroundColor = liveStyle.bg;
-                    statusEl.style.borderColor = liveStyle.color;
-
-                    let needlePos = (currentAqi / 300) * 100;
-                    needleEl.style.left = `${Math.min(needlePos, 100)}%`;
-
-                    const f24 = Math.round(currentAqi * 1.15);
-                    const f42 = Math.round(currentAqi * 0.85);
-                    const f72 = Math.round(currentAqi * 1.25);
-
-                    const s24 = getAqiStyle(f24);
-                    const s42 = getAqiStyle(f42);
-                    const s72 = getAqiStyle(f72);
-
-                    forecastGrid.innerHTML = `
-                        <div class="modern-forecast-card" style="background: ${s24.bg}; border-color: ${s24.border};">
-                            <div class="fc-time"><i class="fas fa-clock"></i> +24 Hours</div>
-                            <div class="fc-aqi" style="color: ${s24.color};">${f24}</div>
-                            <div class="fc-cat" style="background: ${s24.color}; color: white;">${s24.text}</div>
-                        </div>
-                        <div class="modern-forecast-card" style="background: ${s42.bg}; border-color: ${s42.border};">
-                            <div class="fc-time"><i class="fas fa-clock"></i> +42 Hours</div>
-                            <div class="fc-aqi" style="color: ${s42.color};">${f42}</div>
-                            <div class="fc-cat" style="background: ${s42.color}; color: white;">${s42.text}</div>
-                        </div>
-                        <div class="modern-forecast-card" style="background: ${s72.bg}; border-color: ${s72.border};">
-                            <div class="fc-time"><i class="fas fa-clock"></i> +72 Hours</div>
-                            <div class="fc-aqi" style="color: ${s72.color};">${f72}</div>
-                            <div class="fc-cat" style="background: ${s72.color}; color: white;">${s72.text}</div>
-                        </div>`;
-                }
-            } catch (error) {
-                console.log('Failed to fetch Live AQI', error);
-                statusEl.innerText = 'CONNECTION FAILED';
-                statusEl.style.backgroundColor = '#fee2e2';
-                statusEl.style.color = '#ef4444';
-            }
-        }
-
-        // 🛡️ SPAM PROTECTION LOCK
-        document.getElementById('cityForecastSelect').addEventListener('change', async function() {
-            this.disabled = true;
-            this.style.opacity = '0.5';
-            this.style.cursor = 'not-allowed';
-
-            const cityNames = { bengaluru: 'Bengaluru, IN', delhi: 'Delhi, IN', newyork: 'New York, US' };
-            const label = document.querySelector('.aqi-label');
-            if (label) {
-                label.innerText = `Live AQI - ${cityNames[this.value]}`;
-            }
-
-            try {
-                await updateCityData(this.value);
-            } finally {
-                this.disabled = false;
-                this.style.opacity = '1';
-                this.style.cursor = 'pointer';
-            }
-        });
-
-        updateCityData('bengaluru');
     </script>
 
     <script type="module">
@@ -1055,39 +947,46 @@
         };
     }
 
-    // 🏙️ 2. Validated City Feeds & Coordinates Mapping
+    // 🏙️ 2. Direct Station Coordinates Map
     const cityStations = {
-        "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946, defaultAqi: 35 },
-        "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090, defaultAqi: 156 },
-        "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060, defaultAqi: 88 }
+        "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946 },
+        "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090 },
+        "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060 }
     };
 
-    // 🌐 3. Live AQI Fetch & Quantum Pipeline Execution
+    // 🌐 3. Fetch Real-Time Live AQI & Atmospheric Telemetry
     function fetchLiveCityAQI(cityKey) {
         const key = (cityKey || "").toLowerCase().replace(/[^a-z]/g, "");
         let city = cityStations["bengaluru"];
         if (key.includes("delhi")) city = cityStations["delhi"];
         else if (key.includes("york")) city = cityStations["newyork"];
 
-        const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
-
-        fetch(`https://api.waqi.info/feed/geo:${city.lat};${city.lng}/?token=${WAQI_TOKEN}`)
+        // Fetch Live AQI directly from Open-Meteo Air Quality API
+        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${city.lat}&longitude=${city.lng}&current=us_aqi,pm2_5,pm10`)
             .then(res => res.json())
-            .then(data => {
-                const liveAqi = (data && data.status === "ok" && data.data && typeof data.data.aqi === 'number') 
-                    ? data.data.aqi 
-                    : city.defaultAqi;
+            .then(aqiData => {
+                const liveAqi = (aqiData.current && typeof aqiData.current.us_aqi === 'number') 
+                    ? aqiData.current.us_aqi 
+                    : Math.round(aqiData.current.pm2_5 * 2.1);
 
-                updateUIAndQuantumCards(city.name, liveAqi, city.lat, city.lng);
+                // Fetch Live Atmospheric Conditions
+                fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`)
+                    .then(r => r.json())
+                    .then(wData => {
+                        const cur = wData.current || {};
+                        const temp = cur.temperature_2m || 25;
+                        const humidity = cur.relative_humidity_2m || 60;
+                        const pressure = cur.surface_pressure || 1013;
+                        const wind = cur.wind_speed_10m || 10;
+
+                        updateUIAndQuantumCards(city.name, liveAqi, temp, humidity, pressure, wind);
+                    });
             })
-            .catch(() => {
-                updateUIAndQuantumCards(city.name, city.defaultAqi, city.lat, city.lng);
-            });
+            .catch(err => console.error("Live AQI fetch error:", err));
     }
 
-    // Helper: Safely Update UI elements without throwing null errors
-    function updateUIAndQuantumCards(cityName, liveAqi, lat, lng) {
-        // Update top banner if elements exist
+    // Helper: Safely Update UI elements
+    function updateUIAndQuantumCards(cityName, liveAqi, temp, humidity, pressure, wind) {
         const topVal = document.getElementById("topAqiValue") || document.getElementById("topAqiVal");
         const topCity = document.getElementById("topCityName") || document.getElementById("topAqiCity");
 
@@ -1097,41 +996,28 @@
         }
         if (topCity) topCity.innerText = cityName;
 
-        // Fetch Weather and Calculate Quantum Forecasts
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`)
-            .then(r => r.json())
-            .then(wData => {
-                const cur = wData.current || {};
-                const temp = cur.temperature_2m || 25;
-                const humidity = cur.relative_humidity_2m || 60;
-                const pressure = cur.surface_pressure || 1013;
-                const wind = cur.wind_speed_10m || 10;
+        const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
 
-                const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
+        const el24 = document.getElementById("q24Val");
+        const el42 = document.getElementById("q42Val");
+        const el72 = document.getElementById("q72Val");
 
-                const el24 = document.getElementById("q24Val");
-                const el42 = document.getElementById("q42Val");
-                const el72 = document.getElementById("q72Val");
-
-                if (el24) el24.innerText = qResults.h24;
-                if (el42) el42.innerText = qResults.h42;
-                if (el72) el72.innerText = qResults.h72;
-            })
-            .catch(() => {});
+        if (el24) el24.innerText = qResults.h24;
+        if (el42) el42.innerText = qResults.h42;
+        if (el72) el72.innerText = qResults.h72;
     }
 
-    // 📍 4. Event Handler without line 991 TypeError
+    // 📍 4. Event Delegation Handler
     document.addEventListener("DOMContentLoaded", function() {
         fetchLiveCityAQI("bengaluru");
 
-        // Use standard event delegation on document body to avoid null selector errors
         document.body.addEventListener("change", function(e) {
             if (e.target && e.target.tagName === "SELECT") {
                 fetchLiveCityAQI(e.target.value);
             }
         });
     });
-</script>
+    </script>
 
     <!-- ================= 🤖 VAYUGUARD CORE AI AGENT WIDGET ================= -->
     <div id="ai-copilot-trigger" onclick="toggleCopilotWindow()">🤖</div>
