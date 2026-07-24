@@ -208,18 +208,38 @@
                 <span id="coVal" style="color: #00d2ff; font-size: 1.4rem; font-weight: bold;">-- ppm</span>
             </div>
         </div>
+    </div>
 
-        <!-- 2. Chart Container with Fixed Height & No Overflow -->
-        <div style="position: relative; width: 100%; height: 280px; max-height: 300px; margin-top: 10px;">
-            <canvas id="forecastChart"></canvas>
+    <!-- 📊 CHARTS SECTION: LINE FORECAST & POLLUTANT BAR GRAPH -->
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 25px;">
+        
+        <!-- 1. 7-Day Projected AQI (Line Chart) -->
+        <div style="flex: 1 1 450px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+            <h3 style="color: #00d2ff; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                📈 7-Day AQI Trend Projection
+            </h3>
+            <div style="position: relative; width: 100%; height: 260px;">
+                <canvas id="forecastChart"></canvas>
+            </div>
         </div>
+
+        <!-- 2. Live Pollutant Intensity Breakdown (Bar Chart) -->
+        <div style="flex: 1 1 450px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+            <h3 style="color: #00ffcc; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                📊 Live Pollutant Concentrations
+            </h3>
+            <div style="position: relative; width: 100%; height: 260px;">
+                <canvas id="pollutantBarChart"></canvas>
+            </div>
+        </div>
+
     </div>
 
     <!-- Open-Meteo Air Quality API Script -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-    let map, marker, forecastChart;
+    let map, marker, forecastChart, pollutantBarChart;
 
     // 🏙️ Initialize Leaflet Map
     function initMap(lat = 12.9716, lng = 77.5946, locationName = "Bengaluru") {
@@ -265,6 +285,9 @@
                 if (data.hourly && data.hourly.us_aqi) {
                     renderForecastChart(data.hourly.time, data.hourly.us_aqi);
                 }
+
+                // 4. Render Pollutant Bar Chart
+                renderPollutantBarChart(cur);
             })
             .catch(err => console.error("Error loading telemetry:", err));
     }
@@ -317,6 +340,76 @@
                     x: {
                         grid: { color: 'rgba(255, 255, 255, 0.05)' },
                         ticks: { color: '#8a99ad', font: { size: 11 } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8a99ad', font: { size: 11 } },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 📊 Render Real-Time Pollutants Bar Chart
+    function renderPollutantBarChart(cur) {
+        const ctx = document.getElementById('pollutantBarChart');
+        if (!ctx) return;
+
+        // Extract current live pollutant metrics
+        const pm25 = cur.pm2_5 ? Math.round(cur.pm2_5) : 0;
+        const pm10 = cur.pm10 ? Math.round(cur.pm10) : 0;
+        const no2 = cur.nitrogen_dioxide ? Math.round(cur.nitrogen_dioxide) : 0;
+        const o3 = cur.ozone ? Math.round(cur.ozone) : 0;
+        const so2 = cur.sulphur_dioxide ? Math.round(cur.sulphur_dioxide) : 0;
+        const co = cur.carbon_monoxide ? parseFloat((cur.carbon_monoxide / 100).toFixed(1)) : 0;
+
+        if (pollutantBarChart) pollutantBarChart.destroy();
+
+        pollutantBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['PM2.5', 'PM10', 'NO₂', 'O₃', 'SO₂', 'CO (x10)'],
+                datasets: [{
+                    label: 'Live Parameters',
+                    data: [pm25, pm10, no2, o3, so2, co * 10], // scaled CO for visibility
+                    backgroundColor: [
+                        'rgba(0, 255, 204, 0.7)',
+                        'rgba(0, 210, 255, 0.7)',
+                        'rgba(58, 123, 213, 0.7)',
+                        'rgba(255, 204, 0, 0.7)',
+                        'rgba(255, 102, 102, 0.7)',
+                        'rgba(186, 85, 211, 0.7)'
+                    ],
+                    borderColor: [
+                        '#00ffcc',
+                        '#00d2ff',
+                        '#3a7bd5',
+                        '#ffcc00',
+                        '#ff6666',
+                        '#ba55d3'
+                    ],
+                    borderWidth: 1.5,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` Value: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8a99ad', font: { size: 11, weight: 'bold' } }
                     },
                     y: {
                         grid: { color: 'rgba(255, 255, 255, 0.05)' },
