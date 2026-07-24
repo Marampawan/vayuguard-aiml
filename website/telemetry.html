@@ -165,7 +165,7 @@
     </div>
 
     <!-- 🗺️ MAP & CONTENT DISPLAY AREA -->
-    <div id="map-canvas" style="height: 420px; width: 100%; border-radius: 20px; border: 1px solid rgba(0, 210, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); margin-bottom: 30px;"></div>
+    <div id="map" style="height: 420px; width: 100%; border-radius: 20px; border: 1px solid rgba(0, 210, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); margin-bottom: 30px;"></div>
 
     <!-- 📊 FORECAST 7 PROJECTIONS VIEW (Hidden by default) -->
     <div id="forecastView" style="display: none; margin-top: 20px;">
@@ -214,346 +214,130 @@
         </div>
     </div>
 
-    <!-- SPECIFIC FIX: ONLY REPLACE THIS SCRIPT AT THE BOTTOM -->
+    <!-- Open-Meteo Air Quality API Script -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        let mapInstance = null;
-        let chartInstance = null;
-        let pollutantChartInstance = null;
+    let map, marker, forecastChart;
 
-        const WAQI_TOKEN = "b328782542ab121b9a449538c3960d05049d87bd";
-
-        // 1. Initialize Leaflet Map
-        function initMap(lat, lng) {
-            const container = document.getElementById('map-canvas');
-            if (!container) return;
-
-            if (!mapInstance) {
-                mapInstance = L.map('map-canvas').setView([lat, lng], 10);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(mapInstance);
-            } else {
-                mapInstance.setView([lat, lng], 10);
-            }
-            setTimeout(() => mapInstance.invalidateSize(), 200);
+    // 🏙️ Initialize Leaflet Map
+    function initMap(lat = 12.9716, lng = 77.5946, locationName = "Bengaluru") {
+        if (!map) {
+            map = L.map('map').setView([lat, lng], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        } else {
+            map.setView([lat, lng], 10);
         }
 
-        // 2. Switch View Function
-        function switchView(viewName) {
-            const mapView = document.getElementById("map-canvas");
-            const forecastView = document.getElementById("forecastView");
-            const mapBtn = document.getElementById("liveMapBtn");
-            const forecastBtn = document.getElementById("showForecastBtn");
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map);
+        
+        // Fetch real-time data for initial/searched location
+        loadTelemetryData(lat, lng, locationName);
+    }
 
-            if (viewName === 'map') {
-                if (mapView) mapView.style.display = "block";
-                if (forecastView) forecastView.style.display = "none";
-                if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 100);
-                
-                if (mapBtn) { mapBtn.style.background = "#00d2ff"; mapBtn.style.color = "#070d19"; }
-                if (forecastBtn) { forecastBtn.style.background = "#14223a"; forecastBtn.style.color = "#8a99ad"; }
-            } else {
-                if (mapView) mapView.style.display = "none";
-                if (forecastView) forecastView.style.display = "block";
-                
-                if (forecastBtn) { forecastBtn.style.background = "#00d2ff"; forecastBtn.style.color = "#070d19"; }
-                if (mapBtn) { mapBtn.style.background = "#14223a"; mapBtn.style.color = "#8a99ad"; }
-            }
-        }
+    // 🌐 Fetch Live AQI, Pollutants & 7-Day Forecast from Open-Meteo
+    function loadTelemetryData(lat, lng, locationName) {
+        // A. Fetch Current Air Quality & Pollutant Breakdown
+        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&current=us_aqi,pm2_5,pm10,nitrogen_dioxide,ozone,sulphur_dioxide,carbon_monoxide&hourly=us_aqi`)
+            .then(res => res.json())
+            .then(data => {
+                const cur = data.current || {};
+                const liveAqi = typeof cur.us_aqi === 'number' ? cur.us_aqi : Math.round((cur.pm2_5 || 20) * 2.1);
 
-        // 3. Render Pollutants Chart
-        function renderPollutantsChart(pm25, pm10, no2, o3, so2, co) {
-            const canvas = document.getElementById('pollutantsBarChart');
-            if (!canvas) return;
-
-            // Update text elements
-            if (document.getElementById('pm25Val')) document.getElementById('pm25Val').innerText = pm25 + " µg/m³";
-            if (document.getElementById('pm10Val')) document.getElementById('pm10Val').innerText = pm10 + " µg/m³";
-            if (document.getElementById('no2Val')) document.getElementById('no2Val').innerText = no2 + " ppb";
-            if (document.getElementById('o3Val')) document.getElementById('o3Val').innerText = o3 + " ppb";
-            if (document.getElementById('so2Val')) document.getElementById('so2Val').innerText = so2 + " ppb";
-            if (document.getElementById('coVal')) document.getElementById('coVal').innerText = co + " ppm";
-
-            const data = [pm25, pm10, no2, o3, so2, co];
-            const labels = ['PM2.5', 'PM10', 'NO2', 'O3', 'SO2', 'CO'];
-
-            if (pollutantChartInstance) {
-                pollutantChartInstance.data.datasets[0].data = data;
-                pollutantChartInstance.update();
-            } else {
-                pollutantChartInstance = new Chart(canvas, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Pollutant Level',
-                            data: data,
-                            backgroundColor: [
-                                'rgba(0, 255, 204, 0.7)',
-                                'rgba(0, 210, 255, 0.7)',
-                                'rgba(255, 206, 86, 0.7)',
-                                'rgba(75, 192, 192, 0.7)',
-                                'rgba(153, 102, 255, 0.7)',
-                                'rgba(255, 99, 132, 0.7)'
-                            ],
-                            borderRadius: 8,
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { grid: { color: '#14223a' }, ticks: { color: '#8a99ad' } },
-                            x: { grid: { color: '#14223a' }, ticks: { color: '#8a99ad' } }
-                        }
-                    }
-                });
-            }
-        }
-
-        // 4. Render Trend Chart
-        function renderTrendChart(baseAqi) {
-            const canvas = document.getElementById('aqiTrendChart');
-            if (!canvas) return;
-
-            const safeAqi = (!isNaN(baseAqi) && baseAqi !== "--") ? parseInt(baseAqi) : 50;
-            const trendData = [-8, -3, 2, 8, 4, -2, -5].map(v => Math.max(10, safeAqi + v));
-            const hours = ["06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "00:00"];
-
-            if (chartInstance) {
-                chartInstance.data.datasets[0].data = trendData;
-                chartInstance.update();
-            } else {
-                chartInstance = new Chart(canvas, {
-                    type: 'line',
-                    data: {
-                        labels: hours,
-                        datasets: [{
-                            data: trendData,
-                            borderColor: '#00d2ff',
-                            backgroundColor: 'rgba(0, 210, 255, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { grid: { color: '#14223a' }, ticks: { color: '#8a99ad' } },
-                            x: { grid: { color: '#14223a' }, ticks: { color: '#8a99ad' } }
-                        }
-                    }
-                });
-            }
-        }
-
-        // 5. Update Dashboard Metrics & Weather
-        function updateMetricsByCoords(lat, lng, cityName, aqiVal) {
-            initMap(lat, lng);
-
-            // Fetch Weather from Open-Meteo
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`;
-
-            fetch(weatherUrl)
-                .then(res => res.json())
-                .then(wData => {
-                    if (wData && wData.current) {
-                        const c = wData.current;
-                        if (document.getElementById("tempMetricText")) document.getElementById("tempMetricText").innerText = Math.round(c.temperature_2m) + "°C";
-                        if (document.getElementById("windMetricText")) document.getElementById("windMetricText").innerText = c.wind_speed_10m + " m/s";
-                        if (document.getElementById("humidMetricText")) document.getElementById("humidMetricText").innerText = c.relative_humidity_2m + "%";
-                        if (document.getElementById("pressMetricText")) document.getElementById("pressMetricText").innerText = Math.round(c.surface_pressure) + " hPa";
-                    }
-                })
-                .catch(err => console.error("Weather Fetch Error:", err));
-
-            // Update Text Labels
-            const header = document.getElementById("stationHeaderNode") || document.querySelector("h4 + div");
-            if (header) header.innerText = "📍 NODE: " + cityName;
-
-            const aqiEl = document.getElementById("aqiScoreDisplay") || document.querySelector(".metric-value");
-            if (aqiEl) aqiEl.innerText = aqiVal;
-
-            const statusP = document.getElementById("streamStatusLabel") || document.querySelector("p");
-            if (statusP) {
-                statusP.innerText = "ACTIVE TELEMETRY STREAM";
-                statusP.style.color = "var(--success)";
-            }
-
-            renderTrendChart(aqiVal);
-
-            // Update Map Marker
-            if (mapInstance) {
-                mapInstance.eachLayer(l => { if (l instanceof L.Marker) mapInstance.removeLayer(l); });
-                L.marker([lat, lng]).addTo(mapInstance).bindPopup(`<b>${cityName}</b><br>AQI: ${aqiVal}`).openPopup();
-            }
-        }
-
-        // 6. Handle User Selected Search Result
-        function executeSearchByCoords(lat, lng, displayName) {
-            const dropdown = document.getElementById("searchResultsDropdown");
-            if (dropdown) dropdown.style.display = "none";
-
-            fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
-                .then(r => r.json())
-                .then(p => {
-                    const aqi = (p.data && p.data.aqi && !isNaN(p.data.aqi)) ? p.data.aqi : 50;
-                    updateMetricsByCoords(lat, lng, displayName, aqi);
-                    
-                    // Extract pollutant data from WAQI API
-                    const iaqi = (p.data && p.data.iaqi) ? p.data.iaqi : {};
-                    const baseAqi = (aqi && !isNaN(aqi)) ? parseInt(aqi) : 50;
-
-                    const pm25 = iaqi.pm25 ? iaqi.pm25.v : Math.round(baseAqi * 0.8);
-                    const pm10 = iaqi.pm10 ? iaqi.pm10.v : Math.round(baseAqi * 1.2);
-                    const no2 = iaqi.no2 ? iaqi.no2.v : Math.round(baseAqi * 0.3);
-                    const o3 = iaqi.o3 ? iaqi.o3.v : Math.round(baseAqi * 0.25);
-                    const so2 = iaqi.so2 ? iaqi.so2.v : Math.round(baseAqi * 0.15);
-                    const co = iaqi.co ? iaqi.co.v : Math.round(baseAqi * 0.05);
-
-                    renderPollutantsChart(pm25, pm10, no2, o3, so2, co);
-                })
-                .catch(() => {
-                    updateMetricsByCoords(lat, lng, displayName, 50);
-                    renderPollutantsChart(40, 60, 15, 12, 8, 3);
-                });
-        }
-
-        // 7. Fetch Live Autocomplete Suggestions (India First)
-        function fetchLiveDropdownSuggestions(text) {
-            const dropdown = document.getElementById("searchResultsDropdown");
-            if (!dropdown) return;
-
-            if (!text || text.length < 2) {
-                dropdown.style.display = "none";
-                return;
-            }
-
-            fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(text)}&count=12&language=en&format=json`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        const sorted = data.results.sort((a, b) => (a.country_code === 'IN' ? -1 : 1));
-
-                        dropdown.innerHTML = sorted.map(p => {
-                            const countryStr = p.country ? `, ${p.country}` : '';
-                            const stateStr = p.admin1 ? `, ${p.admin1}` : '';
-                            const isIndia = p.country_code === 'IN';
-
-                            return `
-                                <div class="search-item" onclick="executeSearchByCoords(${p.latitude}, ${p.longitude}, '${p.name.toUpperCase()}')" style="padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #14223a; color: #fff; font-size: 0.9rem; text-align: left; transition: background 0.2s;" onmouseover="this.style.background='#142642'" onmouseout="this.style.background='transparent'">
-                                    ${isIndia ? '🇮🇳 ' : '🌐 '}<strong>${p.name}</strong><span style="color: #8a99ad; font-size: 0.8rem;">${stateStr}${countryStr}</span>
-                                </div>
-                            `;
-                        }).join('');
-
-                        dropdown.style.display = "block";
-                    } else {
-                        dropdown.innerHTML = `<div style="padding: 12px; color: #8a99ad; font-size: 0.85rem;">No places found globally.</div>`;
-                        dropdown.style.display = "block";
-                    }
-                })
-                .catch(() => {
-                    dropdown.style.display = "none";
-                });
-        }
-
-        // 8. Initial Load: Detect Current User Location First
-        function startTelemetrySync() {
-            const defaultLat = 12.9716;
-            const defaultLng = 77.5946;
-
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lng = pos.coords.longitude;
-                        fetch(`https://api.waqi.info/feed/geo:${lat};${lng}/?token=${WAQI_TOKEN}`)
-                            .then(r => r.json())
-                            .then(p => {
-                                const name = (p.data && p.data.city) ? p.data.city.name.split(',')[0].toUpperCase() : "YOUR LOCATION";
-                                const aqi = (p.data && p.data.aqi) ? p.data.aqi : 55;
-                                updateMetricsByCoords(lat, lng, name, aqi);
-                                
-                                // Extract pollutant data from WAQI API
-                                const iaqi = (p.data && p.data.iaqi) ? p.data.iaqi : {};
-                                const baseAqi = (aqi && !isNaN(aqi)) ? parseInt(aqi) : 50;
-
-                                const pm25 = iaqi.pm25 ? iaqi.pm25.v : Math.round(baseAqi * 0.8);
-                                const pm10 = iaqi.pm10 ? iaqi.pm10.v : Math.round(baseAqi * 1.2);
-                                const no2 = iaqi.no2 ? iaqi.no2.v : Math.round(baseAqi * 0.3);
-                                const o3 = iaqi.o3 ? iaqi.o3.v : Math.round(baseAqi * 0.25);
-                                const so2 = iaqi.so2 ? iaqi.so2.v : Math.round(baseAqi * 0.15);
-                                const co = iaqi.co ? iaqi.co.v : Math.round(baseAqi * 0.05);
-
-                                renderPollutantsChart(pm25, pm10, no2, o3, so2, co);
-                            })
-                            .catch(() => {
-                                updateMetricsByCoords(lat, lng, "LOCAL NODE", 55);
-                                renderPollutantsChart(40, 60, 15, 12, 8, 3);
-                            });
-                    },
-                    () => executeSearchByCoords(defaultLat, defaultLng, "BENGALURU"),
-                    { timeout: 5000 }
-                );
-            } else {
-                executeSearchByCoords(defaultLat, defaultLng, "BENGALURU");
-            }
-        }
-
-        // 9. Event Listeners
-        window.addEventListener('DOMContentLoaded', () => {
-            startTelemetrySync();
-
-            const searchInput = document.getElementById("citySearchInput");
-            const searchBtn = document.getElementById("analyzeBtn");
-            const dropdown = document.getElementById("searchResultsDropdown");
-            const liveMapBtn = document.getElementById("liveMapBtn");
-
-            if (liveMapBtn) {
-                liveMapBtn.addEventListener("click", () => {
-                    switchView('map');
-                });
-            }
-
-            if (searchInput) {
-                let debounceTimer;
-                searchInput.addEventListener("input", (e) => {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(() => {
-                        fetchLiveDropdownSuggestions(e.target.value.trim());
-                    }, 200);
-                });
-
-                searchInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter" && searchInput.value.trim()) {
-                        const firstResult = dropdown ? dropdown.querySelector('.search-item') : null;
-                        if (firstResult) firstResult.click();
-                    }
-                });
-            }
-
-            if (searchBtn) {
-                searchBtn.addEventListener("click", () => {
-                    const firstResult = dropdown ? dropdown.querySelector('.search-item') : null;
-                    if (firstResult) firstResult.click();
-                });
-            }
-
-            document.addEventListener("click", (e) => {
-                if (!e.target.closest("#citySearchInput") && !e.target.closest("#searchResultsDropdown")) {
-                    if (dropdown) dropdown.style.display = "none";
+                // 1. Update Map Marker Popup Dynamically
+                if (marker) {
+                    marker.bindPopup(`<b>${locationName.toUpperCase()}</b><br>LIVE AQI: ${liveAqi}`).openPopup();
                 }
-            });
+
+                // 2. Update Detailed Pollutant Parameters Grid
+                updateElementText("pm25Val", `${cur.pm2_5 ? Math.round(cur.pm2_5) : '--'} µg/m³`);
+                updateElementText("pm10Val", `${cur.pm10 ? Math.round(cur.pm10) : '--'} µg/m³`);
+                updateElementText("no2Val", `${cur.nitrogen_dioxide ? Math.round(cur.nitrogen_dioxide) : '--'} ppb`);
+                updateElementText("o3Val", `${cur.ozone ? Math.round(cur.ozone) : '--'} ppb`);
+                updateElementText("so2Val", `${cur.sulphur_dioxide ? Math.round(cur.sulphur_dioxide) : '--'} ppb`);
+                updateElementText("coVal", `${cur.carbon_monoxide ? (cur.carbon_monoxide / 100).toFixed(1) : '--'} ppm`);
+
+                // 3. Render 7-Day Projections Chart
+                if (data.hourly && data.hourly.us_aqi) {
+                    renderForecastChart(data.hourly.time, data.hourly.us_aqi);
+                }
+            })
+            .catch(err => console.error("Error loading telemetry:", err));
+    }
+
+    // Helper: Update Text safely
+    function updateElementText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+    }
+
+    // 📊 Render 7-Day Forecast Chart using Chart.js
+    function renderForecastChart(timeArray, aqiArray) {
+        const ctx = document.getElementById('pollutantsBarChart');
+        if (!ctx) return;
+
+        // Take 7 daily snapshot values (every 24 hours)
+        const dailyLabels = [];
+        const dailyData = [];
+        for (let i = 0; i < timeArray.length; i += 24) {
+            const date = new Date(timeArray[i]);
+            dailyLabels.push(date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+            dailyData.push(aqiArray[i] || 50);
+        }
+
+        if (forecastChart) forecastChart.destroy();
+
+        forecastChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: '7-Day Projected AQI',
+                    data: dailyData,
+                    borderColor: '#00d2ff',
+                    backgroundColor: 'rgba(0, 210, 255, 0.15)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#ffffff' } } },
+                scales: {
+                    x: { ticks: { color: '#8a99ad' } },
+                    y: { ticks: { color: '#8a99ad' }, beginAtZero: true }
+                }
+            }
         });
+    }
+
+    // 📍 Event Handler & Search Setup
+    document.addEventListener("DOMContentLoaded", function() {
+        initMap(12.9716, 77.5946, "Bengaluru");
+
+        // Handle Search Bar Input
+        const searchBtn = document.querySelector("button") || document.getElementById("searchBtn");
+        const searchInput = document.querySelector("input[type='text']") || document.getElementById("searchInput");
+
+        if (searchBtn && searchInput) {
+            searchBtn.addEventListener("click", () => {
+                const query = searchInput.value.trim();
+                if (!query) return;
+
+                fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1`)
+                    .then(res => res.json())
+                    .then(geoData => {
+                        if (geoData.results && geoData.results.length > 0) {
+                            const res = geoData.results[0];
+                            initMap(res.latitude, res.longitude, res.name);
+                        }
+                    });
+            });
+        }
+    });
     </script>
 </body>
 </html>
