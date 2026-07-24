@@ -152,19 +152,33 @@
 </head>
 <body>
 
-    <!-- NAV HEADER -->
-    <div class="header-nav">
-        <h2 style="color: var(--accent-glow); margin: 0;">🌐 VayuGuard Atmospheric Forecast</h2>
-        <div>
-            <a href="telemetry.html" class="nav-btn">🌐 Live Map & Telemetry</a>
-            <a href="index.html" class="nav-btn">🏠 Main Dashboard</a>
+    <!-- 🌐 HEADER & LOCATION SELECTOR -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 15px;">
+        <h2 style="color: #00d2ff; margin: 0; font-size: 1.6rem; display: flex; align-items: center; gap: 10px;">
+            📅 Detailed 7-Day Atmospheric & Astronomical Projections
+        </h2>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <label for="forecastLocationSelect" style="color: #8a99ad; font-weight: bold; font-size: 0.9rem;">LOCATION:</label>
+            <select id="forecastLocationSelect" style="
+                padding: 8px 16px; 
+                border-radius: 10px; 
+                background: rgba(15,23,42,0.9); 
+                color: #00d2ff; 
+                border: 1px solid rgba(0,210,255,0.4); 
+                font-weight: bold; 
+                cursor: pointer;
+                outline: none;">
+                <option value="bengaluru">Bengaluru, IN</option>
+                <option value="delhi">Delhi, IN</option>
+                <option value="newyork">New York, US</option>
+            </select>
         </div>
     </div>
 
-    <!-- 📅 7-DAY DETAILED FORECAST -->
-    <h3 style="color: var(--accent-glow); margin-bottom: 20px;">📅 Detailed 7-Day Atmospheric & Astronomical Projections</h3>
-    <div id="forecastContainer" class="forecast-grid">
-        <!-- Dynamic Cards Loaded via JS -->
+    <!-- 📦 CONTAINER FOR DYNAMICALLY RENDERED 7-DAY CARDS -->
+    <div id="forecastCardsContainer" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+        <!-- Live dynamic cards will render here -->
     </div>
 
     <!-- 🧘 RANDOM MINDFUL JOKE BOX -->
@@ -197,76 +211,93 @@
             document.getElementById("jokeText").innerText = `"${selected.text}"`;
         }
 
-        // 2. Fetch Detailed Open-Meteo Weather Data (Sunrise, Sunset, Moon, Wind, Temps)
-        function loadDetailedForecast(lat = 12.9716, lng = 77.5946) {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,wind_speed_10m_max,relative_humidity_2m_mean&timezone=auto`;
+        // 🏙️ City Mapping Table
+        const cityCoordinates = {
+            "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946 },
+            "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090 },
+            "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060 }
+        };
+
+        // 🌐 Live 7-Day Forecast Fetch Pipeline
+        function loadLive7DayForecast(cityKey) {
+            const key = (cityKey || "bengaluru").toLowerCase();
+            const city = cityCoordinates[key] || cityCoordinates["bengaluru"];
+            const container = document.getElementById("forecastCardsContainer");
+
+            if (!container) return;
+            container.innerHTML = `<div style="color:#00d2ff; font-size:1.1rem; padding:20px; width:100%; text-align:center;">Fetching live 7-day projections for ${city.name}...</div>`;
+
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lng}&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,relative_humidity_2m_mean,sunrise,sunset&timezone=auto`;
 
             fetch(url)
                 .then(res => res.json())
                 .then(data => {
-                    const daily = data.daily;
-                    const container = document.getElementById("forecastContainer");
-                    if (!container || !daily) return;
+                    if (!data.daily || !data.daily.time) return;
 
-                    let html = "";
-                    for (let i = 0; i < 7; i++) {
-                        const dateStr = new Date(daily.time[i]).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    const daily = data.daily;
+                    let htmlContent = "";
+
+                    for (let i = 0; i < daily.time.length; i++) {
+                        const dateObj = new Date(daily.time[i] + "T00:00:00");
+                        const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
                         const maxTemp = Math.round(daily.temperature_2m_max[i]);
                         const minTemp = Math.round(daily.temperature_2m_min[i]);
-                        const wind = daily.wind_speed_10m_max[i];
-                        const humidity = daily.relative_humidity_2m_mean ? daily.relative_humidity_2m_mean[i] : 60;
-                        
-                        const sunrise = daily.sunrise[i] ? daily.sunrise[i].split('T')[1] : "06:00";
-                        const sunset = daily.sunset[i] ? daily.sunset[i].split('T')[1] : "18:30";
+                        const wind = (daily.wind_speed_10m_max[i] || 15).toFixed(1);
+                        const humidity = Math.round(daily.relative_humidity_2m_mean[i] || 65);
 
-                        // Estimated moon times based on solar cycle offset
-                        const moonriseHour = (parseInt(sunrise.split(':')[0]) + 12) % 24;
-                        const moonrise = `${String(moonriseHour).padStart(2, '0')}:15`;
-                        const moonsetHour = (parseInt(sunset.split(':')[0]) + 12) % 24;
-                        const moonset = `${String(moonsetHour).padStart(2, '0')}:45`;
+                        const sunrise = daily.sunrise[i] ? daily.sunrise[i].split("T")[1].substring(0, 5) : "06:00";
+                        const sunset = daily.sunset[i] ? daily.sunset[i].split("T")[1].substring(0, 5) : "18:48";
 
-                        html += `
-                            <div class="forecast-card">
-                                <div class="forecast-header">
-                                    <strong style="color: var(--accent-glow); font-size: 1.1rem;">${dateStr}</strong>
+                        htmlContent += `
+                            <div style="flex: 1 1 300px; max-width: 380px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <span style="color: #00d2ff; font-weight: bold; font-size: 1.1rem;">${dateStr}</span>
                                     <span style="font-size: 1.5rem;">⛅</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+
+                                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px;">
                                     <div>
-                                        <span style="font-size: 1.6rem; font-weight: bold; color: #fff;">${maxTemp}°C</span>
-                                        <span style="color: var(--text-sub); font-size: 0.9rem;"> / ${minTemp}°C</span>
+                                        <span style="font-size: 2.2rem; font-weight: bold; color: #ffffff;">${maxTemp}°C</span>
+                                        <span style="color: #8a99ad; font-size: 1rem;"> / ${minTemp}°C</span>
                                     </div>
-                                    <div style="text-align: right; font-size: 0.85rem; color: #00ffcc;">
+                                    <div style="text-align: right; color: #00ffcc; font-size: 0.85rem; font-weight: bold;">
                                         💨 ${wind} km/h<br>
                                         💧 ${humidity}% Hum
                                     </div>
                                 </div>
-                                <div class="astro-grid">
-                                    <div class="astro-item">🌅 <span>Up: ${sunrise}</span></div>
-                                    <div class="astro-item">🌇 <span>Set: ${sunset}</span></div>
-                                    <div class="astro-item">🌙 <span>Moon: ${moonrise}</span></div>
-                                    <div class="astro-item">🌘 <span>Set: ${moonset}</span></div>
+
+                                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 12px 0;">
+
+                                <div style="display: flex; justify-content: space-between; color: #8a99ad; font-size: 0.85rem;">
+                                    <span>🌅 Up: <strong style="color: #ffffff;">${sunrise}</strong></span>
+                                    <span>🌇 Set: <strong style="color: #ffffff;">${sunset}</strong></span>
                                 </div>
                             </div>
                         `;
                     }
-                    container.innerHTML = html;
+
+                    container.innerHTML = htmlContent;
                 })
-                .catch(err => console.error("Forecast Error:", err));
+                .catch(err => {
+                    console.error("Error fetching forecast:", err);
+                    container.innerHTML = `<div style="color:#ff6666; padding:20px; width:100%; text-align:center;">Unable to load live forecast data.</div>`;
+                });
         }
 
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
             displayRandomJoke();
             
-            // Detect user location for accuracy, fallback to Bengaluru
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    pos => loadDetailedForecast(pos.coords.latitude, pos.coords.longitude),
-                    () => loadDetailedForecast()
-                );
-            } else {
-                loadDetailedForecast();
+            // Load default forecast for Bengaluru
+            loadLive7DayForecast("bengaluru");
+
+            // Add event listener for location dropdown
+            const locationSelect = document.getElementById("forecastLocationSelect");
+            if (locationSelect) {
+                locationSelect.addEventListener("change", (e) => {
+                    loadLive7DayForecast(e.target.value);
+                });
             }
         });
     </script>
