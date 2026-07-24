@@ -1007,6 +1007,38 @@
         if (el72) el72.innerText = qResults.h72;
     }
 
+    // 🌐 Fetch Quantum Prediction from qBraid Backend
+    function fetchQuantumPredictionFromqBraid(temp, humidity, pressure, wind, currentAqi) {
+        // Replace with your actual backend API URL
+        const API_URL = "https://your-qbraid-backend-api.com/api/quantum-predict";
+
+        fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                temp: temp,
+                humidity: humidity,
+                pressure: pressure,
+                wind: wind,
+                current_aqi: currentAqi
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.predictions) {
+                // Update Quantum Prediction UI Cards
+                const el24 = document.getElementById("q24Val");
+                const el42 = document.getElementById("q42Val");
+                const el72 = document.getElementById("q72Val");
+
+                if (el24) el24.innerText = data.predictions.h24;
+                if (el42) el42.innerText = data.predictions.h42;
+                if (el72) el72.innerText = data.predictions.h72;
+            }
+        })
+        .catch(err => console.error("qBraid API error:", err));
+    }
+
     // 📍 4. Event Delegation Handler
     document.addEventListener("DOMContentLoaded", function() {
         fetchLiveCityAQI("bengaluru");
