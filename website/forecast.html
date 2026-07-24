@@ -152,6 +152,26 @@
 </head>
 <body>
 
+    <!-- ⬅️ RETURN TO MAIN DASHBOARD BUTTON -->
+    <div style="margin-bottom: 20px; text-align: left;">
+        <a href="index.html" style="
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        ">
+            ⬅️ Return to Main Dashboard
+        </a>
+    </div>
+
     <!-- 🌐 HEADER & LOCATION SELECTOR -->
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 15px;">
         <h2 style="color: #00d2ff; margin: 0; font-size: 1.6rem; display: flex; align-items: center; gap: 10px;">
@@ -181,13 +201,62 @@
         <!-- Live dynamic cards will render here -->
     </div>
 
-    <!-- 🧘 RANDOM MINDFUL JOKE BOX -->
-    <div class="joke-card">
-        <div id="jokeCategory" class="joke-badge">DAILY HUMOR</div>
-        <div id="jokeText" style="font-size: 1.15rem; color: #fff; min-height: 50px; display: flex; align-items: center; justify-content: center; font-style: italic;">
-            "Loading your mindful joke..."
+    <!-- 🧩 HIGHLIGHTED MINDFUL JOKES PANEL -->
+    <div style="
+        margin-top: 40px; 
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); 
+        border: 2px solid #00ffcc; 
+        border-radius: 20px; 
+        padding: 30px; 
+        text-align: center; 
+        box-shadow: 0 0 25px rgba(0, 255, 204, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+    ">
+        <!-- Glowing Badge Header -->
+        <div style="
+            display: inline-block; 
+            background: linear-gradient(135deg, #00ffcc, #00d2ff); 
+            color: #0f172a; 
+            font-weight: 800; 
+            font-size: 0.85rem; 
+            padding: 6px 16px; 
+            border-radius: 20px; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 255, 204, 0.4);
+        ">
+            🧩 MINDFUL GEEK LOGIC HUB
         </div>
-        <button onclick="displayRandomJoke()" class="refresh-joke-btn">🎲 Another Mindful Joke</button>
+
+        <!-- Joke Text -->
+        <p id="jokeText" style="
+            font-size: 1.25rem; 
+            color: #ffffff; 
+            font-style: italic; 
+            font-weight: 500; 
+            margin-bottom: 25px; 
+            line-height: 1.6;
+        ">
+            "Why did the AI go cross-eyed? Too many input parameters to process!"
+        </p>
+
+        <!-- Interactive Button -->
+        <button onclick="getNewJoke()" style="
+            padding: 10px 24px; 
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5); 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+            transition: all 0.2s ease;
+        ">
+            🎲 Another Mindful Joke
+        </button>
     </div>
 
     <script>
@@ -211,14 +280,21 @@
             document.getElementById("jokeText").innerText = `"${selected.text}"`;
         }
 
-        // 🏙️ City Mapping Table
+        // Function to get a new joke (for the highlighted jokes panel)
+        function getNewJoke() {
+            const randomIndex = Math.floor(Math.random() * jokesList.length);
+            const selected = jokesList[randomIndex];
+            document.getElementById("jokeText").innerText = `"${selected.text}"`;
+        }
+
+        // �️ City Mapping Table
         const cityCoordinates = {
             "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946 },
             "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090 },
             "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060 }
         };
 
-        // 🌐 Live 7-Day Forecast Fetch Pipeline
+        // �🌐 Live 7-Day Forecast Fetch Pipeline
         function loadLive7DayForecast(cityKey) {
             const key = (cityKey || "bengaluru").toLowerCase();
             const city = cityCoordinates[key] || cityCoordinates["bengaluru"];
@@ -287,7 +363,7 @@
 
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
-            displayRandomJoke();
+            getNewJoke();
             
             // Load default forecast for Bengaluru
             loadLive7DayForecast("bengaluru");
