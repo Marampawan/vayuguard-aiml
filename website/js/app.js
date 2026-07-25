@@ -1,7 +1,7 @@
 // === VayuGuard Professional Application Logic ===
 
-// Connects to the live Render cloud backend
-const API_BASE = 'https://vayuguard-api-liveee.onrender.com';
+// Connects to the live Railway cloud backend
+const API_BASE = 'https://vayuguard-aiml-production.up.railway.app';
 
 // Load saved family from memory, otherwise default to "Me"
 let familyMembers = JSON.parse(localStorage.getItem('vayuFamily')) || [
