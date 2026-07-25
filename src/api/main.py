@@ -1,7 +1,14 @@
-"""
-FastAPI Serving Layer for VayuGuard ML
-Quantum-Classical Hybrid AQI Forecasting System
-"""
+import autoray
+if not hasattr(autoray.autoray, "NumpyMimic"):
+    autoray.autoray.NumpyMimic = object
+
+# Now import PennyLane and FastAPI normally
+import pennylane as qml
+import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
 import os
 import sys
 import json
@@ -10,12 +17,6 @@ from datetime import datetime
 from typing import List, Dict
 
 import pandas as pd
-import numpy as np
-import autoray
-import pennylane as qml
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 # Add parent directory to path for util imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
