@@ -5,7 +5,8 @@ if not hasattr(autoray.autoray, "NumpyMimic"):
 # --- Your regular imports follow below ---
 import pennylane as qml
 import numpy as np
-from fastapi import FastAPI
+import qbraid
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -92,6 +93,11 @@ def quantum_status():
             "message": "No qBraid API key found in Render environment. Using local CPU simulator."
         }
     try:
+        # Log available qBraid backends for tracking
+        print("Available qBraid backends:", qbraid.get_jobs())
+        # Log the device being targeted
+        print("Targeting qBraid device: ibm_kyiv via qiskit.remote")
+        
         # Pings the IBM Quantum hardware via qBraid API
         dev = qml.device("qiskit.remote", wires=2, backend="ibm_kyiv", provider="qbraid-qiskit")
         return {
