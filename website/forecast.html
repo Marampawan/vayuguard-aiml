@@ -354,6 +354,27 @@
                     }
 
                     container.innerHTML = htmlContent;
+                    
+                    // Fetch quantum prediction from Railway backend
+                    fetch('https://vayuguard-aiml-production.up.railway.app/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            city: city.name,
+                            lat: city.lat,
+                            lng: city.lng,
+                            temperature: maxTemp,
+                            humidity: humidity,
+                            wind_speed: wind
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(prediction => {
+                        console.log("Prediction:", prediction);
+                    })
+                    .catch(err => {
+                        console.error("Quantum prediction error:", err);
+                    });
                 })
                 .catch(err => {
                     console.error("Error fetching forecast:", err);
