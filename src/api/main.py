@@ -11,10 +11,11 @@ from typing import List, Dict
 
 import pandas as pd
 import numpy as np
+import autoray
+import pennylane as qml
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import pennylane as qml
 
 # Add parent directory to path for util imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
