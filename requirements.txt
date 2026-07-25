@@ -2,6 +2,7 @@ fastapi==0.104.1
 uvicorn==0.24.0
 pydantic==2.5.0
 numpy<2.0.0
+pandas
 autoray==0.6.12
 pennylane==0.38.0
 pennylane-qiskit==0.38.1
