@@ -2,10 +2,10 @@ import autoray
 if not hasattr(autoray.autoray, "NumpyMimic"):
     autoray.autoray.NumpyMimic = object
 
-# Now import PennyLane and FastAPI normally
+# --- Your regular imports follow below ---
 import pennylane as qml
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
