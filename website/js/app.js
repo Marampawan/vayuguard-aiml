@@ -632,6 +632,25 @@ async function getForecast() {
     }
 }
 
+// --- Quantum Prediction Helper ---
+async function getQuantumPrediction(weatherData) {
+    try {
+        const response = await fetch('https://vayuguard-aiml-production.up.railway.app/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(weatherData)
+        });
+
+        const data = await response.json();
+        console.log("Railway Response:", data);
+        return data;
+    } catch (error) {
+        console.error("API Call Error:", error);
+    }
+}
+
 // --- Doctors Network ---
 const doctorsList = [
     { id: 1, name: 'Dr. Rajesh Sharma', specialty: 'pulmonologist', hospital: 'AIIMS Delhi', experience: '15 years', rating: 4.9, available: 'Today' },
