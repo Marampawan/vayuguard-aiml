@@ -16,7 +16,7 @@ import json
 import joblib
 from datetime import datetime
 from typing import List, Dict, Any
-from qbraid import device_wrapper, QbraidProvider
+from qbraid import QbraidProvider
 
 import pandas as pd
 
