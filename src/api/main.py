@@ -15,7 +15,8 @@ import sys
 import json
 import joblib
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Any
+from qbraid import device_wrapper, QbraidProvider
 
 import pandas as pd
 
@@ -198,6 +199,100 @@ def health_risk(req: HealthRiskRequest):
         "advisory": advices[risk],
         "precautions": precautions
     }
+
+# --- qBraid Quantum Prediction Endpoint ---
+class PredictRequest(BaseModel):
+    temperature: float = 25.0
+    humidity: float = 60.0
+    wind_speed: float = 10.0
+
+@app.post("/predict")
+async def get_quantum_prediction(req: PredictRequest):
+    """
+    Receives live weather data from the frontend forecast page,
+    runs a quantum circuit via qBraid SDK, and returns a quantum score.
+    This endpoint is called fire-and-forget from the forecast page so
+    weather cards render independently of backend availability.
+    """
+    qbraid_api_key = os.getenv("QBRAID_API_KEY")
+
+    print(f"Executing quantum prediction routine on qBraid... (temp={req.temperature}, hum={req.humidity}, wind={req.wind_speed})")
+
+    quantum_result = {"status": "executed", "quantum_score": 0.87, "device": "simulated"}
+
+    try:
+        # Map weather parameters to quantum rotation angles
+        theta1 = (req.temperature / 50.0) * np.pi
+        theta2 = (req.humidity / 100.0) * np.pi
+        theta3 = (req.wind_speed / 50.0) * np.pi
+
+        if qbraid_api_key:
+            # Use qBraid SDK to submit a real quantum circuit job
+            provider = QbraidProvider()
+            # Build a simple 2-qubit entangled circuit
+            import qiskit
+            from qiskit import QuantumCircuit
+
+            qc = QuantumCircuit(2, 2)
+            qc.ry(theta1, 0)
+            qc.ry(theta2, 1)
+            qc.cx(0, 1)
+            qc.rz(theta3, 1)
+            qc.measure([0, 1], [0, 1])
+
+            # Submit to qBraid simulator or hardware backend
+            device = provider.get_device("qbraid:qbraid:sim:qir-sv")
+            job = device.run(qc, shots=1024)
+            result = job.result()
+            counts = result.get_counts() if hasattr(result, 'get_counts') else result.counts
+
+            prob_00 = counts.get('00', 0) / 1024
+            prob_11 = counts.get('11', 0) / 1024
+            quantum_score = float(round((prob_00 - prob_11) * 0.5 + 0.5, 4))
+
+            quantum_result = {
+                "status": "executed",
+                "quantum_score": quantum_score,
+                "device": "qbraid_simulator",
+                "counts": counts
+            }
+        else:
+            # No qBraid key — run local Aer simulation
+            from qiskit_aer import AerSimulator
+
+            qc = QuantumCircuit(2, 2)
+            qc.ry(theta1, 0)
+            qc.ry(theta2, 1)
+            qc.cx(0, 1)
+            qc.rz(theta3, 1)
+            qc.measure([0, 1], [0, 1])
+
+            sim = AerSimulator()
+            result = sim.run(qc, shots=1024).result()
+            counts = result.get_counts()
+
+            prob_00 = counts.get('00', 0) / 1024
+            prob_11 = counts.get('11', 0) / 1024
+            quantum_score = float(round((prob_00 - prob_11) * 0.5 + 0.5, 4))
+
+            quantum_result = {
+                "status": "executed",
+                "quantum_score": quantum_score,
+                "device": "local_aer_simulator",
+                "counts": counts
+            }
+
+    except Exception as e:
+        print(f"Quantum circuit execution error: {e}")
+        # Graceful fallback — return default score
+        quantum_result = {
+            "status": "fallback",
+            "quantum_score": 0.5,
+            "device": "fallback_default",
+            "error": str(e)
+        }
+
+    return {"status": "success", "quantum_data": quantum_result}
 
 if __name__ == "__main__":
     import uvicorn

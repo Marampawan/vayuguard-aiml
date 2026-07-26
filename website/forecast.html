@@ -6,11 +6,11 @@
     <title>7-Day Forecast & Mindful Hub — VayuGuard</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Silences missing favicon 404 -->
     <style>
-        /* 🌌 Lighter Glassmorphism & Neon-Border Theme */
+        /* Lighter Glassmorphism & Neon-Border Theme */
         :root {
-            --bg-light-dark: #121c33; /* Lighter background tone */
-            --card-bg: rgba(26, 38, 66, 0.75); /* Lighter card background */
-            --card-border: rgba(0, 210, 255, 0.45); /* Enhanced vibrant border */
+            --bg-light-dark: #121c33;
+            --card-bg: rgba(26, 38, 66, 0.75);
+            --card-border: rgba(0, 210, 255, 0.45);
             --accent-glow: #00d2ff;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
@@ -53,7 +53,6 @@
             box-shadow: 0 0 18px rgba(0, 210, 255, 0.5);
         }
 
-        /* 📅 Forecast Cards Grid */
         .forecast-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -63,11 +62,11 @@
 
         .forecast-card {
             background: var(--card-bg);
-            border: 1px solid var(--card-border); /* Enhanced bright border */
+            border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 20px;
             backdrop-filter: blur(16px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.05); /* Outer + Inner glow */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.05);
             transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -96,7 +95,7 @@
             background: rgba(15, 23, 42, 0.6);
             padding: 12px;
             border-radius: 12px;
-            border: 1px solid rgba(0, 210, 255, 0.2); /* Enhanced inner card border */
+            border: 1px solid rgba(0, 210, 255, 0.2);
         }
 
         .astro-item {
@@ -105,7 +104,6 @@
             gap: 6px;
         }
 
-        /* 🧘 Mindful Joke Box */
         .joke-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -152,7 +150,7 @@
 </head>
 <body>
 
-    <!-- ⬅️ RETURN TO MAIN DASHBOARD BUTTON -->
+    <!-- RETURN TO MAIN DASHBOARD BUTTON -->
     <div style="margin-bottom: 20px; text-align: left;">
         <a href="index.html" style="
             display: inline-flex;
@@ -168,14 +166,14 @@
             box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         ">
-            ⬅️ Return to Main Dashboard
+            &#11013; Return to Main Dashboard
         </a>
     </div>
 
-    <!-- 🌐 HEADER & LOCATION SELECTOR -->
+    <!-- HEADER & LOCATION SELECTOR -->
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 15px;">
         <h2 style="color: #00d2ff; margin: 0; font-size: 1.6rem; display: flex; align-items: center; gap: 10px;">
-            📅 Detailed 7-Day Atmospheric & Astronomical Projections
+            &#128200; Detailed 7-Day Atmospheric & Astronomical Projections
         </h2>
 
         <div style="display: flex; align-items: center; gap: 12px;">
@@ -196,12 +194,15 @@
         </div>
     </div>
 
-    <!-- 📦 CONTAINER FOR DYNAMICALLY RENDERED 7-DAY CARDS -->
+    <!-- Error Message Container -->
+    <div id="error-message" style="color:#ff6666; padding:20px; width:100%; text-align:center; display:none;"></div>
+
+    <!-- CONTAINER FOR DYNAMICALLY RENDERED 7-DAY CARDS -->
     <div id="forecastCardsContainer" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
         <!-- Live dynamic cards will render here -->
     </div>
 
-    <!-- 🧩 HIGHLIGHTED MINDFUL JOKES PANEL -->
+    <!-- HIGHLIGHTED MINDFUL JOKES PANEL -->
     <div style="
         margin-top: 40px; 
         background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); 
@@ -227,7 +228,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0, 255, 204, 0.4);
         ">
-            🧩 MINDFUL GEEK LOGIC HUB
+            &#129529; MINDFUL GEEK LOGIC HUB
         </div>
 
         <!-- Joke Text -->
@@ -255,12 +256,12 @@
             box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
             transition: all 0.2s ease;
         ">
-            🎲 Another Mindful Joke
+            &#127922; Another Mindful Joke
         </button>
     </div>
 
     <script>
-        // 1. Array of Mindful & Tech Jokes
+        // Array of Mindful & Tech Jokes
         const jokesList = [
             { cat: "Classic", text: "Why did the tomato blush? Because it saw the salad dressing!" },
             { cat: "Random", text: "Why can't a bicycle stand up by itself? Because it's two-tired!" },
@@ -272,30 +273,27 @@
             { cat: "Weather", text: "What does a cloud wear under its raincoat? Thunderwear!" }
         ];
 
-        // Function to select and render a random joke
         function displayRandomJoke() {
             const randomIndex = Math.floor(Math.random() * jokesList.length);
             const selected = jokesList[randomIndex];
-            document.getElementById("jokeCategory").innerText = selected.cat;
             document.getElementById("jokeText").innerText = `"${selected.text}"`;
         }
 
-        // Function to get a new joke (for the highlighted jokes panel)
         function getNewJoke() {
             const randomIndex = Math.floor(Math.random() * jokesList.length);
             const selected = jokesList[randomIndex];
             document.getElementById("jokeText").innerText = `"${selected.text}"`;
         }
 
-        // �️ City Mapping Table
+        // City Mapping Table
         const cityCoordinates = {
             "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946 },
             "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090 },
             "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060 }
         };
 
-        // �🌐 Live 7-Day Forecast Fetch Pipeline
-        function loadLive7DayForecast(cityKey) {
+        // Live 7-Day Forecast Fetch Pipeline — Decoupled Weather + Backend
+        async function loadLive7DayForecast(cityKey) {
             const key = (cityKey || "bengaluru").toLowerCase();
             const city = cityCoordinates[key] || cityCoordinates["bengaluru"];
             const container = document.getElementById("forecastCardsContainer");
@@ -305,81 +303,81 @@
 
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lng}&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,relative_humidity_2m_mean,sunrise,sunset&timezone=auto`;
 
-            fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.daily || !data.daily.time) return;
+            try {
+                // 1. Fetch live Open-Meteo weather data
+                const res = await fetch(url);
+                const data = await res.json();
 
-                    const daily = data.daily;
-                    let htmlContent = "";
+                if (!data.daily || !data.daily.time) {
+                    container.innerHTML = `<div style="color:#ff6666; padding:20px; width:100%; text-align:center;">No forecast data available.</div>`;
+                    return;
+                }
 
-                    for (let i = 0; i < daily.time.length; i++) {
-                        const dateObj = new Date(daily.time[i] + "T00:00:00");
-                        const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const daily = data.daily;
+                let htmlContent = "";
 
-                        const maxTemp = Math.round(daily.temperature_2m_max[i]);
-                        const minTemp = Math.round(daily.temperature_2m_min[i]);
-                        const wind = (daily.wind_speed_10m_max[i] || 15).toFixed(1);
-                        const humidity = Math.round(daily.relative_humidity_2m_mean[i] || 65);
+                for (let i = 0; i < daily.time.length; i++) {
+                    const dateObj = new Date(daily.time[i] + "T00:00:00");
+                    const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-                        const sunrise = daily.sunrise[i] ? daily.sunrise[i].split("T")[1].substring(0, 5) : "06:00";
-                        const sunset = daily.sunset[i] ? daily.sunset[i].split("T")[1].substring(0, 5) : "18:48";
+                    const maxTemp = Math.round(daily.temperature_2m_max[i]);
+                    const minTemp = Math.round(daily.temperature_2m_min[i]);
+                    const wind = (daily.wind_speed_10m_max[i] || 15).toFixed(1);
+                    const humidity = Math.round(daily.relative_humidity_2m_mean[i] || 65);
 
-                        htmlContent += `
-                            <div style="flex: 1 1 300px; max-width: 380px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                    <span style="color: #00d2ff; font-weight: bold; font-size: 1.1rem;">${dateStr}</span>
-                                    <span style="font-size: 1.5rem;">⛅</span>
+                    const sunrise = daily.sunrise[i] ? daily.sunrise[i].split("T")[1].substring(0, 5) : "06:00";
+                    const sunset = daily.sunset[i] ? daily.sunset[i].split("T")[1].substring(0, 5) : "18:48";
+
+                    htmlContent += `
+                        <div style="flex: 1 1 300px; max-width: 380px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <span style="color: #00d2ff; font-weight: bold; font-size: 1.1rem;">${dateStr}</span>
+                                <span style="font-size: 1.5rem;">&#9925;</span>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px;">
+                                <div>
+                                    <span style="font-size: 2.2rem; font-weight: bold; color: #ffffff;">${maxTemp}&deg;C</span>
+                                    <span style="color: #8a99ad; font-size: 1rem;"> / ${minTemp}&deg;C</span>
                                 </div>
-
-                                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px;">
-                                    <div>
-                                        <span style="font-size: 2.2rem; font-weight: bold; color: #ffffff;">${maxTemp}°C</span>
-                                        <span style="color: #8a99ad; font-size: 1rem;"> / ${minTemp}°C</span>
-                                    </div>
-                                    <div style="text-align: right; color: #00ffcc; font-size: 0.85rem; font-weight: bold;">
-                                        💨 ${wind} km/h<br>
-                                        💧 ${humidity}% Hum
-                                    </div>
-                                </div>
-
-                                <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 12px 0;">
-
-                                <div style="display: flex; justify-content: space-between; color: #8a99ad; font-size: 0.85rem;">
-                                    <span>🌅 Up: <strong style="color: #ffffff;">${sunrise}</strong></span>
-                                    <span>🌇 Set: <strong style="color: #ffffff;">${sunset}</strong></span>
+                                <div style="text-align: right; color: #00ffcc; font-size: 0.85rem; font-weight: bold;">
+                                    &#128168; ${wind} km/h<br>
+                                    &#128167; ${humidity}% Hum
                                 </div>
                             </div>
-                        `;
-                    }
 
-                    container.innerHTML = htmlContent;
-                    
-                    // Fetch quantum prediction from Railway backend
-                    fetch('https://vayuguard-aiml-production.up.railway.app/predict', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            city: city.name,
-                            lat: city.lat,
-                            lng: city.lng,
-                            temperature: maxTemp,
-                            humidity: humidity,
-                            wind_speed: wind
-                        })
+                            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 12px 0;">
+
+                            <div style="display: flex; justify-content: space-between; color: #8a99ad; font-size: 0.85rem;">
+                                <span>&#127749; Up: <strong style="color: #ffffff;">${sunrise}</strong></span>
+                                <span>&#127751; Set: <strong style="color: #ffffff;">${sunset}</strong></span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // 2. Render weather cards immediately — never blocked by backend
+                container.innerHTML = htmlContent;
+
+                // 3. Fire-and-forget: send payload to Railway backend (non-blocking)
+                //    Weather data is already on screen; backend failure won't hide it.
+                fetch('https://vayuguard-aiml-production.up.railway.app/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        temperature: daily.temperature_2m_max[0],
+                        humidity: daily.relative_humidity_2m_mean[0],
+                        wind_speed: daily.wind_speed_10m_max[0]
                     })
-                    .then(res => res.json())
-                    .then(prediction => {
-                        console.log("Prediction:", prediction);
-                    })
-                    .catch(err => {
-                        console.error("Quantum prediction error:", err);
-                    });
                 })
-                .catch(err => {
-                    console.error("Error fetching forecast:", err);
-                    container.innerHTML = `<div style="color:#ff6666; padding:20px; width:100%; text-align:center;">Unable to load live forecast data.</div>`;
-                });
+                .then(res => res.json())
+                .then(data => console.log("Prediction response:", data))
+                .catch(err => console.warn("qBraid Railway call failed (weather still displayed):", err));
+
+            } catch (err) {
+                console.error("Error fetching forecast:", err);
+                container.innerHTML = `<div style="color:#ff6666; padding:20px; width:100%; text-align:center;">Unable to load live forecast data. Please try again later.</div>`;
+            }
         }
 
         // Initialize on load
