@@ -247,20 +247,22 @@
         <a href="index.html" class="nav-brand" style="text-decoration: none;">
             <i class="fas fa-shield-virus"></i> VayuGuard
         </a>
-        <ul class="nav-menu">
-            <li><a href="index.html" class="active">Forecast</a></li>
-            <li><a href="telemetry.html">Advanced Monitor</a></li>
-            <li>
-                <!-- QUANTUM TELEMETRY LINK IN TOP NAVBAR -->
-                <a href="telemetry.html" target="_blank" 
-                   class="btn btn-sm text-white fw-bold px-3 py-2 rounded-pill d-inline-flex align-items-center" 
-                   style="background: linear-gradient(135deg, #8a2be2, #9d4edd); border: 1px solid #c77dff; box-shadow: 0 0 10px rgba(138, 43, 226, 0.5); text-decoration: none;">
-                    <i class="fas fa-atom fa-spin me-2"></i> Quantum Execution Telemetry
-                </a>
-            </li>
-            <li><a href="helpdesk.html">Help Desk</a></li>
-            <li><a href="login.html" class="btn btn-primary" id="navLoginBtn" style="color: white; padding: 0.5rem 1.2rem; margin-left: 1rem;">Log In</a></li>
-        </ul>
+        <div class="d-flex align-items-center gap-3">
+            <a href="index.html" class="nav-link text-light">Forecast</a>
+            
+            <!-- ADVANCED MONITOR LINK -->
+            <a href="telemetry.html" class="nav-link text-light">Advanced Monitor</a>
+
+            <!-- QUANTUM EXECUTION TELEMETRY BUTTON -->
+            <a href="telemetry.html" target="_blank" 
+               class="btn btn-sm text-white fw-bold px-3 py-1 rounded-pill d-inline-flex align-items-center" 
+               style="background: linear-gradient(135deg, #8a2be2, #9d4edd); border: 1px solid #c77dff; box-shadow: 0 0 10px rgba(138, 43, 226, 0.5); text-decoration: none;">
+                <i class="fas fa-atom fa-spin me-1"></i> Quantum Execution Telemetry
+            </a>
+
+            <a href="helpdesk.html" class="nav-link text-light">Help Desk</a>
+            <a href="login.html" class="btn btn-primary rounded-pill px-3" id="navLoginBtn">Log In</a>
+        </div>
     </nav>
 
     <section class="hero">
