@@ -198,8 +198,15 @@
     <div id="error-message" style="color:#ff6666; padding:20px; width:100%; text-align:center; display:none;"></div>
 
     <!-- CONTAINER FOR DYNAMICALLY RENDERED 7-DAY CARDS -->
-    <div id="forecastCardsContainer" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+    <div id="forecastCardsContainer" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;"></div>
         <!-- Live dynamic cards will render here -->
+    </div>
+
+    <!-- QUANTUM EXECUTION STATUS BADGE -->
+    <div id="quantum-status-badge" style="text-align: center; margin: 10px 0 20px 0; min-height: 32px;">
+        <span class="badge bg-secondary" style="background: rgba(100, 116, 139, 0.3); color: #94a3b8; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+            &#9203; Awaiting quantum execution...
+        </span>
     </div>
 
     <!-- HIGHLIGHTED MINDFUL JOKES PANEL -->
@@ -371,7 +378,30 @@
                     })
                 })
                 .then(res => res.json())
-                .then(data => console.log("Prediction response:", data))
+                .then(data => {
+                    console.log("Prediction response:", data);
+                    // Update quantum status badge with execution details
+                    const badge = document.getElementById('quantum-status-badge');
+                    if (badge && data.quantum_data) {
+                        const qd = data.quantum_data;
+                        if (qd.device && qd.device.includes('qbraid')) {
+                            badge.innerHTML = `
+                                <span style="background: rgba(147, 51, 234, 0.2); color: #c084fc; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(147, 51, 234, 0.4);">
+                                    &#9889; Executed via qBraid ${qd.device === 'qbraid_simulator' ? 'QIR Simulator' : 'QPU'} &mdash; Score: ${qd.quantum_score}
+                                </span>`;
+                        } else if (qd.device && qd.device.includes('local')) {
+                            badge.innerHTML = `
+                                <span style="background: rgba(100, 116, 139, 0.3); color: #94a3b8; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(148, 163, 184, 0.3);">
+                                    &#129302; Classical Local Simulator Fallback &mdash; Score: ${qd.quantum_score}
+                                </span>`;
+                        } else if (qd.status === 'fallback') {
+                            badge.innerHTML = `
+                                <span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.4);">
+                                    &#9888;&#65039; Quantum Error — Default Score: ${qd.quantum_score}
+                                </span>`;
+                        }
+                    }
+                })
                 .catch(err => console.warn("qBraid Railway call failed (weather still displayed):", err));
 
             } catch (err) {
