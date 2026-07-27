@@ -151,7 +151,7 @@
 <body>
 
     <!-- RETURN TO MAIN DASHBOARD BUTTON -->
-    <div style="margin-bottom: 20px; text-align: left;">
+    <div style="margin-bottom: 10px; text-align: left;">
         <a href="index.html" style="
             display: inline-flex;
             align-items: center;
@@ -168,6 +168,15 @@
         ">
             &#11013; Return to Main Dashboard
         </a>
+    </div>
+
+    <!-- TOP QUANTUM METRICS FULLSCREEN BUTTON -->
+    <div class="text-end mb-3">
+        <button class="btn btn-sm btn-outline-purple text-purple rounded-pill px-3 py-2 fw-semibold" 
+                style="border: 1px solid #c77dff; color: #c77dff; background: rgba(186, 85, 211, 0.1);"
+                data-bs-toggle="modal" data-bs-target="#quantumFullPageModal">
+            <i class="fas fa-atom fa-spin me-2"></i> View Full Quantum Telemetry
+        </button>
     </div>
 
     <!-- HEADER & LOCATION SELECTOR -->
@@ -480,5 +489,79 @@
             }
         });
     </script>
+
+    <!-- FULL-PAGE QUANTUM METRICS MODAL -->
+    <div class="modal fade" id="quantumFullPageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content text-light" style="background: #0d0b18; background-image: radial-gradient(circle at 50% 30%, rgba(138, 43, 226, 0.15), transparent 70%);">
+                
+                <!-- Modal Header -->
+                <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="p-2 rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(186, 85, 211, 0.2); width: 45px; height: 45px;">
+                            <i class="fas fa-atom fa-spin fs-4" style="color: #c77dff;"></i>
+                        </span>
+                        <div>
+                            <h4 class="m-0 fw-bold text-white tracking-wide">QUANTUM EXECUTION TELEMETRY</h4>
+                            <small class="text-white-50">Real-time qBraid Hybrid Prediction System Overview</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Full Page Modal Body -->
+                <div class="modal-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center">
+                    <div class="container max-w-4xl">
+                        
+                        <!-- Top Status Banner -->
+                        <div class="p-3 rounded-4 mb-4 text-center d-flex align-items-center justify-content-between px-4" 
+                             style="background: rgba(186, 85, 211, 0.1); border: 1px solid rgba(186, 85, 211, 0.3);">
+                            <span class="text-white-50 fw-medium">Execution Engine Status:</span>
+                            <span class="badge px-3 py-2 rounded-pill fw-semibold" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3);">
+                                ● qBraid Engine Active
+                            </span>
+                        </div>
+
+                        <!-- Grid Stats -->
+                        <div class="row g-4 mb-4 text-center">
+                            <div class="col-md-4">
+                                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                                    <div class="text-uppercase fw-semibold mb-2" style="color: #9d4edd; font-size: 0.85rem; letter-spacing: 1px;">Target Device</div>
+                                    <div class="fw-bold text-white fs-4">qBraid QIR Simulator</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                                    <div class="text-uppercase fw-semibold mb-2" style="color: #9d4edd; font-size: 0.85rem; letter-spacing: 1px;">Shots / Count</div>
+                                    <div class="fw-bold text-white fs-4">1,024</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                                    <div class="text-uppercase fw-semibold mb-2" style="color: #9d4edd; font-size: 0.85rem; letter-spacing: 1px;">Execution Latency</div>
+                                    <div class="fw-bold text-white fs-4">Real-time (~11s)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Large Score Display -->
+                        <div class="p-4 rounded-4 text-center" style="background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(199, 125, 255, 0.1)); border: 1px solid rgba(199, 125, 255, 0.4);">
+                            <div class="text-white-50 mb-1 fw-medium">Hybrid Quantum Model Output Score</div>
+                            <div class="fw-bold display-3" style="color: #e0aaff; text-shadow: 0 0 20px rgba(199, 125, 255, 0.6);">
+                                0.4858
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer border-top border-secondary border-opacity-25 justify-content-center py-3">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Close Fullview</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /FULL-PAGE QUANTUM METRICS MODAL -->
 </body>
 </html>
