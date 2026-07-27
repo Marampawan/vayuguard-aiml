@@ -244,7 +244,7 @@ async def get_quantum_prediction(req: PredictRequest):
             device = provider.get_device("qbraid:qbraid:sim:qir-sv")
             job = device.run(qc, shots=1024)
             result = job.result()
-            counts = result.measurement_counts()
+            counts = result.data.get_counts()
 
             prob_00 = counts.get('00', 0) / 1024
             prob_11 = counts.get('11', 0) / 1024
