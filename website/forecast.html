@@ -202,35 +202,63 @@
         <!-- Live dynamic cards will render here -->
     </div>
 
-    <!-- EXPANDED QUANTUM PANEL -->
-    <div id="quantum-metrics-panel" class="quantum-panel mt-4 p-3 rounded d-none" style="background: rgba(138, 43, 226, 0.1); border: 1px solid blueviolet; box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-            <h5 class="text-purple m-0">
-                <i class="fas fa-atom fa-spin me-2"></i>Quantum Execution Metrics
-            </h5>
-            <span id="q-status-text" class="text-muted small">Initializing...</span>
+    <!-- MODERN QUANTUM METRICS CARD -->
+    <div id="quantum-metrics-panel" class="quantum-panel my-4 p-4 rounded-4 position-relative overflow-hidden d-none" 
+         style="background: linear-gradient(135deg, rgba(20, 15, 38, 0.85), rgba(35, 20, 60, 0.65)); 
+                backdrop-filter: blur(12px); 
+                -webkit-backdrop-filter: blur(12px); 
+                border: 1px solid rgba(186, 85, 211, 0.35); 
+                box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.25), inset 0 0 15px rgba(186, 85, 211, 0.15);">
+        
+        <!-- Top Header -->
+        <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center gap-2">
+                <span class="p-2 rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(186, 85, 211, 0.2); width: 38px; height: 38px;">
+                    <i class="fas fa-atom fa-spin" style="color: #c77dff; font-size: 1.2rem;"></i>
+                </span>
+                <div>
+                    <h6 class="m-0 fw-bold text-white tracking-wide" style="letter-spacing: 0.5px;">QUANTUM EXECUTION METRICS</h6>
+                    <small class="text-white-50" style="font-size: 0.75rem;">Real-time qBraid Processing Telemetry</small>
+                </div>
+            </div>
+            <span id="q-status-text" class="badge px-3 py-2 rounded-pill fw-semibold" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3);">
+                ● Active
+            </span>
         </div>
 
-        <div class="row text-center text-light">
-            <div class="col-4 border-end border-secondary">
-                <div class="small text-purple">TARGET DEVICE</div>
-                <div id="q-device" class="h6 m-0">-</div>
-            </div>
-            <div class="col-4 border-end border-secondary">
-                <div class="small text-purple">shots / count</div>
-                <div id="q-shots" class="h6 m-0">-</div>
-            </div>
+        <!-- Parameter Grid -->
+        <div class="row g-3 text-center mb-3">
+            <!-- Target Device -->
             <div class="col-4">
-                <div class="small text-purple">LATENCY / TIME</div>
-                <div id="q-time" class="h6 m-0">- ms</div>
+                <div class="p-2 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);">
+                    <div class="text-uppercase fw-semibold mb-1" style="color: #9d4edd; font-size: 0.7rem; letter-spacing: 0.8px;">Target Device</div>
+                    <div id="q-device" class="fw-bold text-white text-truncate" style="font-size: 0.95rem;">-</div>
+                </div>
+            </div>
+            <!-- Shots / Count -->
+            <div class="col-4">
+                <div class="p-2 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);">
+                    <div class="text-uppercase fw-semibold mb-1" style="color: #9d4edd; font-size: 0.7rem; letter-spacing: 0.8px;">Shots / Count</div>
+                    <div id="q-shots" class="fw-bold text-white" style="font-size: 0.95rem;">-</div>
+                </div>
+            </div>
+            <!-- Latency / Time -->
+            <div class="col-4">
+                <div class="p-2 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);">
+                    <div class="text-uppercase fw-semibold mb-1" style="color: #9d4edd; font-size: 0.7rem; letter-spacing: 0.8px;">Latency / Time</div>
+                    <div id="q-time" class="fw-bold text-white" style="font-size: 0.95rem;">- ms</div>
+                </div>
             </div>
         </div>
-        
-        <div class="mt-2 text-center text-purple h5 m-0 pt-1 border-top border-secondary">
-            <span class="small text-light">Hybrid Score:</span> <span id="q-score">-</span>
+
+        <!-- Bottom Score Banner -->
+        <div class="p-2 rounded-3 text-center d-flex align-items-center justify-content-center gap-2" 
+             style="background: linear-gradient(90deg, rgba(157, 78, 221, 0.15), rgba(199, 125, 255, 0.25), rgba(157, 78, 221, 0.15)); border: 1px solid rgba(199, 125, 255, 0.3);">
+            <span class="text-white-50 fw-medium" style="font-size: 0.85rem;">Hybrid Model Score:</span>
+            <span id="q-score" class="fw-bold fs-5" style="color: #e0aaff; text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);">-</span>
         </div>
     </div>
-    <!-- /EXPANDED QUANTUM PANEL -->
+    <!-- /MODERN QUANTUM METRICS CARD -->
 
     <!-- HIGHLIGHTED MINDFUL JOKES PANEL -->
     <div style="
