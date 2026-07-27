@@ -202,12 +202,35 @@
         <!-- Live dynamic cards will render here -->
     </div>
 
-    <!-- QUANTUM EXECUTION STATUS BADGE -->
-    <div id="quantum-status-badge" style="text-align: center; margin: 10px 0 20px 0; min-height: 32px;">
-        <span class="badge bg-secondary" style="background: rgba(100, 116, 139, 0.3); color: #94a3b8; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
-            &#9203; Awaiting quantum execution...
-        </span>
+    <!-- EXPANDED QUANTUM PANEL -->
+    <div id="quantum-metrics-panel" class="quantum-panel mt-4 p-3 rounded d-none" style="background: rgba(138, 43, 226, 0.1); border: 1px solid blueviolet; box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="text-purple m-0">
+                <i class="fas fa-atom fa-spin me-2"></i>Quantum Execution Metrics
+            </h5>
+            <span id="q-status-text" class="text-muted small">Initializing...</span>
+        </div>
+
+        <div class="row text-center text-light">
+            <div class="col-4 border-end border-secondary">
+                <div class="small text-purple">TARGET DEVICE</div>
+                <div id="q-device" class="h6 m-0">-</div>
+            </div>
+            <div class="col-4 border-end border-secondary">
+                <div class="small text-purple">shots / count</div>
+                <div id="q-shots" class="h6 m-0">-</div>
+            </div>
+            <div class="col-4">
+                <div class="small text-purple">LATENCY / TIME</div>
+                <div id="q-time" class="h6 m-0">- ms</div>
+            </div>
+        </div>
+        
+        <div class="mt-2 text-center text-purple h5 m-0 pt-1 border-top border-secondary">
+            <span class="small text-light">Hybrid Score:</span> <span id="q-score">-</span>
+        </div>
     </div>
+    <!-- /EXPANDED QUANTUM PANEL -->
 
     <!-- HIGHLIGHTED MINDFUL JOKES PANEL -->
     <div style="
@@ -380,26 +403,29 @@
                 .then(res => res.json())
                 .then(data => {
                     console.log("Prediction response:", data);
-                    // Update quantum status badge with execution details
-                    const badge = document.getElementById('quantum-status-badge');
-                    if (badge && data.quantum_data) {
-                        const qd = data.quantum_data;
-                        if (qd.device && qd.device.includes('qbraid')) {
-                            badge.innerHTML = `
-                                <span style="background: rgba(147, 51, 234, 0.2); color: #c084fc; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(147, 51, 234, 0.4);">
-                                    &#9889; Executed via qBraid ${qd.device === 'qbraid_simulator' ? 'QIR Simulator' : 'QPU'} &mdash; Score: ${qd.quantum_score}
-                                </span>`;
-                        } else if (qd.device && qd.device.includes('local')) {
-                            badge.innerHTML = `
-                                <span style="background: rgba(100, 116, 139, 0.3); color: #94a3b8; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(148, 163, 184, 0.3);">
-                                    &#129302; Classical Local Simulator Fallback &mdash; Score: ${qd.quantum_score}
-                                </span>`;
-                        } else if (qd.status === 'fallback') {
-                            badge.innerHTML = `
-                                <span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(239, 68, 68, 0.4);">
-                                    &#9888;&#65039; Quantum Error — Default Score: ${qd.quantum_score}
-                                </span>`;
-                        }
+                    
+                    // Handle Expanded Quantum Panel
+                    const qPanel = document.getElementById('quantum-metrics-panel');
+                    if (!qPanel) return;
+                    
+                    const details = data.quantum_details;
+                    
+                    if (details && details.status === "success") {
+                        // Show panel and populate parameters
+                        qPanel.classList.remove('d-none');
+                        document.getElementById('q-status-text').innerHTML = '<span class="text-success small">● Active</span>';
+                        document.getElementById('q-device').innerText = details.device;
+                        document.getElementById('q-shots').innerText = details.shots.toLocaleString();
+                        document.getElementById('q-time').innerText = details.execution_time_ms + ' ms';
+                        document.getElementById('q-score').innerText = details.score.toFixed(4);
+                    } else {
+                        // Fallback state
+                        qPanel.classList.remove('d-none');
+                        document.getElementById('q-status-text').innerHTML = '<span class="text-warning small">▲ Classical Fallback</span>';
+                        document.getElementById('q-device').innerText = "Classical Model";
+                        document.getElementById('q-shots').innerText = "0";
+                        document.getElementById('q-time').innerText = "- ms";
+                        document.getElementById('q-score').innerText = "0.0000";
                     }
                 })
                 .catch(err => console.warn("qBraid Railway call failed (weather still displayed):", err));

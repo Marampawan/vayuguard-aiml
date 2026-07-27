@@ -13,6 +13,7 @@ from pydantic import BaseModel
 import os
 import sys
 import json
+import time
 import joblib
 from datetime import datetime
 from typing import List, Dict, Any
@@ -218,7 +219,10 @@ async def get_quantum_prediction(req: PredictRequest):
 
     print(f"Executing quantum prediction routine on qBraid... (temp={req.temperature}, hum={req.humidity}, wind={req.wind_speed})")
 
-    quantum_result = {"status": "executed", "quantum_score": 0.87, "device": "simulated"}
+    # Start timer for latency measurement
+    start_time = time.time()
+
+    quantum_details = {"status": "executed", "score": 0.5, "device": "simulated", "shots": 1024, "execution_time_ms": 0}
 
     try:
         # Map weather parameters to quantum rotation angles
@@ -250,11 +254,14 @@ async def get_quantum_prediction(req: PredictRequest):
             prob_11 = counts.get('11', 0) / 1024
             quantum_score = float(round((prob_00 - prob_11) * 0.5 + 0.5, 4))
 
-            quantum_result = {
-                "status": "executed",
-                "quantum_score": quantum_score,
-                "device": "qbraid_simulator",
-                "counts": counts
+            latency_ms = round((time.time() - start_time) * 1000, 1)
+
+            quantum_details = {
+                "status": "success",
+                "device": "qBraid QIR Simulator",
+                "score": quantum_score,
+                "shots": 1024,
+                "execution_time_ms": latency_ms
             }
         else:
             # No qBraid key — run local Aer simulation
@@ -275,24 +282,30 @@ async def get_quantum_prediction(req: PredictRequest):
             prob_11 = counts.get('11', 0) / 1024
             quantum_score = float(round((prob_00 - prob_11) * 0.5 + 0.5, 4))
 
-            quantum_result = {
-                "status": "executed",
-                "quantum_score": quantum_score,
-                "device": "local_aer_simulator",
-                "counts": counts
+            latency_ms = round((time.time() - start_time) * 1000, 1)
+
+            quantum_details = {
+                "status": "success",
+                "device": "Local AerSimulator",
+                "score": quantum_score,
+                "shots": 1024,
+                "execution_time_ms": latency_ms
             }
 
     except Exception as e:
         print(f"Quantum circuit execution error: {e}")
+        latency_ms = round((time.time() - start_time) * 1000, 1)
         # Graceful fallback — return default score
-        quantum_result = {
+        quantum_details = {
             "status": "fallback",
-            "quantum_score": 0.5,
             "device": "fallback_default",
+            "score": 0.5,
+            "shots": 0,
+            "execution_time_ms": latency_ms,
             "error": str(e)
         }
 
-    return {"status": "success", "quantum_data": quantum_result}
+    return {"status": "success", "quantum_details": quantum_details}
 
 if __name__ == "__main__":
     import uvicorn
