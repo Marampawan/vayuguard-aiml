@@ -180,6 +180,53 @@
         </button>
     </div>
 
+<!-- MAP & WEATHER PARAMETERS SECTION (website/forecast.html) -->
+<div class="container my-5">
+    <h3 class="fw-bold text-white mb-4"><i class="fas fa-map-marked-alt text-info me-2"></i>Interactive AQI Monitoring Map</h3>
+    
+    <div class="row g-4">
+        <!-- Leaflet Map Container -->
+        <div class="col-lg-7">
+            <div id="map" class="rounded-4 shadow" style="height: 400px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.1);"></div>
+        </div>
+
+        <!-- Weather Input Parameters -->
+        <div class="col-lg-5">
+            <div class="p-4 rounded-4 text-light" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h5 class="fw-bold mb-3"><i class="fas fa-sliders-h text-purple me-2"></i>Environmental Parameters</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label d-flex justify-content-between small text-white-50">
+                        <span>Temperature (°C)</span>
+                        <span id="temp-val" class="fw-bold text-white">28.4</span>
+                    </label>
+                    <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label d-flex justify-content-between small text-white-50">
+                        <span>Humidity (%)</span>
+                        <span id="hum-val" class="fw-bold text-white">75.0</span>
+                    </label>
+                    <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label d-flex justify-content-between small text-white-50">
+                        <span>Wind Speed (km/h)</span>
+                        <span id="wind-val" class="fw-bold text-white">23.0</span>
+                    </label>
+                    <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
+                </div>
+
+                <button id="run-predict-btn" class="btn btn-primary w-100 rounded-pill mt-2 fw-bold">
+                    <i class="fas fa-bolt me-2"></i> Recalculate AQI Prediction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <!-- HEADER & LOCATION SELECTOR -->
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 15px;">
         <h2 style="color: #00d2ff; margin: 0; font-size: 1.6rem; display: flex; align-items: center; gap: 10px;">
