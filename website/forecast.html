@@ -92,16 +92,18 @@
                     </button>
                 </div>
 
-                <!-- 7-DAY FORECAST & JOKES BUTTON -->
+                <!-- 7-DAY PREDICTION & MINDFUL HUB (OPENS IN NEW TAB) -->
                 <div class="card card-custom text-light p-4 shadow rounded-4 text-center">
                     <i class="fas fa-calendar-week display-4 text-info mb-3"></i>
                     <h5 class="fw-bold text-white mb-2">7-Day Prediction & Mindful Hub</h5>
                     <p class="small text-white-50 mb-3">View complete 7-day AQI projections alongside jokes and relaxation exercises.</p>
                     
-                    <!-- BUTTON THAT OPENS IN-PAGE MODAL -->
-                    <button type="button" class="btn btn-outline-info rounded-pill py-2 px-4 fw-bold shadow-sm d-inline-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#extendedForecastModal">
-                        <i class="fas fa-eye"></i> Open 7-Day Predictions & Details
-                    </button>
+                    <a href="forecast-details.html" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn btn-outline-info rounded-pill py-2 px-4 fw-bold text-decoration-none d-inline-flex align-items-center justify-content-center gap-2">
+                        <i class="fas fa-external-link-alt"></i> Open Full 7-Day Predictions & Details
+                    </a>
                 </div>
 
             </div>
@@ -147,98 +149,6 @@
             });
         });
     </script>
-
-    <!-- IN-PAGE MODAL (OPENS DIRECTLY ON SAME PAGE) -->
-    <div class="modal fade" id="extendedForecastModal" tabindex="-1" aria-labelledby="extendedForecastModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content text-light" style="background: #090713; border: 1px solid rgba(199, 125, 255, 0.3); border-radius: 1.25rem;">
-                
-                <!-- Modal Header -->
-                <div class="modal-header border-secondary border-opacity-25 px-4 pt-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="p-2 rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(199, 125, 255, 0.15); width: 42px; height: 42px;">
-                            <i class="fas fa-chart-line text-purple"></i>
-                        </span>
-                        <div>
-                            <h5 class="modal-title fw-bold text-white m-0" id="extendedForecastModalLabel">7-Day Extended Forecast</h5>
-                            <small class="text-white-50">Real-Time Astronomical & Environmental Predictions</small>
-                        </div>
-                    </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="modal-body p-4">
-                    <div class="d-flex flex-column gap-3">
-                        
-                        <!-- Today -->
-                        <div class="p-3 rounded-4" style="background: rgba(138, 43, 226, 0.12); border: 1px solid rgba(199, 125, 255, 0.3);">
-                            <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom border-secondary border-opacity-25">
-                                <div>
-                                    <span class="badge bg-purple text-white px-2 py-1 rounded-pill small mb-1">TODAY</span>
-                                    <h6 class="fw-bold text-white m-0">Tuesday, Jul 28</h6>
-                                </div>
-                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">AQI: 85 (Moderate)</span>
-                            </div>
-                            <div class="row g-2 text-center small">
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Temp</span><strong class="text-info">30°C</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Rain</span><strong class="text-primary">15%</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Wind</span><strong class="text-light">24 km/h</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Humidity</span><strong class="text-purple">75%</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Sunrise</span><strong class="text-warning">06:04 AM</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Sunset</span><strong class="text-danger">06:48 PM</strong></div></div>
-                            </div>
-                        </div>
-
-                        <!-- Wednesday -->
-                        <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
-                            <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom border-secondary border-opacity-25">
-                                <h6 class="fw-bold text-white m-0">Wednesday, Jul 29</h6>
-                                <span class="badge bg-success px-3 py-2 rounded-pill fw-bold">AQI: 42 (Good)</span>
-                            </div>
-                            <div class="row g-2 text-center small">
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Temp</span><strong class="text-info">29°C</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Rain</span><strong class="text-primary">10%</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Wind</span><strong class="text-light">22 km/h</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Humidity</span><strong class="text-purple">68%</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Sunrise</span><strong class="text-warning">06:05 AM</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Sunset</span><strong class="text-danger">06:48 PM</strong></div></div>
-                            </div>
-                        </div>
-
-                        <!-- Thursday -->
-                        <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
-                            <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom border-secondary border-opacity-25">
-                                <h6 class="fw-bold text-white m-0">Thursday, Jul 30</h6>
-                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">AQI: 78 (Moderate)</span>
-                            </div>
-                            <div class="row g-2 text-center small">
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Temp</span><strong class="text-info">30°C</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Rain</span><strong class="text-primary">35%</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Wind</span><strong class="text-light">26 km/h</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Humidity</span><strong class="text-purple">80%</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Sunrise</span><strong class="text-warning">06:05 AM</strong></div></div>
-                                <div class="col-4 col-md-2"><div class="p-2 rounded bg-dark bg-opacity-50"><span class="text-white-50 d-block">Sunset</span><strong class="text-danger">06:47 PM</strong></div></div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Mindful Joke Panel -->
-                    <div class="p-3 rounded-4 text-center mt-3" style="background: rgba(199, 125, 255, 0.1); border: 1px solid rgba(199, 125, 255, 0.25);">
-                        <h6 class="fw-bold text-purple mb-1"><i class="fas fa-smile me-1"></i>Mindful Geek Joke</h6>
-                        <p class="fst-italic text-white-50 small m-0">"Why did the egg hide? Because it was a little chicken!"</p>
-                    </div>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="modal-footer border-secondary border-opacity-25">
-                    <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
 
 </body>
 </html>
