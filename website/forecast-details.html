@@ -107,7 +107,7 @@
 
     <div class="container" style="max-width: 980px;">
         
-        <!-- 7-DAY FORECAST HEADER WITH INTEGRATED LOCATION SEARCH -->
+        <!-- 7-DAY EXTENDED FORECAST HEADER WITH LOCATION SEARCH -->
         <div class="card card-custom text-light p-4 shadow rounded-4 mb-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                 <div>
@@ -115,21 +115,30 @@
                         <i class="fas fa-calendar-week text-purple" style="color: #c77dff;"></i>
                         <span>7-Day Extended Forecast</span>
                     </h2>
-                    <p class="text-white-50 small m-0 mt-1">Comprehensive atmospheric, astronomical, and air quality telemetry</p>
+                    <p class="text-white-50 small m-0 mt-1">
+                        Active Location: <strong id="current-location-label" class="text-info">Bengaluru, IN</strong>
+                    </p>
                 </div>
                 <a href="forecast.html" class="btn btn-outline-light btn-sm rounded-pill px-3">
                     <i class="fas fa-arrow-left me-1"></i> Dashboard
                 </a>
             </div>
 
-            <!-- CHANGE LOCATION INPUT BAR -->
+            <!-- LOCATION SEARCH INPUT BAR -->
             <div class="position-relative">
                 <div class="input-group">
                     <span class="input-group-text bg-dark border-secondary text-white-50">
                         <i class="fas fa-map-marker-alt text-danger"></i>
                     </span>
-                    <input type="text" id="details-location-input" class="form-control bg-dark text-white border-secondary" placeholder="Search city to change location (e.g., Bengaluru, Delhi, Mumbai)..." autocomplete="off" onkeypress="if(event.key==='Enter') searchDetailsLocation()">
-                    <button class="btn btn-purple text-white fw-semibold px-4" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="searchDetailsLocation()">
+                    <input type="text" 
+                           id="details-location-input" 
+                           class="form-control bg-dark text-white border-secondary" 
+                           placeholder="Enter city to change location (e.g., Delhi, Mumbai, Hyderabad)..." 
+                           autocomplete="off" 
+                           onkeypress="if(event.key==='Enter') searchDetailsLocation()">
+                    <button class="btn btn-purple text-white fw-semibold px-4" 
+                            style="background: linear-gradient(135deg, #7209b7, #8a2be2);" 
+                            onclick="searchDetailsLocation()">
                         Update Forecast
                     </button>
                 </div>
@@ -300,27 +309,35 @@
             document.getElementById("joke-text").innerText = jokes[idx];
         }
 
-        // Detect live position or load default location on start
         document.addEventListener("DOMContentLoaded", function() {
-            if ("geolocation" in navigator) {
+            // Check if location was passed in URL query params
+            const urlParams = new URLSearchParams(window.location.search);
+            const city = urlParams.get('city');
+
+            if (city) {
+                document.getElementById('details-location-input').value = city;
+                searchDetailsLocation();
+            } else if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => loadForecastByCoords(pos.coords.latitude, pos.coords.longitude, "Live GPS"),
-                    () => loadForecastByCoords(12.9716, 77.5946, "Bengaluru")
+                    (pos) => loadForecastByCoords(pos.coords.latitude, pos.coords.longitude, "Your Location"),
+                    () => loadForecastByCoords(12.9716, 77.5946, "Bengaluru, IN")
                 );
             } else {
-                loadForecastByCoords(12.9716, 77.5946, "Bengaluru");
+                loadForecastByCoords(12.9716, 77.5946, "Bengaluru, IN");
             }
         });
 
-        // Search and change location
+        // Location Search Handler
         async function searchDetailsLocation() {
             const input = document.getElementById('details-location-input');
             if (!input || !input.value.trim()) return;
 
             const query = input.value.trim();
-            
+            const label = document.getElementById('current-location-label');
+            if (label) label.innerHTML = `<i class="fas fa-spinner fa-spin me-1"></i> Updating...`;
+
             try {
-                // India-first search
+                // Search India locations first
                 let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`;
                 let res = await fetch(url);
                 let data = await res.json();
@@ -339,16 +356,21 @@
                     await loadForecastByCoords(lat, lon, cityName);
                 } else {
                     alert("Location not found. Please enter a valid city.");
+                    if (label) label.innerText = "Bengaluru, IN";
                 }
             } catch (err) {
                 console.error("Failed to update location forecast:", err);
+                if (label) label.innerText = "Bengaluru, IN";
             }
         }
 
         // Fetch live Open-Meteo telemetry for requested city
         async function loadForecastByCoords(lat, lon, cityName) {
             const input = document.getElementById('details-location-input');
+            const locationLabel = document.getElementById('current-location-label');
+            
             if (input) input.value = cityName;
+            if (locationLabel) locationLabel.innerText = `${cityName}, IN`;
 
             try {
                 const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&daily=pm2_5_max,us_aqi_max&timezone=auto`;
