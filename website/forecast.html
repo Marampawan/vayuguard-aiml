@@ -204,18 +204,19 @@
     <script>
         var map;
         var activeMarker;
+        let debounceTimer;
 
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Initialize Map with default fallback location (e.g. Bengaluru)
+            // 1. Initialize Leaflet Map
             map = L.map('map').setView([12.9716, 77.5946], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
                 attribution: '© OpenStreetMap' 
             }).addTo(map);
 
-            // 2. Automatically detect user's live location on page enter
+            // 2. Auto-detect user's GPS position on page enter
             detectLiveLocation();
 
-            // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
+            // 3. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
             const ctx1 = document.getElementById('pmChart').getContext('2d');
             
             // Gradient Fills
@@ -275,7 +276,7 @@
                 }
             });
 
-            // 3. Chart 2: Dual Axis Temperature & Humidity Dynamics
+            // 4. Chart 2: Dual Axis Temperature & Humidity Dynamics
             const ctx2 = document.getElementById('weatherChart').getContext('2d');
             
             new Chart(ctx2, {
@@ -336,7 +337,7 @@
                 }
             });
 
-            // 4. Chart 3: Wind Speed & Gusts Graph
+            // 5. Chart 3: Wind Speed & Gusts Graph
             const ctx3 = document.getElementById('windChart').getContext('2d');
             new Chart(ctx3, {
                 type: 'bar',
@@ -371,7 +372,7 @@
                 }
             });
 
-            // 5. Chart 4: Barometric Pressure & Air Density
+            // 6. Chart 4: Barometric Pressure & Air Density
             const ctx4 = document.getElementById('pressureChart').getContext('2d');
             new Chart(ctx4, {
                 type: 'line',
@@ -398,7 +399,7 @@
             });
         });
 
-        // Detect Live GPS Location via Browser Geolocation API
+        // Auto-detect User's GPS Location
         function detectLiveLocation() {
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
@@ -407,46 +408,36 @@
                         const lon = position.coords.longitude;
 
                         try {
-                            // Reverse geocode coordinates to get the city name
                             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                             const data = await res.json();
-                            
-                            const cityName = data.address.city || data.address.town || data.address.village || data.address.state_district || "Your Location";
+                            const cityName = data.address.city || data.address.town || data.address.village || "Your Location";
 
-                            // Update map center & active marker
                             if (map) {
                                 map.setView([lat, lon], 12);
                                 await updateMapMarker(lat, lon, `${cityName} (Live GPS)`);
                             }
 
-                            // Update search bar input value
                             const searchInput = document.getElementById('location-search-input');
                             if (searchInput) searchInput.value = cityName;
 
-                            // Execute quantum prediction update for live location
                             if (typeof runQuantumPrediction === "function") {
                                 runQuantumPrediction();
                             }
-
                         } catch (err) {
-                            console.error("Reverse geocoding failed:", err);
-                            updateMapMarker(lat, lon, "Your Live Location");
+                            updateMapMarker(lat, lon, "Your Location");
                         }
                     },
                     (error) => {
-                        console.warn("Geolocation access denied or unavailable. Using default location.", error);
-                        // Fallback location if permission is denied
                         updateMapMarker(12.9716, 77.5946, "Bengaluru (Default)");
                     },
                     { enableHighAccuracy: true, timeout: 10000 }
                 );
             } else {
-                console.warn("Geolocation is not supported by this browser.");
                 updateMapMarker(12.9716, 77.5946, "Bengaluru (Default)");
             }
         }
 
-        // Fetch Live AQI Telemetry & Update Marker Popup
+        // Fetch Live AQI Telemetry & Render Marker
         async function updateMapMarker(lat, lon, cityName) {
             let aqiText = "AQI: Fetching...";
             
@@ -459,7 +450,7 @@
                     aqiText = `<b>AQI: ${aqi} (${status})</b>`;
                 }
             } catch (e) {
-                aqiText = "<b>AQI: 85 (Moderate)</b>"; // Default fallback
+                aqiText = "<b>AQI: 85 (Moderate)</b>";
             }
 
             if (activeMarker) {
@@ -467,67 +458,61 @@
             }
 
             activeMarker = L.marker([lat, lon]).addTo(map)
-                .bindPopup(`<b>${cityName}</b><br>${aqiText}<br><small>Active Node</small>`)
+                .bindPopup(`<b>${cityName}</b><br>${aqiText}<br><small>Quantum Sensor Node</small>`)
                 .openPopup();
         }
 
-        let debounceTimer;
-
-        // Trigger live search suggestions while typing
+        // Typing Auto-Complete Suggestions (India-First Preference)
         function onTypeSearch(query) {
             clearTimeout(debounceTimer);
             const suggestionsList = document.getElementById('suggestions-list');
 
             if (!query || query.trim().length < 2) {
-                suggestionsList.style.display = 'none';
-                suggestionsList.innerHTML = '';
+                if (suggestionsList) suggestionsList.style.display = 'none';
                 return;
             }
 
-            // Debounce API requests by 250ms to avoid spamming network requests
             debounceTimer = setTimeout(async () => {
-                // 1. Search India locations first using countrycodes=in
                 let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
                 
                 try {
                     let response = await fetch(url);
                     let data = await response.json();
 
-                    // 2. Global fallback if no Indian locations match
                     if (!data || data.length === 0) {
                         url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
                         response = await fetch(url);
                         data = await response.json();
                     }
 
-                    suggestionsList.innerHTML = '';
-
-                    if (data && data.length > 0) {
-                        data.forEach(place => {
-                            const li = document.createElement('li');
-                            li.className = 'dropdown-item text-truncate py-2 px-3 border-bottom border-secondary border-opacity-25';
-                            li.style.cursor = 'pointer';
-                            li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i><strong>${place.display_name}</strong>`;
-                            
-                            // On clicking a suggestion, update input and move map
-                            li.onclick = () => {
-                                document.getElementById('location-search-input').value = place.display_name.split(',')[0];
-                                suggestionsList.style.display = 'none';
-                                selectPlace(place.lat, place.lon, place.display_name.split(',')[0]);
-                            };
-                            suggestionsList.appendChild(li);
-                        });
-                        suggestionsList.style.display = 'block';
-                    } else {
-                        suggestionsList.style.display = 'none';
+                    if (suggestionsList) {
+                        suggestionsList.innerHTML = '';
+                        if (data && data.length > 0) {
+                            data.forEach(place => {
+                                const li = document.createElement('li');
+                                li.className = 'dropdown-item text-truncate py-2 px-3 border-bottom border-secondary border-opacity-25';
+                                li.style.cursor = 'pointer';
+                                li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i><strong>${place.display_name}</strong>`;
+                                
+                                li.onclick = () => {
+                                    document.getElementById('location-search-input').value = place.display_name.split(',')[0];
+                                    suggestionsList.style.display = 'none';
+                                    selectPlace(place.lat, place.lon, place.display_name.split(',')[0]);
+                                };
+                                suggestionsList.appendChild(li);
+                            });
+                            suggestionsList.style.display = 'block';
+                        } else {
+                            suggestionsList.style.display = 'none';
+                        }
                     }
                 } catch (err) {
-                    console.error('Suggestions fetch error:', err);
+                    console.error('Suggestions error:', err);
                 }
             }, 250);
         }
 
-        // Select place from suggestion dropdown
+        // Select location from suggestion or click
         async function selectPlace(lat, lon, cityName) {
             const latNum = parseFloat(lat);
             const lonNum = parseFloat(lon);
@@ -541,16 +526,7 @@
             }
         }
 
-        // Close suggestions dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            const suggestionsList = document.getElementById('suggestions-list');
-            const searchInput = document.getElementById('location-search-input');
-            if (suggestionsList && !searchInput.contains(e.target)) {
-                suggestionsList.style.display = 'none';
-            }
-        });
-
-        // Search Function (India First, Direct Map Update, No Dropdown Recommendations)
+        // Search Function (India First, Direct Map Update)
         async function searchLocation() {
             const searchInput = document.getElementById('location-search-input');
             if (!searchInput) return;
