@@ -41,19 +41,27 @@
                         </span>
                     </div>
 
-                    <!-- LOCATION SEARCH BAR (INDIA PREFERRED) -->
+                    <!-- SEARCH INPUT WITH AUTOCOMPLETE & SUGGESTIONS DISABLED -->
                     <div class="position-relative mb-3">
                         <div class="input-group">
                             <span class="input-group-text bg-dark border-secondary text-white-50">
                                 <i class="fas fa-search"></i>
                             </span>
-                            <input type="text" id="location-search-input" class="form-control bg-dark text-white border-secondary" placeholder="Search any city or area (e.g., Bengaluru, Mumbai, Delhi)..." autocomplete="off">
-                            <button class="btn btn-purple text-white fw-semibold px-4" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="searchLocation()">
+                            <input type="text" 
+                                   id="location-search-input" 
+                                   class="form-control bg-dark text-white border-secondary" 
+                                   placeholder="Search any city (e.g., Delhi, Mumbai, Chennai)..." 
+                                   autocomplete="off" 
+                                   autocorrect="off" 
+                                   autocapitalize="off" 
+                                   spellcheck="false" 
+                                   onkeypress="if(event.key==='Enter') searchLocation()">
+                            <button class="btn btn-purple text-white fw-semibold px-4" 
+                                    style="background: linear-gradient(135deg, #7209b7, #8a2be2);" 
+                                    onclick="searchLocation()">
                                 Search
                             </button>
                         </div>
-                        <!-- Search Results Dropdown -->
-                        <ul id="search-results-list" class="dropdown-menu dropdown-menu-dark w-100 mt-1 shadow-lg border-secondary" style="display: none; max-height: 200px; overflow-y: auto;"></ul>
                     </div>
 
                     <!-- MAP CONTAINER -->
