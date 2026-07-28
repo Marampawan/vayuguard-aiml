@@ -3,583 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7-Day Forecast & Mindful Hub — VayuGuard</title>
-    <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Silences missing favicon 404 -->
+    <title>Advanced Monitor — VayuGuard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Lighter Glassmorphism & Neon-Border Theme */
-        :root {
-            --bg-light-dark: #121c33;
-            --card-bg: rgba(26, 38, 66, 0.75);
-            --card-border: rgba(0, 210, 255, 0.45);
-            --accent-glow: #00d2ff;
-            --text-main: #f8fafc;
-            --text-sub: #cbd5e1;
-        }
-
-        body {
-            background-color: var(--bg-light-dark);
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.15) 0%, transparent 45%),
-                radial-gradient(circle at 85% 80%, rgba(0, 255, 204, 0.12) 0%, transparent 45%);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 24px;
-            min-height: 100vh;
-        }
-
-        .header-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .nav-btn {
-            padding: 10px 20px;
-            border-radius: 20px;
-            background: rgba(26, 38, 66, 0.85);
-            border: 1px solid var(--card-border);
-            color: var(--accent-glow);
-            text-decoration: none;
-            font-weight: 600;
-            box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
-            background: var(--accent-glow);
-            color: #080d1a;
-            box-shadow: 0 0 18px rgba(0, 210, 255, 0.5);
-        }
-
-        .forecast-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .forecast-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.05);
-            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .forecast-card:hover {
-            transform: translateY(-5px);
-            border-color: #00ffcc;
-            box-shadow: 0 12px 30px rgba(0, 210, 255, 0.35), inset 0 0 15px rgba(0, 255, 204, 0.1);
-        }
-
-        .forecast-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
-            padding-bottom: 12px;
-            margin-bottom: 14px;
-        }
-
-        .astro-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 12px;
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            background: rgba(15, 23, 42, 0.6);
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 210, 255, 0.2);
-        }
-
-        .astro-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .joke-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 26px;
-            backdrop-filter: blur(16px);
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        }
-
-        .joke-badge {
-            display: inline-block;
-            padding: 4px 14px;
-            border-radius: 12px;
-            background: rgba(0, 210, 255, 0.2);
-            border: 1px solid rgba(0, 210, 255, 0.4);
-            color: var(--accent-glow);
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .refresh-joke-btn {
-            margin-top: 16px;
-            padding: 10px 24px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
-            border: none;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .refresh-joke-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
-        }
+        body { background-color: #0d0b18; color: #fff; font-family: system-ui, -apple-system, sans-serif; }
+        .card-custom { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(186, 85, 211, 0.25); backdrop-filter: blur(10px); }
+        .text-purple { color: #c77dff; }
     </style>
 </head>
-<body>
+<body class="p-3 p-md-4">
 
-    <!-- RETURN TO MAIN DASHBOARD BUTTON -->
-    <div style="margin-bottom: 10px; text-align: left;">
-        <a href="index.html" style="
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 0.95rem;
-            text-decoration: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        ">
-            &#11013; Return to Main Dashboard
+    <!-- Top Navigation Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <a href="index.html" class="btn btn-outline-info rounded-pill px-3 py-2">
+            ← Return to Main Dashboard
+        </a>
+        <a href="telemetry.html" target="_blank" class="btn btn-sm text-white fw-bold px-3 py-2 rounded-pill" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
+            <i class="fas fa-atom fa-spin me-1"></i> Quantum Execution Telemetry
         </a>
     </div>
 
-    <!-- BUTTON BETWEEN HEADER AND CARDS — QUANTUM EXECUTION TELEMETRY -->
-    <div style="text-align: right;">
-        <button class="btn btn-purple rounded-pill px-4 py-2 my-2 mx-1 fw-bold text-white shadow-sm" 
-                style="background: linear-gradient(135deg, #8a2be2, #9d4edd); border: 1px solid #c77dff; box-shadow: 0 0 12px rgba(138, 43, 226, 0.4);"
-                data-bs-toggle="modal" 
-                data-bs-target="#quantumFullPageModal">
-            <i class="fas fa-atom fa-spin me-2"></i> Quantum Execution Telemetry
-        </button>
-    </div>
-
-<!-- ADVANCED MONITOR MAIN CONTAINER -->
-<div class="container-fluid px-4 my-4">
-    <div class="row g-4">
-        
-        <!-- LEFT COLUMN: MAP & ENVIRONMENTAL PARAMETERS -->
-        <div class="col-lg-7">
-            <!-- Leaflet Map Card -->
-            <div class="card bg-dark border-secondary text-light mb-4 shadow">
-                <div class="card-header border-secondary d-flex align-items-center justify-content-between">
-                    <h5 class="m-0 fw-bold"><i class="fas fa-map-marked-alt text-info me-2"></i>Interactive AQI Monitoring Map</h5>
-                    <span class="badge bg-success">Live GPS Sync</span>
+    <!-- MAIN MONITOR GRID -->
+    <div class="container-fluid px-0">
+        <div class="row g-4">
+            
+            <!-- LEFT COLUMN: MAP & CHARTS -->
+            <div class="col-lg-8">
+                <!-- Leaflet Map Card -->
+                <div class="card card-custom text-light mb-4 shadow rounded-4">
+                    <div class="card-header border-secondary d-flex align-items-center justify-content-between">
+                        <h5 class="m-0 fw-bold text-white"><i class="fas fa-map-marked-alt text-info me-2"></i>Interactive AQI Monitoring Map</h5>
+                        <span class="badge bg-success">Live GPS Sync</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map" style="height: 380px; width: 100%; border-radius: 0 0 1rem 1rem;"></div>
+                    </div>
                 </div>
-                <div class="card-body p-0">
-                    <!-- Map Container -->
-                    <div id="map" style="height: 420px; width: 100%; border-radius: 0 0 0.375rem 0.375rem;"></div>
+
+                <!-- PARAMETERS CHARTS BELOW MAP (PM2.5, PM10, AQI) -->
+                <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
+                    <h5 class="fw-bold mb-3 text-purple"><i class="fas fa-chart-line me-2"></i>Environmental Parameter Graphs</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
+                                <h6 class="small text-white-50">PM2.5 & PM10 Concentration (µg/m³)</h6>
+                                <canvas id="pmChart" height="180"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
+                                <h6 class="small text-white-50">Temperature & Humidity Trends</h6>
+                                <canvas id="weatherChart" height="180"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Environmental Parameters Card -->
-            <div class="card bg-dark border-secondary text-light p-3 shadow">
-                <h6 class="fw-bold mb-3 text-purple"><i class="fas fa-sliders-h me-2"></i>Environmental Control Sliders</h6>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label small text-white-50">Temp (°C): <span id="temp-val" class="text-white fw-bold">28.4</span></label>
+            <!-- RIGHT COLUMN: CONTROLS & FORECAST BUTTON -->
+            <div class="col-lg-4">
+                
+                <!-- Environmental Control Sliders -->
+                <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
+                    <h5 class="fw-bold mb-3 text-purple"><i class="fas fa-sliders-h me-2"></i>Controls & Inputs</h5>
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 d-flex justify-content-between">
+                            <span>Temp (°C)</span> <span id="temp-val" class="text-white fw-bold">28.4</span>
+                        </label>
                         <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label small text-white-50">Humidity (%): <span id="hum-val" class="text-white fw-bold">75.0</span></label>
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 d-flex justify-content-between">
+                            <span>Humidity (%)</span> <span id="hum-val" class="text-white fw-bold">75.0</span>
+                        </label>
                         <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label small text-white-50">Wind (km/h): <span id="wind-val" class="text-white fw-bold">23.0</span></label>
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50 d-flex justify-content-between">
+                            <span>Wind (km/h)</span> <span id="wind-val" class="text-white fw-bold">23.0</span>
+                        </label>
                         <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
                     </div>
-                </div>
-                <button id="recalc-btn" class="btn btn-purple text-white w-100 rounded-pill mt-3 fw-bold" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
-                    <i class="fas fa-bolt me-2"></i>Recalculate AQI Prediction
-                </button>
-            </div>
-        </div>
-
-        <!-- RIGHT COLUMN: 7-DAY FORECAST PREDICTION SIDE PANEL -->
-        <div class="col-lg-5">
-            <div class="card bg-dark border-secondary text-light shadow h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
-                    <h5 class="m-0 fw-bold text-info"><i class="fas fa-calendar-week me-2"></i>7-Day Forecast Predictions</h5>
-                    <!-- Button to toggle / trigger forecast view -->
-                    <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="loadForecastData()">
-                        <i class="fas fa-sync-alt me-1"></i> Refresh Forecast
+                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
+                        <i class="fas fa-bolt me-2"></i>Recalculate Prediction
                     </button>
                 </div>
 
-                <!-- 7-Day Prediction List Container -->
-                <div id="forecast-list" class="d-flex flex-column gap-2 overflow-auto" style="max-height: 550px;">
-                    <!-- Forecast cards render inside here dynamically -->
-                    <div class="p-3 rounded bg-secondary bg-opacity-25 border border-secondary d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="fw-bold">Today (Jul 28)</div>
-                            <small class="text-white-50">Partly Cloudy • 24.3 km/h wind</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="fs-5 fw-bold text-warning">30°C</span>
-                            <div class="small text-white-50">AQI: Moderate</div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 rounded bg-secondary bg-opacity-25 border border-secondary d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="fw-bold">Tomorrow (Jul 29)</div>
-                            <small class="text-white-50">Scattered Clouds • 22.4 km/h wind</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="fs-5 fw-bold text-warning">29°C</span>
-                            <div class="small text-white-50">AQI: Good</div>
-                        </div>
-                    </div>
-
-                    <div class="p-3 rounded bg-secondary bg-opacity-25 border border-secondary d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="fw-bold">Thu, Jul 30</div>
-                            <small class="text-white-50">Humid • 26.8 km/h wind</small>
-                        </div>
-                        <div class="text-end">
-                            <span class="fs-5 fw-bold text-warning">30°C</span>
-                            <div class="small text-white-50">AQI: Moderate</div>
-                        </div>
-                    </div>
+                <!-- 7-DAY FORECAST & JOKES BUTTON -->
+                <div class="card card-custom text-light p-4 shadow rounded-4 text-center">
+                    <i class="fas fa-calendar-week display-4 text-info mb-3"></i>
+                    <h5 class="fw-bold text-white mb-2">7-Day Prediction & Mindful Hub</h5>
+                    <p class="small text-white-50 mb-3">View complete 7-day AQI projections alongside jokes and relaxation exercises.</p>
+                    <button class="btn btn-outline-info rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#forecastJokesModal">
+                        <i class="fas fa-eye me-2"></i> Open 7-Day Forecast & Jokes Hub
+                    </button>
                 </div>
+
             </div>
         </div>
-
-    </div>
-</div>
-
-<!-- LEAFLET MAP CSS & JS REQUIRED IN HEAD & BODY -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-    // Initialize Leaflet Map
-    document.addEventListener("DOMContentLoaded", function() {
-        var map = L.map('map').setView([12.9716, 77.5946], 11); // Default Bengaluru
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-        
-        L.marker([12.9716, 77.5946]).addTo(map)
-            .bindPopup('Bengaluru Active AQI Monitoring Node')
-            .openPopup();
-    });
-</script>
-
-    <!-- HIGHLIGHTED MINDFUL JOKES PANEL -->
-    <div style="
-        margin-top: 40px; 
-        background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); 
-        border: 2px solid #00ffcc; 
-        border-radius: 20px; 
-        padding: 30px; 
-        text-align: center; 
-        box-shadow: 0 0 25px rgba(0, 255, 204, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.1);
-        position: relative;
-        overflow: hidden;
-    ">
-        <!-- Glowing Badge Header -->
-        <div style="
-            display: inline-block; 
-            background: linear-gradient(135deg, #00ffcc, #00d2ff); 
-            color: #0f172a; 
-            font-weight: 800; 
-            font-size: 0.85rem; 
-            padding: 6px 16px; 
-            border-radius: 20px; 
-            letter-spacing: 1px; 
-            text-transform: uppercase; 
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 255, 204, 0.4);
-        ">
-            &#129529; MINDFUL GEEK LOGIC HUB
-        </div>
-
-        <!-- Joke Text -->
-        <p id="jokeText" style="
-            font-size: 1.25rem; 
-            color: #ffffff; 
-            font-style: italic; 
-            font-weight: 500; 
-            margin-bottom: 25px; 
-            line-height: 1.6;
-        ">
-            "Why did the AI go cross-eyed? Too many input parameters to process!"
-        </p>
-
-        <!-- Interactive Button -->
-        <button onclick="getNewJoke()" style="
-            padding: 10px 24px; 
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5); 
-            color: #ffffff; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            font-size: 0.95rem; 
-            cursor: pointer; 
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
-            transition: all 0.2s ease;
-        ">
-            &#127922; Another Mindful Joke
-        </button>
     </div>
 
-    <script>
-        // Array of Mindful & Tech Jokes
-        const jokesList = [
-            { cat: "Classic", text: "Why did the tomato blush? Because it saw the salad dressing!" },
-            { cat: "Random", text: "Why can't a bicycle stand up by itself? Because it's two-tired!" },
-            { cat: "Dad Joke", text: "What do you call a bear with no teeth? A gummy bear!" },
-            { cat: "Atmosphere", text: "Why does a coordinates node love dark clouds? Because they keep it fully calibrated under pressure!" },
-            { cat: "Geek Logic", text: "Why did the AI go cross-eyed? Too many input parameters to process!" },
-            { cat: "Classic", text: "Why did the egg hide? Because it was a little chicken!" },
-            { cat: "Tech", text: "There are 10 types of people in the world: those who understand binary, and those who don't." },
-            { cat: "Weather", text: "What does a cloud wear under its raincoat? Thunderwear!" }
-        ];
-
-        function displayRandomJoke() {
-            const randomIndex = Math.floor(Math.random() * jokesList.length);
-            const selected = jokesList[randomIndex];
-            document.getElementById("jokeText").innerText = `"${selected.text}"`;
-        }
-
-        function getNewJoke() {
-            const randomIndex = Math.floor(Math.random() * jokesList.length);
-            const selected = jokesList[randomIndex];
-            document.getElementById("jokeText").innerText = `"${selected.text}"`;
-        }
-
-        // City Mapping Table
-        const cityCoordinates = {
-            "bengaluru": { name: "BENGALURU, IN", lat: 12.9716, lng: 77.5946 },
-            "delhi":     { name: "DELHI, IN", lat: 28.6139, lng: 77.2090 },
-            "newyork":   { name: "NEW YORK, US", lat: 40.7128, lng: -74.0060 }
-        };
-
-        // Live 7-Day Forecast Fetch Pipeline — Decoupled Weather + Backend
-        async function loadLive7DayForecast(cityKey) {
-            const key = (cityKey || "bengaluru").toLowerCase();
-            const city = cityCoordinates[key] || cityCoordinates["bengaluru"];
-            const container = document.getElementById("forecastCardsContainer");
-
-            if (!container) return;
-            container.innerHTML = `<div style="color:#00d2ff; font-size:1.1rem; padding:20px; width:100%; text-align:center;">Fetching live 7-day projections for ${city.name}...</div>`;
-
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lng}&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,relative_humidity_2m_mean,sunrise,sunset&timezone=auto`;
-
-            try {
-                // 1. Fetch live Open-Meteo weather data
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (!data.daily || !data.daily.time) {
-                    container.innerHTML = `<div style="color:#ff6666; padding:20px; width:100%; text-align:center;">No forecast data available.</div>`;
-                    return;
-                }
-
-                const daily = data.daily;
-                let htmlContent = "";
-
-                for (let i = 0; i < daily.time.length; i++) {
-                    const dateObj = new Date(daily.time[i] + "T00:00:00");
-                    const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-
-                    const maxTemp = Math.round(daily.temperature_2m_max[i]);
-                    const minTemp = Math.round(daily.temperature_2m_min[i]);
-                    const wind = (daily.wind_speed_10m_max[i] || 15).toFixed(1);
-                    const humidity = Math.round(daily.relative_humidity_2m_mean[i] || 65);
-
-                    const sunrise = daily.sunrise[i] ? daily.sunrise[i].split("T")[1].substring(0, 5) : "06:00";
-                    const sunset = daily.sunset[i] ? daily.sunset[i].split("T")[1].substring(0, 5) : "18:48";
-
-                    htmlContent += `
-                        <div style="flex: 1 1 300px; max-width: 380px; background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                <span style="color: #00d2ff; font-weight: bold; font-size: 1.1rem;">${dateStr}</span>
-                                <span style="font-size: 1.5rem;">&#9925;</span>
-                            </div>
-
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 15px;">
-                                <div>
-                                    <span style="font-size: 2.2rem; font-weight: bold; color: #ffffff;">${maxTemp}&deg;C</span>
-                                    <span style="color: #8a99ad; font-size: 1rem;"> / ${minTemp}&deg;C</span>
-                                </div>
-                                <div style="text-align: right; color: #00ffcc; font-size: 0.85rem; font-weight: bold;">
-                                    &#128168; ${wind} km/h<br>
-                                    &#128167; ${humidity}% Hum
-                                </div>
-                            </div>
-
-                            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 12px 0;">
-
-                            <div style="display: flex; justify-content: space-between; color: #8a99ad; font-size: 0.85rem;">
-                                <span>&#127749; Up: <strong style="color: #ffffff;">${sunrise}</strong></span>
-                                <span>&#127751; Set: <strong style="color: #ffffff;">${sunset}</strong></span>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                // 2. Render weather cards immediately — never blocked by backend
-                container.innerHTML = htmlContent;
-
-                // 3. Fire-and-forget: send payload to Railway backend (non-blocking)
-                //    Weather data is already on screen; backend failure won't hide it.
-                fetch('https://vayuguard-aiml-production.up.railway.app/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        temperature: daily.temperature_2m_max[0],
-                        humidity: daily.relative_humidity_2m_mean[0],
-                        wind_speed: daily.wind_speed_10m_max[0]
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("Prediction response:", data);
-                    
-                    // Populate Full-Page Quantum Modal with execution details
-                    const details = data.quantum_details;
-                    
-                    if (details && details.status === "success") {
-                        document.getElementById('q-status-text').innerHTML = '● qBraid Engine Active';
-                        document.getElementById('q-status-text').style.color = '#00e676';
-                        document.getElementById('q-device').innerText = details.device;
-                        document.getElementById('q-shots').innerText = details.shots.toLocaleString();
-                        document.getElementById('q-time').innerText = details.execution_time_ms + ' ms';
-                        document.getElementById('q-score').innerText = details.score.toFixed(4);
-                    } else {
-                        document.getElementById('q-status-text').innerHTML = '▲ Classical Fallback';
-                        document.getElementById('q-status-text').style.color = '#f59e0b';
-                        document.getElementById('q-device').innerText = "Classical Model";
-                        document.getElementById('q-shots').innerText = "0";
-                        document.getElementById('q-time').innerText = "- ms";
-                        document.getElementById('q-score').innerText = "0.0000";
-                    }
-                })
-                .catch(err => console.warn("qBraid Railway call failed (weather still displayed):", err));
-
-            } catch (err) {
-                console.error("Error fetching forecast:", err);
-                container.innerHTML = `<div style="color:#ff6666; padding:20px; width:100%; text-align:center;">Unable to load live forecast data. Please try again later.</div>`;
-            }
-        }
-
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', () => {
-            getNewJoke();
-            
-            // Load default forecast for Bengaluru
-            loadLive7DayForecast("bengaluru");
-
-            // Add event listener for location dropdown
-            const locationSelect = document.getElementById("forecastLocationSelect");
-            if (locationSelect) {
-                locationSelect.addEventListener("change", (e) => {
-                    loadLive7DayForecast(e.target.value);
-                });
-            }
-        });
-    </script>
-
-    <!-- FULL-PAGE QUANTUM METRICS MODAL -->
-    <div class="modal fade" id="quantumFullPageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content text-light" style="background: #0d0b18; background-image: radial-gradient(circle at 50% 30%, rgba(138, 43, 226, 0.15), transparent 70%);">
-                
-                <!-- Modal Header -->
-                <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="p-2 rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(186, 85, 211, 0.2); width: 45px; height: 45px;">
-                            <i class="fas fa-atom fa-spin fs-4" style="color: #c77dff;"></i>
-                        </span>
-                        <div>
-                            <h4 class="m-0 fw-bold text-white tracking-wide">QUANTUM EXECUTION TELEMETRY</h4>
-                            <small class="text-white-50">Real-time qBraid Hybrid Prediction System Overview</small>
-                        </div>
-                    </div>
+    <!-- FULL MODAL: 7-DAY FORECAST & JOKES -->
+    <div class="modal fade" id="forecastJokesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content text-light" style="background: #0d0b18; border: 1px solid rgba(186, 85, 211, 0.4);">
+                <div class="modal-header border-secondary px-4">
+                    <h5 class="modal-title fw-bold text-info"><i class="fas fa-calendar-alt me-2"></i>7-Day Forecast Predictions & Mindful Hub</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <!-- Full Page Modal Body -->
-                <div class="modal-body p-4 p-md-5 d-flex flex-column justify-content-center align-items-center">
-                    <div class="container max-w-4xl">
-                        
-                        <!-- Top Status Banner -->
-                        <div class="p-3 rounded-4 mb-4 text-center d-flex align-items-center justify-content-between px-4" 
-                             style="background: rgba(186, 85, 211, 0.1); border: 1px solid rgba(186, 85, 211, 0.3);">
-                            <span class="text-white-50 fw-medium">Execution Engine Status:</span>
-                            <span class="badge px-3 py-2 rounded-pill fw-semibold" style="background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.3);">
-                                ● qBraid Engine Active
-                            </span>
+                <div class="modal-body p-4">
+                    
+                    <!-- 7-Day Forecast List -->
+                    <h6 class="text-purple fw-bold mb-3"><i class="fas fa-list-ol me-2"></i>7-Day Forecast Projections</h6>
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Today (Jul 28)</strong> <div class="small text-white-50">Partly Cloudy • 24.3 km/h wind</div></div>
+                            <span class="badge bg-warning text-dark fs-6">30°C | AQI: Moderate</span>
                         </div>
-
-                        <!-- Grid Stats -->
-                        <div class="row g-4 mb-4 text-center">
-                            <div class="col-md-4">
-                                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <div class="text-uppercase fw-semibold mb-2" style="color: #9d4edd; font-size: 0.85rem; letter-spacing: 1px;">Target Device</div>
-                                    <div id="q-device" class="fw-bold text-white fs-4">qBraid QIR Simulator</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <div class="text-uppercase fw-semibold mb-2" style="color: #9d4edd; font-size: 0.85rem; letter-spacing: 1px;">Shots / Count</div>
-                                    <div id="q-shots" class="fw-bold text-white fs-4">1,024</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <div class="text-uppercase fw-semibold mb-2" style="color: #9d4edd; font-size: 0.85rem; letter-spacing: 1px;">Execution Latency</div>
-                                    <div id="q-time" class="fw-bold text-white fs-4">~11s</div>
-                                </div>
-                            </div>
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Tomorrow (Jul 29)</strong> <div class="small text-white-50">Scattered Clouds • 22.4 km/h wind</div></div>
+                            <span class="badge bg-success fs-6">29°C | AQI: Good</span>
                         </div>
-
-                        <!-- Large Score Display -->
-                        <div class="p-4 rounded-4 text-center" style="background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(199, 125, 255, 0.1)); border: 1px solid rgba(199, 125, 255, 0.4);">
-                            <div class="text-white-50 mb-1 fw-medium">Hybrid Quantum Model Output Score</div>
-                            <div id="q-score" class="fw-bold display-3" style="color: #e0aaff; text-shadow: 0 0 20px rgba(199, 125, 255, 0.6);">
-                                0.4858
-                            </div>
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Thu, Jul 30</strong> <div class="small text-white-50">Humid • 26.8 km/h wind</div></div>
+                            <span class="badge bg-warning text-dark fs-6">30°C | AQI: Moderate</span>
                         </div>
-
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Fri, Jul 31</strong> <div class="small text-white-50">Light Rain • 18.2 km/h wind</div></div>
+                            <span class="badge bg-success fs-6">27°C | AQI: Good</span>
+                        </div>
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Sat, Aug 01</strong> <div class="small text-white-50">Clear Sky • 20.1 km/h wind</div></div>
+                            <span class="badge bg-success fs-6">28°C | AQI: Good</span>
+                        </div>
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Sun, Aug 02</strong> <div class="small text-white-50">Overcast • 25.0 km/h wind</div></div>
+                            <span class="badge bg-warning text-dark fs-6">29°C | AQI: Moderate</span>
+                        </div>
+                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                            <div><strong>Mon, Aug 03</strong> <div class="small text-white-50">Breezy • 29.5 km/h wind</div></div>
+                            <span class="badge bg-success fs-6">28°C | AQI: Good</span>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Modal Footer -->
-                <div class="modal-footer border-top border-secondary border-opacity-25 justify-content-center py-3">
-                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Close Fullview</button>
+                    <!-- MINDFUL JOKES SECTION -->
+                    <div class="p-3 rounded-4 text-center" style="background: rgba(186, 85, 211, 0.1); border: 1px solid rgba(186, 85, 211, 0.3);">
+                        <h6 class="fw-bold text-purple"><i class="fas fa-smile me-2"></i>Mindful Geek Logic Hub</h6>
+                        <p class="fst-italic text-white-50 my-2">"Why did the egg hide? Because it was a little chicken!"</p>
+                        <button class="btn btn-sm btn-outline-purple text-purple rounded-pill px-3">🎲 Another Mindful Joke</button>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-    <!-- /FULL-PAGE QUANTUM METRICS MODAL -->
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Leaflet Map Init
+        document.addEventListener("DOMContentLoaded", function() {
+            var map = L.map('map').setView([12.9716, 77.5946], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+            L.marker([12.9716, 77.5946]).addTo(map).bindPopup('Bengaluru Active AQI Monitoring Node').openPopup();
+
+            // Chart 1: PM2.5 & PM10 Graph
+            const ctx1 = document.getElementById('pmChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [
+                        { label: 'PM2.5', data: [22, 28, 45, 38, 30, 25], borderColor: '#c77dff', tension: 0.4 },
+                        { label: 'PM10', data: [50, 62, 85, 70, 60, 52], borderColor: '#00e676', tension: 0.4 }
+                    ]
+                },
+                options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#ccc' } }, y: { ticks: { color: '#ccc' } } } }
+            });
+
+            // Chart 2: Temp & Humidity Graph
+            const ctx2 = document.getElementById('weatherChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [
+                        { label: 'Temp (°C)', data: [22, 21, 26, 30, 29, 25], borderColor: '#ffb703', tension: 0.4 },
+                        { label: 'Humidity (%)', data: [85, 88, 70, 55, 60, 75], borderColor: '#00b4d8', tension: 0.4 }
+                    ]
+                },
+                options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#ccc' } }, y: { ticks: { color: '#ccc' } } } }
+            });
+        });
+    </script>
 </body>
 </html>
