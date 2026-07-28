@@ -63,46 +63,84 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: CONTROLS & FORECAST BUTTON -->
+            <!-- RIGHT COLUMN: SEPARATED PARAMETERS & HIGHLIGHTED HUB -->
             <div class="col-lg-4">
                 
-                <!-- Environmental Control Sliders -->
+                <!-- SEPARATED ENVIRONMENTAL CONTROLS CARD -->
                 <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
-                    <h5 class="fw-bold mb-3 text-purple"><i class="fas fa-sliders-h me-2"></i>Controls & Inputs</h5>
-                    <div class="mb-3">
-                        <label class="form-label small text-white-50 d-flex justify-content-between">
-                            <span>Temp (°C)</span> <span id="temp-val" class="text-white fw-bold">28.4</span>
-                        </label>
-                        <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
+                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                        <h5 class="fw-bold m-0 text-purple"><i class="fas fa-sliders-h me-2"></i>Parameter Adjustments</h5>
+                        <span class="badge bg-secondary bg-opacity-50 text-white-50">Manual Input</span>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-white-50 d-flex justify-content-between">
-                            <span>Humidity (%)</span> <span id="hum-val" class="text-white fw-bold">75.0</span>
-                        </label>
-                        <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
+
+                    <!-- Section 1: Weather Parameters -->
+                    <div class="mb-3 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <small class="text-info fw-bold d-block mb-2"><i class="fas fa-cloud-sun me-1"></i> Thermal & Wind Dynamics</small>
+                        <div class="mb-2">
+                            <label class="form-label small text-white-50 d-flex justify-content-between">
+                                <span>Temperature (°C)</span> <span id="temp-val" class="text-white fw-bold">28.4</span>
+                            </label>
+                            <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
+                        </div>
+                        <div>
+                            <label class="form-label small text-white-50 d-flex justify-content-between">
+                                <span>Wind Speed (km/h)</span> <span id="wind-val" class="text-white fw-bold">23.0</span>
+                            </label>
+                            <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-white-50 d-flex justify-content-between">
-                            <span>Wind (km/h)</span> <span id="wind-val" class="text-white fw-bold">23.0</span>
-                        </label>
-                        <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
+
+                    <!-- Section 2: Moisture & Air Density -->
+                    <div class="mb-3 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <small class="text-purple fw-bold d-block mb-2"><i class="fas fa-tint me-1"></i> Atmospheric Moisture</small>
+                        <div>
+                            <label class="form-label small text-white-50 d-flex justify-content-between">
+                                <span>Humidity (%)</span> <span id="hum-val" class="text-white fw-bold">75.0</span>
+                            </label>
+                            <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
+                        </div>
                     </div>
-                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
-                        <i class="fas fa-bolt me-2"></i>Recalculate Prediction
+
+                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
+                        <i class="fas fa-bolt me-2"></i>Recalculate AQI Prediction
                     </button>
                 </div>
 
-                <!-- 7-DAY PREDICTION & MINDFUL HUB (OPENS IN NEW TAB) -->
-                <div class="card card-custom text-light p-4 shadow rounded-4 text-center">
-                    <i class="fas fa-calendar-week display-4 text-info mb-3"></i>
-                    <h5 class="fw-bold text-white mb-2">7-Day Prediction & Mindful Hub</h5>
-                    <p class="small text-white-50 mb-3">View complete 7-day AQI projections alongside jokes and relaxation exercises.</p>
+                <!-- HIGH-ATTRACTION HIGHLIGHTED 7-DAY PREDICTION & MINDFUL HUB -->
+                <div class="card p-4 rounded-4 text-center position-relative overflow-hidden" 
+                     style="background: linear-gradient(145deg, rgba(23, 18, 41, 0.9), rgba(138, 43, 226, 0.25)); 
+                            border: 2px solid #c77dff; 
+                            box-shadow: 0 0 25px rgba(138, 43, 226, 0.5), inset 0 0 15px rgba(199, 125, 255, 0.2);">
                     
+                    <!-- Glowing Top Badge -->
+                    <div class="position-absolute top-0 start-50 translate-middle-x">
+                        <span class="badge px-3 py-1 rounded-bottom-4 fw-bold text-dark shadow" style="background: #00e676; font-size: 0.75rem;">
+                            ★ FEATURED MODULE
+                        </span>
+                    </div>
+
+                    <div class="mt-2 mb-3">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle p-3 mb-2" 
+                              style="background: rgba(199, 125, 255, 0.2); border: 1px solid rgba(199, 125, 255, 0.5); width: 70px; height: 70px; box-shadow: 0 0 15px rgba(199, 125, 255, 0.4);">
+                            <i class="fas fa-calendar-week display-6 text-info"></i>
+                        </span>
+                        <h4 class="fw-bold text-white m-0 tracking-wide">7-Day Prediction & Mindful Hub</h4>
+                        <small class="text-purple fw-semibold">Extended Astronomical & Weather Telemetry</small>
+                    </div>
+
+                    <p class="small text-white-50 mb-4 px-2">
+                        Explore complete 7-day AQI forecasts, sun positions, rain probabilities, and relaxation logic.
+                    </p>
+
+                    <!-- ATTRACTIVE ANIMATED LAUNCH BUTTON -->
                     <a href="forecast-details.html" 
                        target="_blank" 
                        rel="noopener noreferrer" 
-                       class="btn btn-outline-info rounded-pill py-2 px-4 fw-bold text-decoration-none d-inline-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-external-link-alt"></i> Open Full 7-Day Predictions & Details
+                       class="btn btn-lg text-white rounded-pill py-3 px-4 fw-bold text-decoration-none d-inline-flex align-items-center justify-content-center gap-2 shadow-lg"
+                       style="background: linear-gradient(135deg, #00b4d8, #8a2be2); border: 1px solid #7209b7; box-shadow: 0 0 15px rgba(0, 180, 216, 0.4); transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.03)'" 
+                       onmouseout="this.style.transform='scale(1)'">
+                        <i class="fas fa-external-link-alt me-1"></i> Open Full 7-Day Predictions & Details
                     </a>
                 </div>
 
