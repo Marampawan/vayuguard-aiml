@@ -97,7 +97,8 @@
                     <i class="fas fa-calendar-week display-4 text-info mb-3"></i>
                     <h5 class="fw-bold text-white mb-2">7-Day Prediction & Mindful Hub</h5>
                     <p class="small text-white-50 mb-3">View complete 7-day AQI projections alongside jokes and relaxation exercises.</p>
-                    <a href="forecast-details.html" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info rounded-pill py-2 px-3 fw-bold text-decoration-none shadow-sm d-inline-flex align-items-center gap-2">
+                    <a href="forecast-details.html" target="_blank" rel="noopener noreferrer" 
+                       class="btn btn-outline-info rounded-pill py-2 px-3 fw-bold text-decoration-none shadow-sm d-inline-flex align-items-center gap-2">
                         <i class="fas fa-external-link-alt"></i> Open Full 7-Day Predictions & Details
                     </a>
                 </div>
@@ -106,56 +107,89 @@
         </div>
     </div>
 
-    <!-- FULL MODAL: 7-DAY FORECAST & JOKES -->
-    <div class="modal fade" id="forecastJokesModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content text-light" style="background: #0d0b18; border: 1px solid rgba(186, 85, 211, 0.4);">
-                <div class="modal-header border-secondary px-4">
-                    <h5 class="modal-title fw-bold text-info"><i class="fas fa-calendar-alt me-2"></i>7-Day Forecast Predictions & Mindful Hub</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- INLINE 7-DAY FORECAST COMPONENT -->
+    <div class="container-fluid px-0 mt-4">
+        <div class="forecast-container">
+            <div class="forecast-header">
+                <div>
+                    <h2>📅 7-Day Extended Forecast</h2>
+                    <p>Real-time atmospheric & astronomical telemetry</p>
                 </div>
-                <div class="modal-body p-4">
-                    
-                    <!-- 7-Day Forecast List -->
-                    <h6 class="text-purple fw-bold mb-3"><i class="fas fa-list-ol me-2"></i>7-Day Forecast Projections</h6>
-                    <div class="d-flex flex-column gap-2 mb-4">
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Today (Jul 28)</strong> <div class="small text-white-50">Partly Cloudy • 24.3 km/h wind</div></div>
-                            <span class="badge bg-warning text-dark fs-6">30°C | AQI: Moderate</span>
-                        </div>
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Tomorrow (Jul 29)</strong> <div class="small text-white-50">Scattered Clouds • 22.4 km/h wind</div></div>
-                            <span class="badge bg-success fs-6">29°C | AQI: Good</span>
-                        </div>
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Thu, Jul 30</strong> <div class="small text-white-50">Humid • 26.8 km/h wind</div></div>
-                            <span class="badge bg-warning text-dark fs-6">30°C | AQI: Moderate</span>
-                        </div>
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Fri, Jul 31</strong> <div class="small text-white-50">Light Rain • 18.2 km/h wind</div></div>
-                            <span class="badge bg-success fs-6">27°C | AQI: Good</span>
-                        </div>
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Sat, Aug 01</strong> <div class="small text-white-50">Clear Sky • 20.1 km/h wind</div></div>
-                            <span class="badge bg-success fs-6">28°C | AQI: Good</span>
-                        </div>
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Sun, Aug 02</strong> <div class="small text-white-50">Overcast • 25.0 km/h wind</div></div>
-                            <span class="badge bg-warning text-dark fs-6">29°C | AQI: Moderate</span>
-                        </div>
-                        <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
-                            <div><strong>Mon, Aug 03</strong> <div class="small text-white-50">Breezy • 29.5 km/h wind</div></div>
-                            <span class="badge bg-success fs-6">28°C | AQI: Good</span>
-                        </div>
-                    </div>
+                <button class="toggle-btn" onclick="toggleForecast()">
+                    <span id="btn-text">Expand Full Week</span> ▾
+                </button>
+            </div>
 
-                    <!-- MINDFUL JOKES SECTION -->
-                    <div class="p-3 rounded-4 text-center" style="background: rgba(186, 85, 211, 0.1); border: 1px solid rgba(186, 85, 211, 0.3);">
-                        <h6 class="fw-bold text-purple"><i class="fas fa-smile me-2"></i>Mindful Geek Logic Hub</h6>
-                        <p class="fst-italic text-white-50 my-2">"Why did the egg hide? Because it was a little chicken!"</p>
-                        <button class="btn btn-sm btn-outline-purple text-purple rounded-pill px-3">🎲 Another Mindful Joke</button>
-                    </div>
+            <!-- Featured / Today Card -->
+            <div class="day-card featured">
+                <div class="day-info">
+                    <span class="badge today-badge">Today</span>
+                    <h3>Tuesday, Jul 28</h3>
+                    <p class="condition">Partly Cloudy Condition</p>
+                </div>
+                <div class="temp-box">
+                    <span class="temp">30°C</span>
+                    <span class="aqi-badge aqi-moderate">AQI: 85 (Moderate)</span>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric"><span>🌧️ Rain</span><strong>15%</strong></div>
+                    <div class="metric"><span>💨 Wind</span><strong>24.3 km/h</strong></div>
+                    <div class="metric"><span>💧 Humidity</span><strong>75%</strong></div>
+                    <div class="metric"><span>🌅 Sun</span><strong>06:04 AM / 06:48 PM</strong></div>
+                </div>
+            </div>
 
+            <!-- Extended Forecast Days (Inline Grid) -->
+            <div class="extended-days" id="extended-days">
+                <!-- Day 2 -->
+                <div class="day-card">
+                    <div class="day-info">
+                        <h3>Wednesday, Jul 29</h3>
+                        <p class="condition">Scattered Clouds</p>
+                    </div>
+                    <div class="temp-box">
+                        <span class="temp">29°C</span>
+                        <span class="aqi-badge aqi-good">AQI: 42 (Good)</span>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric"><span>🌧️ Rain</span><strong>10%</strong></div>
+                        <div class="metric"><span>💨 Wind</span><strong>22.4 km/h</strong></div>
+                        <div class="metric"><span>💧 Humidity</span><strong>68%</strong></div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="day-card">
+                    <div class="day-info">
+                        <h3>Thursday, Jul 30</h3>
+                        <p class="condition">Humid & Breezy</p>
+                    </div>
+                    <div class="temp-box">
+                        <span class="temp">30°C</span>
+                        <span class="aqi-badge aqi-moderate">AQI: 78 (Moderate)</span>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric"><span>🌧️ Rain</span><strong>35%</strong></div>
+                        <div class="metric"><span>💨 Wind</span><strong>26.8 km/h</strong></div>
+                        <div class="metric"><span>💧 Humidity</span><strong>80%</strong></div>
+                    </div>
+                </div>
+
+                <!-- Day 4 -->
+                <div class="day-card">
+                    <div class="day-info">
+                        <h3>Friday, Jul 31</h3>
+                        <p class="condition">Light Rain Expected</p>
+                    </div>
+                    <div class="temp-box">
+                        <span class="temp">27°C</span>
+                        <span class="aqi-badge aqi-good">AQI: 35 (Good)</span>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric"><span>🌧️ Rain</span><strong>80%</strong></div>
+                        <div class="metric"><span>💨 Wind</span><strong>18.2 km/h</strong></div>
+                        <div class="metric"><span>💧 Humidity</span><strong>92%</strong></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -199,6 +233,123 @@
                 options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#ccc' } }, y: { ticks: { color: '#ccc' } } } }
             });
         });
+    </script>
+
+    <style>
+      .forecast-container {
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        color: #f8fafc;
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 900px;
+        margin: 20px auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      }
+
+      .forecast-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .forecast-header h2 { margin: 0; font-size: 1.4rem; color: #38bdf8; }
+      .forecast-header p { margin: 4px 0 0; color: #94a3b8; font-size: 0.85rem; }
+
+      .toggle-btn {
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        color: #38bdf8;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .toggle-btn:hover { background: rgba(56, 189, 248, 0.3); }
+
+      .day-card {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 3fr;
+        align-items: center;
+        gap: 16px;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+      .day-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(56, 189, 248, 0.3);
+      }
+
+      .day-card.featured {
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+      }
+
+      .today-badge {
+        background: #0284c7;
+        color: #fff;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+
+      .day-info h3 { margin: 4px 0 2px; font-size: 1.1rem; }
+      .day-info .condition { margin: 0; color: #94a3b8; font-size: 0.85rem; }
+
+      .temp-box { display: flex; flex-direction: column; gap: 6px; }
+      .temp { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
+
+      .aqi-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        width: fit-content;
+      }
+      .aqi-good { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+      .aqi-moderate { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4); }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+      }
+      .metric span { color: #64748b; display: block; font-size: 0.75rem; }
+
+      .extended-days {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+      }
+
+      .extended-days.open {
+        max-height: 1000px;
+        transition: max-height 0.4s ease-in-out;
+        margin-top: 12px;
+      }
+    </style>
+
+    <script>
+      function toggleForecast() {
+        const extended = document.getElementById('extended-days');
+        const btnText = document.getElementById('btn-text');
+        const isOpen = extended.classList.toggle('open');
+        
+        btnText.textContent = isOpen ? 'Collapse Forecast' : 'Expand Full Week';
+      }
     </script>
 </body>
 </html>
