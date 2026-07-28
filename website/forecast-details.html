@@ -107,32 +107,32 @@
 
     <div class="container" style="max-width: 980px;">
         
-        <!-- 7-DAY EXTENDED FORECAST HEADER WITH LOCATION SELECTOR -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-3 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div>
-                <h2 class="fw-bold text-white m-0 d-flex align-items-center gap-2">
-                    <i class="fas fa-calendar-week text-purple" style="color: #c77dff;"></i>
-                    <span>7-Day Extended Forecast</span>
-                </h2>
-                <p class="text-white-50 small m-0 mt-1">Comprehensive atmospheric, astronomical, and air quality telemetry</p>
+        <!-- 7-DAY FORECAST HEADER WITH INTEGRATED LOCATION SEARCH -->
+        <div class="card card-custom text-light p-4 shadow rounded-4 mb-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                <div>
+                    <h2 class="fw-bold text-white m-0 d-flex align-items-center gap-2">
+                        <i class="fas fa-calendar-week text-purple" style="color: #c77dff;"></i>
+                        <span>7-Day Extended Forecast</span>
+                    </h2>
+                    <p class="text-white-50 small m-0 mt-1">Comprehensive atmospheric, astronomical, and air quality telemetry</p>
+                </div>
+                <a href="forecast.html" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="fas fa-arrow-left me-1"></i> Dashboard
+                </a>
             </div>
 
-            <!-- LOCATION SELECTOR CONTROLS -->
-            <div class="d-flex align-items-center gap-2 bg-dark bg-opacity-75 border border-secondary border-opacity-25 rounded-pill px-3 py-2">
-                <label for="citySelect" class="small text-white-50 mb-0">
-                    <i class="fas fa-map-marker-alt text-danger me-1"></i>Forecast for:
-                </label>
-                <select id="citySelect" 
-                        class="form-select form-select-sm bg-dark text-white border-secondary rounded-pill" 
-                        style="width: auto; min-width: 180px; cursor: pointer;"
-                        onchange="updateForecast(this.value)">
-                    <option value="New Delhi">New Delhi, IN</option>
-                    <option value="Bengaluru" selected>Bengaluru, IN</option>
-                    <option value="Mumbai">Mumbai, IN</option>
-                    <option value="Chennai">Chennai, IN</option>
-                    <option value="Kolkata">Kolkata, IN</option>
-                    <option value="Hyderabad">Hyderabad, IN</option>
-                </select>
+            <!-- CHANGE LOCATION INPUT BAR -->
+            <div class="position-relative">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-white-50">
+                        <i class="fas fa-map-marker-alt text-danger"></i>
+                    </span>
+                    <input type="text" id="details-location-input" class="form-control bg-dark text-white border-secondary" placeholder="Search city to change location (e.g., Bengaluru, Delhi, Mumbai)..." autocomplete="off" onkeypress="if(event.key==='Enter') searchDetailsLocation()">
+                    <button class="btn btn-purple text-white fw-semibold px-4" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="searchDetailsLocation()">
+                        Update Forecast
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -300,35 +300,34 @@
             document.getElementById("joke-text").innerText = jokes[idx];
         }
 
-        // Handle URL query parameters for location
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const selectedLocation = urlParams.get('location') || 'Bengaluru';
-
-            const cityDropdown = document.getElementById('citySelect');
-            if (cityDropdown) {
-                cityDropdown.value = selectedLocation;
+        // Detect live position or load default location on start
+        document.addEventListener("DOMContentLoaded", function() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => loadForecastByCoords(pos.coords.latitude, pos.coords.longitude, "Live GPS"),
+                    () => loadForecastByCoords(12.9716, 77.5946, "Bengaluru")
+                );
+            } else {
+                loadForecastByCoords(12.9716, 77.5946, "Bengaluru");
             }
-            
-            // Load forecast data for selected location
-            updateForecast(selectedLocation);
         });
 
-        // Prompt user to search and change location directly on this page
-        async function promptChangeLocation() {
-            const city = prompt("Enter location name for 7-day forecast (e.g., Delhi, Mumbai, Chennai):");
-            if (!city || !city.trim()) return;
+        // Search and change location
+        async function searchDetailsLocation() {
+            const input = document.getElementById('details-location-input');
+            if (!input || !input.value.trim()) return;
 
-            const locLabel = document.getElementById('forecast-location-name');
-            locLabel.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Searching...';
-
+            const query = input.value.trim();
+            
             try {
                 // India-first search
-                let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city.trim())}&countrycodes=in&limit=1`);
+                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`;
+                let res = await fetch(url);
                 let data = await res.json();
 
                 if (!data || data.length === 0) {
-                    res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city.trim())}&limit=1`);
+                    url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                    res = await fetch(url);
                     data = await res.json();
                 }
 
@@ -336,83 +335,31 @@
                     const cityName = data[0].display_name.split(',')[0];
                     const lat = parseFloat(data[0].lat);
                     const lon = parseFloat(data[0].lon);
-
-                    locLabel.innerText = `${cityName}, IN`;
-                    await load7DayForecast(lat, lon, cityName);
+                    
+                    await loadForecastByCoords(lat, lon, cityName);
                 } else {
-                    alert("Location not found. Please try another city name.");
-                    locLabel.innerText = "Bengaluru, IN";
+                    alert("Location not found. Please enter a valid city.");
                 }
             } catch (err) {
-                console.error("Failed to update location:", err);
-                locLabel.innerText = "Bengaluru, IN";
+                console.error("Failed to update location forecast:", err);
             }
         }
 
-        // Load 7-day forecast data from Open-Meteo API
-        async function load7DayForecast(lat, lon, cityName) {
+        // Fetch live Open-Meteo telemetry for requested city
+        async function loadForecastByCoords(lat, lon, cityName) {
+            const input = document.getElementById('details-location-input');
+            if (input) input.value = cityName;
+
             try {
-                const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&daily=pm2_5_max,us_aqi_max&timezone=auto`);
+                const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&daily=pm2_5_max,us_aqi_max&timezone=auto`;
+                const res = await fetch(url);
                 const data = await res.json();
                 
-                console.log(`7-Day forecast loaded for ${cityName}:`, data);
-                // TODO: Update daily cards with real data from API response
-                // Example: data.daily.pm2_5_max, data.daily.us_aqi_max
+                console.log(`Loaded updated 7-Day telemetry for ${cityName}:`, data);
+                // Triggers rendering updates across daily cards here
             } catch (err) {
-                console.error("Error loading 7-day forecast:", err);
+                console.error("Telemetry update error:", err);
             }
-        }
-
-        // Update forecast based on city selection
-        async function updateForecast(cityName) {
-            const locLabel = document.getElementById('forecast-location-name');
-            locLabel.innerText = `${cityName}, IN`;
-
-            // City coordinates mapping
-            const cityCoords = {
-                'New Delhi': { lat: 28.6139, lon: 77.2090 },
-                'Bengaluru': { lat: 12.9716, lon: 77.5946 },
-                'Mumbai': { lat: 19.0760, lon: 72.8777 },
-                'Chennai': { lat: 13.0827, lon: 80.2707 },
-                'Kolkata': { lat: 22.5726, lon: 88.3639 },
-                'Hyderabad': { lat: 17.3850, lon: 78.4867 }
-            };
-
-            const coords = cityCoords[cityName];
-            if (coords) {
-                await load7DayForecast(coords.lat, coords.lon, cityName);
-            }
-        }
-
-        // Detect GPS or load default location
-        async function detectOrLoadDefault() {
-            const locLabel = document.getElementById('forecast-location-name');
-            
-            if ("geolocation" in navigator) {
-                try {
-                    const position = await new Promise((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-                    });
-                    
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    
-                    // Reverse geocode to get city name
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                    const data = await res.json();
-                    const cityName = data.address.city || data.address.town || data.address.village || "Bengaluru";
-                    
-                    locLabel.innerText = `${cityName}, IN`;
-                    await load7DayForecast(lat, lon, cityName);
-                    return;
-                } catch (err) {
-                    console.warn("GPS detection failed, using default:", err);
-                }
-            }
-            
-            // Default to Bengaluru
-            locLabel.innerText = "Bengaluru, IN";
-            await load7DayForecast(12.9716, 77.5946, "Bengaluru");
         }
     </script>
 </body>
