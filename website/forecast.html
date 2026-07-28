@@ -43,20 +43,39 @@
                     </div>
                 </div>
 
-                <!-- PARAMETERS CHARTS BELOW MAP (PM2.5, PM10, AQI) -->
+                <!-- PARAMETERS CHARTS BELOW MAP -->
                 <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
                     <h5 class="fw-bold mb-3 text-purple"><i class="fas fa-chart-line me-2"></i>Environmental Parameter Graphs</h5>
                     <div class="row g-3">
+                        <!-- Chart 1: PM2.5 & PM10 -->
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
                                 <h6 class="small text-white-50">PM2.5 & PM10 Concentration (µg/m³)</h6>
                                 <canvas id="pmChart" height="180"></canvas>
                             </div>
                         </div>
+
+                        <!-- Chart 2: Temp & Humidity -->
                         <div class="col-md-6">
                             <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
                                 <h6 class="small text-white-50">Temperature & Humidity Trends</h6>
                                 <canvas id="weatherChart" height="180"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- NEW Chart 3: Wind Speed & Gusts -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
+                                <h6 class="small text-white-50">Wind Speed & Peak Gusts (km/h)</h6>
+                                <canvas id="windChart" height="180"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- NEW Chart 4: Atmospheric Pressure & Air Density -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
+                                <h6 class="small text-white-50">Barometric Pressure (hPa) & Air Density</h6>
+                                <canvas id="pressureChart" height="180"></canvas>
                             </div>
                         </div>
                     </div>
@@ -275,6 +294,67 @@
                             grid: { drawOnChartArea: false },
                             title: { display: true, text: 'Humidity (%)', color: '#00b4d8' }
                         }
+                    }
+                }
+            });
+
+            // 4. Chart 3: Wind Speed & Gusts Graph
+            const ctx3 = document.getElementById('windChart').getContext('2d');
+            new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [
+                        {
+                            label: 'Avg Wind Speed (km/h)',
+                            data: [12, 10, 18, 23, 20, 15],
+                            backgroundColor: 'rgba(0, 180, 216, 0.6)',
+                            borderColor: '#00b4d8',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Peak Gusts (km/h)',
+                            data: [18, 15, 28, 35, 30, 22],
+                            backgroundColor: 'rgba(247, 37, 133, 0.6)',
+                            borderColor: '#f72585',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#ffffff' } } },
+                    scales: {
+                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        y: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                    }
+                }
+            });
+
+            // 5. Chart 4: Barometric Pressure & Air Density
+            const ctx4 = document.getElementById('pressureChart').getContext('2d');
+            new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [{
+                        label: 'Pressure (hPa)',
+                        data: [1013, 1012, 1015, 1011, 1009, 1012],
+                        borderColor: '#7209b7',
+                        backgroundColor: 'rgba(114, 9, 183, 0.25)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#7209b7'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#ffffff' } } },
+                    scales: {
+                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        y: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
                     }
                 }
             });
