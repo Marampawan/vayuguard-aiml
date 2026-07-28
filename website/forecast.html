@@ -180,84 +180,117 @@
         </button>
     </div>
 
-<!-- MAP & WEATHER PARAMETERS SECTION (website/forecast.html) -->
-<div class="container my-5">
-    <h3 class="fw-bold text-white mb-4"><i class="fas fa-map-marked-alt text-info me-2"></i>Interactive AQI Monitoring Map</h3>
-    
+<!-- ADVANCED MONITOR MAIN CONTAINER -->
+<div class="container-fluid px-4 my-4">
     <div class="row g-4">
-        <!-- Leaflet Map Container -->
+        
+        <!-- LEFT COLUMN: MAP & ENVIRONMENTAL PARAMETERS -->
         <div class="col-lg-7">
-            <div id="map" class="rounded-4 shadow" style="height: 400px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.1);"></div>
-        </div>
-
-        <!-- Weather Input Parameters -->
-        <div class="col-lg-5">
-            <div class="p-4 rounded-4 text-light" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
-                <h5 class="fw-bold mb-3"><i class="fas fa-sliders-h text-purple me-2"></i>Environmental Parameters</h5>
-                
-                <div class="mb-3">
-                    <label class="form-label d-flex justify-content-between small text-white-50">
-                        <span>Temperature (°C)</span>
-                        <span id="temp-val" class="fw-bold text-white">28.4</span>
-                    </label>
-                    <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
+            <!-- Leaflet Map Card -->
+            <div class="card bg-dark border-secondary text-light mb-4 shadow">
+                <div class="card-header border-secondary d-flex align-items-center justify-content-between">
+                    <h5 class="m-0 fw-bold"><i class="fas fa-map-marked-alt text-info me-2"></i>Interactive AQI Monitoring Map</h5>
+                    <span class="badge bg-success">Live GPS Sync</span>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label d-flex justify-content-between small text-white-50">
-                        <span>Humidity (%)</span>
-                        <span id="hum-val" class="fw-bold text-white">75.0</span>
-                    </label>
-                    <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
+                <div class="card-body p-0">
+                    <!-- Map Container -->
+                    <div id="map" style="height: 420px; width: 100%; border-radius: 0 0 0.375rem 0.375rem;"></div>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label d-flex justify-content-between small text-white-50">
-                        <span>Wind Speed (km/h)</span>
-                        <span id="wind-val" class="fw-bold text-white">23.0</span>
-                    </label>
-                    <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
+            <!-- Environmental Parameters Card -->
+            <div class="card bg-dark border-secondary text-light p-3 shadow">
+                <h6 class="fw-bold mb-3 text-purple"><i class="fas fa-sliders-h me-2"></i>Environmental Control Sliders</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-white-50">Temp (°C): <span id="temp-val" class="text-white fw-bold">28.4</span></label>
+                        <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-white-50">Humidity (%): <span id="hum-val" class="text-white fw-bold">75.0</span></label>
+                        <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-white-50">Wind (km/h): <span id="wind-val" class="text-white fw-bold">23.0</span></label>
+                        <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
+                    </div>
                 </div>
-
-                <button id="run-predict-btn" class="btn btn-primary w-100 rounded-pill mt-2 fw-bold">
-                    <i class="fas fa-bolt me-2"></i> Recalculate AQI Prediction
+                <button id="recalc-btn" class="btn btn-purple text-white w-100 rounded-pill mt-3 fw-bold" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
+                    <i class="fas fa-bolt me-2"></i>Recalculate AQI Prediction
                 </button>
             </div>
         </div>
+
+        <!-- RIGHT COLUMN: 7-DAY FORECAST PREDICTION SIDE PANEL -->
+        <div class="col-lg-5">
+            <div class="card bg-dark border-secondary text-light shadow h-100 p-3">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
+                    <h5 class="m-0 fw-bold text-info"><i class="fas fa-calendar-week me-2"></i>7-Day Forecast Predictions</h5>
+                    <!-- Button to toggle / trigger forecast view -->
+                    <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="loadForecastData()">
+                        <i class="fas fa-sync-alt me-1"></i> Refresh Forecast
+                    </button>
+                </div>
+
+                <!-- 7-Day Prediction List Container -->
+                <div id="forecast-list" class="d-flex flex-column gap-2 overflow-auto" style="max-height: 550px;">
+                    <!-- Forecast cards render inside here dynamically -->
+                    <div class="p-3 rounded bg-secondary bg-opacity-25 border border-secondary d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold">Today (Jul 28)</div>
+                            <small class="text-white-50">Partly Cloudy • 24.3 km/h wind</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-5 fw-bold text-warning">30°C</span>
+                            <div class="small text-white-50">AQI: Moderate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 rounded bg-secondary bg-opacity-25 border border-secondary d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold">Tomorrow (Jul 29)</div>
+                            <small class="text-white-50">Scattered Clouds • 22.4 km/h wind</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-5 fw-bold text-warning">29°C</span>
+                            <div class="small text-white-50">AQI: Good</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded bg-secondary bg-opacity-25 border border-secondary d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold">Thu, Jul 30</div>
+                            <small class="text-white-50">Humid • 26.8 km/h wind</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="fs-5 fw-bold text-warning">30°C</span>
+                            <div class="small text-white-50">AQI: Moderate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-    <!-- HEADER & LOCATION SELECTOR -->
-    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 15px;">
-        <h2 style="color: #00d2ff; margin: 0; font-size: 1.6rem; display: flex; align-items: center; gap: 10px;">
-            &#128200; Detailed 7-Day Atmospheric & Astronomical Projections
-        </h2>
+<!-- LEAFLET MAP CSS & JS REQUIRED IN HEAD & BODY -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <label for="forecastLocationSelect" style="color: #8a99ad; font-weight: bold; font-size: 0.9rem;">LOCATION:</label>
-            <select id="forecastLocationSelect" style="
-                padding: 8px 16px; 
-                border-radius: 10px; 
-                background: rgba(15,23,42,0.9); 
-                color: #00d2ff; 
-                border: 1px solid rgba(0,210,255,0.4); 
-                font-weight: bold; 
-                cursor: pointer;
-                outline: none;">
-                <option value="bengaluru">Bengaluru, IN</option>
-                <option value="delhi">Delhi, IN</option>
-                <option value="newyork">New York, US</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Error Message Container -->
-    <div id="error-message" style="color:#ff6666; padding:20px; width:100%; text-align:center; display:none;"></div>
-
-    <!-- CONTAINER FOR DYNAMICALLY RENDERED 7-DAY CARDS -->
-    <div id="forecastCardsContainer" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;"></div>
-        <!-- Live dynamic cards will render here -->
-    </div>
+<script>
+    // Initialize Leaflet Map
+    document.addEventListener("DOMContentLoaded", function() {
+        var map = L.map('map').setView([12.9716, 77.5946], 11); // Default Bengaluru
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        L.marker([12.9716, 77.5946]).addTo(map)
+            .bindPopup('Bengaluru Active AQI Monitoring Node')
+            .openPopup();
+    });
+</script>
 
     <!-- HIGHLIGHTED MINDFUL JOKES PANEL -->
     <div style="
