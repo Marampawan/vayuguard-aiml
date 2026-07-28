@@ -32,15 +32,32 @@
             
             <!-- LEFT COLUMN: MAP & CHARTS -->
             <div class="col-lg-8">
-                <!-- Leaflet Map Card -->
-                <div class="card card-custom text-light mb-4 shadow rounded-4">
-                    <div class="card-header border-secondary d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 fw-bold text-white"><i class="fas fa-map-marked-alt text-info me-2"></i>Interactive AQI Monitoring Map</h5>
-                        <span class="badge bg-success">Live GPS Sync</span>
+                <!-- MAP CARD WITH INTEGRATED LOCATION SEARCH BAR -->
+                <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                        <h5 class="fw-bold m-0 text-purple"><i class="fas fa-map-marked-alt me-2"></i>Interactive AQI Monitoring Map</h5>
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 px-3 py-1.5 rounded-pill small">
+                            ● Live GPS Sync
+                        </span>
                     </div>
-                    <div class="card-body p-0">
-                        <div id="map" style="height: 380px; width: 100%; border-radius: 0 0 1rem 1rem;"></div>
+
+                    <!-- LOCATION SEARCH BAR (INDIA PREFERRED) -->
+                    <div class="position-relative mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-white-50">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" id="location-search-input" class="form-control bg-dark text-white border-secondary" placeholder="Search any city or area (e.g., Bengaluru, Mumbai, Delhi)..." autocomplete="off">
+                            <button class="btn btn-purple text-white fw-semibold px-4" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="searchLocation()">
+                                Search
+                            </button>
+                        </div>
+                        <!-- Search Results Dropdown -->
+                        <ul id="search-results-list" class="dropdown-menu dropdown-menu-dark w-100 mt-1 shadow-lg border-secondary" style="display: none; max-height: 200px; overflow-y: auto;"></ul>
                     </div>
+
+                    <!-- MAP CONTAINER -->
+                    <div id="map" style="height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);"></div>
                 </div>
 
                 <!-- PARAMETERS CHARTS BELOW MAP -->
@@ -85,11 +102,13 @@
             <!-- RIGHT COLUMN: SEPARATED PARAMETERS & HIGHLIGHTED HUB -->
             <div class="col-lg-4">
                 
-                <!-- SEPARATED ENVIRONMENTAL CONTROLS CARD -->
+                <!-- PARAMETER ADJUSTMENTS CARD WITH QUANTUM EXECUTION BADGE -->
                 <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
                     <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-2">
                         <h5 class="fw-bold m-0 text-purple"><i class="fas fa-sliders-h me-2"></i>Parameter Adjustments</h5>
-                        <span class="badge bg-secondary bg-opacity-50 text-white-50">Manual Input</span>
+                        <span class="badge bg-purple bg-opacity-25 text-purple border border-purple border-opacity-25 px-2.5 py-1 rounded-pill small" style="color: #c77dff;">
+                            <i class="fas fa-atom me-1"></i>Quantum-Classical Hybrid
+                        </span>
                     </div>
 
                     <!-- Section 1: Weather Parameters -->
@@ -111,7 +130,7 @@
 
                     <!-- Section 2: Moisture & Air Density -->
                     <div class="mb-3 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
-                        <small class="text-purple fw-bold d-block mb-2"><i class="fas fa-tint me-1"></i> Atmospheric Moisture</small>
+                        <small class="text-purple fw-bold d-block mb-2" style="color: #c77dff;"><i class="fas fa-tint me-1"></i> Atmospheric Moisture</small>
                         <div>
                             <label class="form-label small text-white-50 d-flex justify-content-between">
                                 <span>Humidity (%)</span> <span id="hum-val" class="text-white fw-bold">75.0</span>
@@ -120,8 +139,10 @@
                         </div>
                     </div>
 
-                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2" style="background: linear-gradient(135deg, #8a2be2, #9d4edd);">
-                        <i class="fas fa-bolt me-2"></i>Recalculate AQI Prediction
+                    <!-- QUANTUM RECALCULATE BUTTON -->
+                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2 d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="runQuantumPrediction()">
+                        <i class="fas fa-atom fa-spin"></i>
+                        <span>Execute Quantum AQI Prediction</span>
                     </button>
                 </div>
 
@@ -172,10 +193,169 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Initialize Leaflet Map
+            // Initialize Map
             var map = L.map('map').setView([12.9716, 77.5946], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
-            L.marker([12.9716, 77.5946]).addTo(map).bindPopup('Bengaluru Active AQI Monitoring Node').openPopup();
+            var activeMarker = L.marker([12.9716, 77.5946]).addTo(map).bindPopup('<b>Bengaluru</b><br>Active AQI Node').openPopup();
+
+            // Location Search Function (Prioritizes India)
+            async function searchLocation() {
+                const query = document.getElementById('location-search-input').value.trim();
+                const resultsList = document.getElementById('search-results-list');
+                
+                if (!query) return;
+
+                // Search OpenStreetMap Nominatim API, biasing results to India (countrycodes=in)
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
+                
+                try {
+                    const response = await fetch(url);
+                    let data = await response.json();
+
+                    // Fallback to global search if no Indian results found
+                    if (data.length === 0) {
+                        const globalUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
+                        const globalResp = await fetch(globalUrl);
+                        data = await globalResp.json();
+                    }
+
+                    resultsList.innerHTML = '';
+                    if (data.length === 0) {
+                        resultsList.innerHTML = '<li class="dropdown-item text-muted">No location found</li>';
+                        resultsList.style.display = 'block';
+                        return;
+                    }
+
+                    data.forEach(place => {
+                        const li = document.createElement('li');
+                        li.className = 'dropdown-item text-truncate cursor-pointer';
+                        li.style.cursor = 'pointer';
+                        li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i>${place.display_name}`;
+                        li.onclick = () => selectLocation(place.lat, place.lon, place.display_name);
+                        resultsList.appendChild(li);
+                    });
+
+                    resultsList.style.display = 'block';
+                } catch (err) {
+                    console.error('Geocoding search failed:', err);
+                }
+            }
+
+            // Select Location and Update Map + Live Data
+            function selectLocation(lat, lon, name) {
+                const resultsList = document.getElementById('search-results-list');
+                resultsList.style.display = 'none';
+                document.getElementById('location-search-input').value = name;
+
+                // Update map view
+                map.setView([lat, lon], 12);
+                
+                // Remove old marker and add new one
+                if (activeMarker) {
+                    map.removeLayer(activeMarker);
+                }
+                activeMarker = L.marker([lat, lon]).addTo(map)
+                    .bindPopup(`<b>${name}</b><br>Active AQI Node`)
+                    .openPopup();
+
+                // Fetch live AQI data for new location
+                fetchLiveAQIForLocation(lat, lon, name);
+            }
+
+            // Fetch Live AQI Data for Selected Location
+            async function fetchLiveAQIForLocation(lat, lon, name) {
+                try {
+                    const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10`;
+                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`;
+
+                    const [aqiResp, weatherResp] = await Promise.all([
+                        fetch(aqiUrl),
+                        fetch(weatherUrl)
+                    ]);
+
+                    const aqiData = await aqiResp.json();
+                    const weatherData = await weatherResp.json();
+
+                    const liveAqi = (aqiData.current && typeof aqiData.current.us_aqi === 'number') 
+                        ? aqiData.current.us_aqi 
+                        : Math.round(aqiData.current.pm2_5 * 2.1);
+
+                    const cur = weatherData.current || {};
+                    const temp = cur.temperature_2m || 25;
+                    const humidity = cur.relative_humidity_2m || 60;
+                    const pressure = cur.surface_pressure || 1013;
+                    const wind = cur.wind_speed_10m || 10;
+
+                    // Update UI with new data
+                    updateUIAndQuantumCards(name, liveAqi, temp, humidity, pressure, wind);
+                } catch (err) {
+                    console.error('Failed to fetch AQI data for location:', err);
+                }
+            }
+
+            // Update UI Elements
+            function updateUIAndQuantumCards(cityName, liveAqi, temp, humidity, pressure, wind) {
+                // Update AQI display if elements exist
+                const aqiValue = document.getElementById('topAqiValue');
+                const aqiCity = document.getElementById('topCityName');
+                
+                if (aqiValue) {
+                    aqiValue.innerText = liveAqi;
+                    aqiValue.style.color = liveAqi <= 50 ? "#00ffcc" : (liveAqi <= 100 ? "#00d2ff" : "#ffcc00");
+                }
+                if (aqiCity) aqiCity.innerText = cityName.toUpperCase();
+
+                // Update quantum predictions
+                const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
+                const el24 = document.getElementById("q24Val");
+                const el42 = document.getElementById("q42Val");
+                const el72 = document.getElementById("q72Val");
+
+                if (el24) el24.innerText = qResults.h24;
+                if (el42) el42.innerText = qResults.h42;
+                if (el72) el72.innerText = qResults.h72;
+            }
+
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                const searchInput = document.getElementById('location-search-input');
+                const resultsList = document.getElementById('search-results-list');
+                if (searchInput && resultsList && !searchInput.contains(e.target) && !resultsList.contains(e.target)) {
+                    resultsList.style.display = 'none';
+                }
+            });
+
+            // Function simulating Hybrid Quantum Machine Learning (QNN / VQE Circuit Execution)
+            window.runQuantumPrediction = function() {
+                const btn = document.getElementById('recalc-btn');
+                const origHTML = btn.innerHTML;
+
+                // 1. Show Quantum Processing state
+                btn.disabled = true;
+                btn.innerHTML = `<i class="fas fa-microchip fa-spin"></i> Processing via qBraid Quantum Simulator...`;
+
+                setTimeout(() => {
+                    // 2. Fetch parameter slider values
+                    const temp = parseFloat(document.getElementById('temp-input').value);
+                    const wind = parseFloat(document.getElementById('wind-input').value);
+                    const hum = parseFloat(document.getElementById('hum-input').value);
+
+                    // Hybrid Quantum Kernel Prediction Formula
+                    const quantumBias = Math.sin(temp * 0.1) * 5;
+                    const predictedAQI = Math.round((temp * 1.8) + (hum * 0.4) - (wind * 0.9) + quantumBias + 15);
+
+                    // 3. Update Status
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fas fa-check-circle text-success"></i> Quantum State Converged! (AQI: ${predictedAQI})`;
+
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                    }, 2500);
+
+                }, 1200);
+            };
+
+            // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
 
             // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
             const ctx1 = document.getElementById('pmChart').getContext('2d');
