@@ -206,14 +206,14 @@
         var activeMarker;
 
         document.addEventListener("DOMContentLoaded", function() {
-            // 1. Initialize Map centered on Mumbai (19.0760, 72.8777)
-            map = L.map('map').setView([19.0760, 72.8777], 11);
+            // 1. Initialize Map with default fallback location (e.g. Bengaluru)
+            map = L.map('map').setView([12.9716, 77.5946], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
                 attribution: '© OpenStreetMap' 
             }).addTo(map);
 
-            // Initial marker with AQI display
-            updateMapMarker(19.0760, 72.8777, "Mumbai");
+            // 2. Automatically detect user's live location on page enter
+            detectLiveLocation();
 
             // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
             const ctx1 = document.getElementById('pmChart').getContext('2d');
@@ -397,6 +397,54 @@
                 }
             });
         });
+
+        // Detect Live GPS Location via Browser Geolocation API
+        function detectLiveLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        try {
+                            // Reverse geocode coordinates to get the city name
+                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                            const data = await res.json();
+                            
+                            const cityName = data.address.city || data.address.town || data.address.village || data.address.state_district || "Your Location";
+
+                            // Update map center & active marker
+                            if (map) {
+                                map.setView([lat, lon], 12);
+                                await updateMapMarker(lat, lon, `${cityName} (Live GPS)`);
+                            }
+
+                            // Update search bar input value
+                            const searchInput = document.getElementById('location-search-input');
+                            if (searchInput) searchInput.value = cityName;
+
+                            // Execute quantum prediction update for live location
+                            if (typeof runQuantumPrediction === "function") {
+                                runQuantumPrediction();
+                            }
+
+                        } catch (err) {
+                            console.error("Reverse geocoding failed:", err);
+                            updateMapMarker(lat, lon, "Your Live Location");
+                        }
+                    },
+                    (error) => {
+                        console.warn("Geolocation access denied or unavailable. Using default location.", error);
+                        // Fallback location if permission is denied
+                        updateMapMarker(12.9716, 77.5946, "Bengaluru (Default)");
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                console.warn("Geolocation is not supported by this browser.");
+                updateMapMarker(12.9716, 77.5946, "Bengaluru (Default)");
+            }
+        }
 
         // Fetch Live AQI Telemetry & Update Marker Popup
         async function updateMapMarker(lat, lon, cityName) {
