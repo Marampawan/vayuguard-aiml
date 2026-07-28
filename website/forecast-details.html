@@ -107,24 +107,37 @@
 
     <div class="container" style="max-width: 980px;">
         
-        <!-- Header -->
-        <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-            <div class="d-flex align-items-center gap-3">
-                <div class="p-3 rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(0, 242, 254, 0.1); width: 48px; height: 48px; border: 1px solid rgba(0, 242, 254, 0.25);">
-                    <i class="fas fa-chart-line text-info fs-5"></i>
-                </div>
-                <div>
-                    <h2 class="fw-bold m-0 text-white">7-Day Extended Forecast</h2>
-                    <small class="text-secondary">Comprehensive atmospheric, astronomical, and air quality telemetry</small>
-                </div>
+        <!-- 7-DAY EXTENDED FORECAST HEADER WITH LOCATION SELECTOR -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-3 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+            <div>
+                <h2 class="fw-bold text-white m-0 d-flex align-items-center gap-2">
+                    <i class="fas fa-calendar-week text-purple" style="color: #c77dff;"></i>
+                    <span>7-Day Extended Forecast</span>
+                </h2>
+                <p class="text-white-50 small m-0 mt-1">Comprehensive atmospheric, astronomical, and air quality telemetry</p>
             </div>
-            <a href="forecast.html" class="btn btn-dash text-decoration-none">
-                <i class="fas fa-arrow-left me-1"></i> Dashboard
-            </a>
+
+            <!-- LOCATION SELECTOR CONTROLS -->
+            <div class="d-flex align-items-center gap-2 bg-dark bg-opacity-75 border border-secondary border-opacity-25 rounded-pill px-3 py-2">
+                <label for="citySelect" class="small text-white-50 mb-0">
+                    <i class="fas fa-map-marker-alt text-danger me-1"></i>Forecast for:
+                </label>
+                <select id="citySelect" 
+                        class="form-select form-select-sm bg-dark text-white border-secondary rounded-pill" 
+                        style="width: auto; min-width: 180px; cursor: pointer;"
+                        onchange="updateForecast(this.value)">
+                    <option value="New Delhi">New Delhi, IN</option>
+                    <option value="Bengaluru" selected>Bengaluru, IN</option>
+                    <option value="Mumbai">Mumbai, IN</option>
+                    <option value="Chennai">Chennai, IN</option>
+                    <option value="Kolkata">Kolkata, IN</option>
+                    <option value="Hyderabad">Hyderabad, IN</option>
+                </select>
+            </div>
         </div>
 
         <!-- 7 Days Grid -->
-        <div class="d-flex flex-column gap-3">
+        <div id="forecast-list" class="d-flex flex-column gap-3">
             
             <!-- Day 1 (Today) -->
             <div class="glass-card">
@@ -285,6 +298,121 @@
         function nextJoke() {
             idx = (idx + 1) % jokes.length;
             document.getElementById("joke-text").innerText = jokes[idx];
+        }
+
+        // Handle URL query parameters for location
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedLocation = urlParams.get('location') || 'Bengaluru';
+
+            const cityDropdown = document.getElementById('citySelect');
+            if (cityDropdown) {
+                cityDropdown.value = selectedLocation;
+            }
+            
+            // Load forecast data for selected location
+            updateForecast(selectedLocation);
+        });
+
+        // Prompt user to search and change location directly on this page
+        async function promptChangeLocation() {
+            const city = prompt("Enter location name for 7-day forecast (e.g., Delhi, Mumbai, Chennai):");
+            if (!city || !city.trim()) return;
+
+            const locLabel = document.getElementById('forecast-location-name');
+            locLabel.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Searching...';
+
+            try {
+                // India-first search
+                let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city.trim())}&countrycodes=in&limit=1`);
+                let data = await res.json();
+
+                if (!data || data.length === 0) {
+                    res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city.trim())}&limit=1`);
+                    data = await res.json();
+                }
+
+                if (data && data.length > 0) {
+                    const cityName = data[0].display_name.split(',')[0];
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+
+                    locLabel.innerText = `${cityName}, IN`;
+                    await load7DayForecast(lat, lon, cityName);
+                } else {
+                    alert("Location not found. Please try another city name.");
+                    locLabel.innerText = "Bengaluru, IN";
+                }
+            } catch (err) {
+                console.error("Failed to update location:", err);
+                locLabel.innerText = "Bengaluru, IN";
+            }
+        }
+
+        // Load 7-day forecast data from Open-Meteo API
+        async function load7DayForecast(lat, lon, cityName) {
+            try {
+                const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&daily=pm2_5_max,us_aqi_max&timezone=auto`);
+                const data = await res.json();
+                
+                console.log(`7-Day forecast loaded for ${cityName}:`, data);
+                // TODO: Update daily cards with real data from API response
+                // Example: data.daily.pm2_5_max, data.daily.us_aqi_max
+            } catch (err) {
+                console.error("Error loading 7-day forecast:", err);
+            }
+        }
+
+        // Update forecast based on city selection
+        async function updateForecast(cityName) {
+            const locLabel = document.getElementById('forecast-location-name');
+            locLabel.innerText = `${cityName}, IN`;
+
+            // City coordinates mapping
+            const cityCoords = {
+                'New Delhi': { lat: 28.6139, lon: 77.2090 },
+                'Bengaluru': { lat: 12.9716, lon: 77.5946 },
+                'Mumbai': { lat: 19.0760, lon: 72.8777 },
+                'Chennai': { lat: 13.0827, lon: 80.2707 },
+                'Kolkata': { lat: 22.5726, lon: 88.3639 },
+                'Hyderabad': { lat: 17.3850, lon: 78.4867 }
+            };
+
+            const coords = cityCoords[cityName];
+            if (coords) {
+                await load7DayForecast(coords.lat, coords.lon, cityName);
+            }
+        }
+
+        // Detect GPS or load default location
+        async function detectOrLoadDefault() {
+            const locLabel = document.getElementById('forecast-location-name');
+            
+            if ("geolocation" in navigator) {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                    });
+                    
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    // Reverse geocode to get city name
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const data = await res.json();
+                    const cityName = data.address.city || data.address.town || data.address.village || "Bengaluru";
+                    
+                    locLabel.innerText = `${cityName}, IN`;
+                    await load7DayForecast(lat, lon, cityName);
+                    return;
+                } catch (err) {
+                    console.warn("GPS detection failed, using default:", err);
+                }
+            }
+            
+            // Default to Bengaluru
+            locLabel.innerText = "Bengaluru, IN";
+            await load7DayForecast(12.9716, 77.5946, "Bengaluru");
         }
     </script>
 </body>
