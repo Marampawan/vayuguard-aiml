@@ -152,38 +152,131 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Leaflet Map Init
         document.addEventListener("DOMContentLoaded", function() {
+            // 1. Initialize Leaflet Map
             var map = L.map('map').setView([12.9716, 77.5946], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
             L.marker([12.9716, 77.5946]).addTo(map).bindPopup('Bengaluru Active AQI Monitoring Node').openPopup();
 
-            // Chart 1: PM2.5 & PM10 Graph
+            // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
             const ctx1 = document.getElementById('pmChart').getContext('2d');
+            
+            // Gradient Fills
+            const pm25Gradient = ctx1.createLinearGradient(0, 0, 0, 200);
+            pm25Gradient.addColorStop(0, 'rgba(199, 125, 255, 0.4)');
+            pm25Gradient.addColorStop(1, 'rgba(199, 125, 255, 0.0)');
+
+            const pm10Gradient = ctx1.createLinearGradient(0, 0, 0, 200);
+            pm10Gradient.addColorStop(0, 'rgba(0, 230, 118, 0.4)');
+            pm10Gradient.addColorStop(1, 'rgba(0, 230, 118, 0.0)');
+
             new Chart(ctx1, {
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
                     datasets: [
-                        { label: 'PM2.5', data: [22, 28, 45, 38, 30, 25], borderColor: '#c77dff', tension: 0.4 },
-                        { label: 'PM10', data: [50, 62, 85, 70, 60, 52], borderColor: '#00e676', tension: 0.4 }
+                        {
+                            label: 'PM2.5 (µg/m³)',
+                            data: [22, 28, 45, 38, 30, 25],
+                            borderColor: '#c77dff',
+                            backgroundColor: pm25Gradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#c77dff',
+                            pointHoverRadius: 7
+                        },
+                        {
+                            label: 'PM10 (µg/m³)',
+                            data: [50, 62, 85, 70, 60, 52],
+                            borderColor: '#00e676',
+                            backgroundColor: pm10Gradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#00e676',
+                            pointHoverRadius: 7
+                        }
                     ]
                 },
-                options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#ccc' } }, y: { ticks: { color: '#ccc' } } } }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff', font: { family: 'system-ui', weight: '600' } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(13, 11, 24, 0.9)',
+                            titleColor: '#c77dff',
+                            borderColor: 'rgba(199, 125, 255, 0.3)',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        y: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' }, title: { display: true, text: 'Concentration (µg/m³)', color: '#a0a0a0' } }
+                    }
+                }
             });
 
-            // Chart 2: Temp & Humidity Graph
+            // 3. Chart 2: Dual Axis Temperature & Humidity Dynamics
             const ctx2 = document.getElementById('weatherChart').getContext('2d');
+            
             new Chart(ctx2, {
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
                     datasets: [
-                        { label: 'Temp (°C)', data: [22, 21, 26, 30, 29, 25], borderColor: '#ffb703', tension: 0.4 },
-                        { label: 'Humidity (%)', data: [85, 88, 70, 55, 60, 75], borderColor: '#00b4d8', tension: 0.4 }
+                        {
+                            label: 'Temperature (°C)',
+                            data: [22, 21, 26, 30, 29, 25],
+                            borderColor: '#ffb703',
+                            backgroundColor: '#ffb703',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            yAxisID: 'yTemp'
+                        },
+                        {
+                            label: 'Humidity (%)',
+                            data: [85, 88, 70, 55, 60, 75],
+                            borderColor: '#00b4d8',
+                            backgroundColor: '#00b4d8',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            yAxisID: 'yHum'
+                        }
                     ]
                 },
-                options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#ccc' } }, y: { ticks: { color: '#ccc' } } } }
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#ffffff', font: { family: 'system-ui', weight: '600' } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(13, 11, 24, 0.9)',
+                            titleColor: '#00b4d8',
+                            borderColor: 'rgba(0, 180, 216, 0.3)',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        yTemp: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: { color: '#ffb703' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            title: { display: true, text: 'Temp (°C)', color: '#ffb703' }
+                        },
+                        yHum: {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: { color: '#00b4d8' },
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Humidity (%)', color: '#00b4d8' }
+                        }
+                    }
+                }
             });
         });
     </script>
