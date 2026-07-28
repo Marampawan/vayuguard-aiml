@@ -41,7 +41,7 @@
                         </span>
                     </div>
 
-                    <!-- SEARCH INPUT WITH AUTOCOMPLETE DISABLED -->
+                    <!-- SEARCH INPUT WITH LIVE TYPING SUGGESTIONS DROPDOWN -->
                     <div class="position-relative mb-3">
                         <div class="input-group">
                             <span class="input-group-text bg-dark border-secondary text-white-50">
@@ -52,9 +52,7 @@
                                    class="form-control bg-dark text-white border-secondary" 
                                    placeholder="Search any city (e.g., Delhi, Mumbai, Chennai)..." 
                                    autocomplete="off" 
-                                   autocorrect="off" 
-                                   autocapitalize="off" 
-                                   spellcheck="false" 
+                                   oninput="onTypeSearch(this.value)"
                                    onkeypress="if(event.key==='Enter') searchLocation()">
                             <button class="btn btn-purple text-white fw-semibold px-4" 
                                     style="background: linear-gradient(135deg, #7209b7, #8a2be2);" 
@@ -62,6 +60,9 @@
                                 Search
                             </button>
                         </div>
+
+                        <!-- Live Suggestions Dropdown Menu -->
+                        <ul id="suggestions-list" class="dropdown-menu dropdown-menu-dark w-100 shadow-lg border-secondary position-absolute" style="display: none; top: 100%; z-index: 1000; max-height: 220px; overflow-y: auto;"></ul>
                     </div>
 
                     <!-- MAP CONTAINER -->
@@ -421,6 +422,85 @@
                 .bindPopup(`<b>${cityName}</b><br>${aqiText}<br><small>Active Node</small>`)
                 .openPopup();
         }
+
+        let debounceTimer;
+
+        // Trigger live search suggestions while typing
+        function onTypeSearch(query) {
+            clearTimeout(debounceTimer);
+            const suggestionsList = document.getElementById('suggestions-list');
+
+            if (!query || query.trim().length < 2) {
+                suggestionsList.style.display = 'none';
+                suggestionsList.innerHTML = '';
+                return;
+            }
+
+            // Debounce API requests by 250ms to avoid spamming network requests
+            debounceTimer = setTimeout(async () => {
+                // 1. Search India locations first using countrycodes=in
+                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
+                
+                try {
+                    let response = await fetch(url);
+                    let data = await response.json();
+
+                    // 2. Global fallback if no Indian locations match
+                    if (!data || data.length === 0) {
+                        url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
+                        response = await fetch(url);
+                        data = await response.json();
+                    }
+
+                    suggestionsList.innerHTML = '';
+
+                    if (data && data.length > 0) {
+                        data.forEach(place => {
+                            const li = document.createElement('li');
+                            li.className = 'dropdown-item text-truncate py-2 px-3 border-bottom border-secondary border-opacity-25';
+                            li.style.cursor = 'pointer';
+                            li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i><strong>${place.display_name}</strong>`;
+                            
+                            // On clicking a suggestion, update input and move map
+                            li.onclick = () => {
+                                document.getElementById('location-search-input').value = place.display_name.split(',')[0];
+                                suggestionsList.style.display = 'none';
+                                selectPlace(place.lat, place.lon, place.display_name.split(',')[0]);
+                            };
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = 'block';
+                    } else {
+                        suggestionsList.style.display = 'none';
+                    }
+                } catch (err) {
+                    console.error('Suggestions fetch error:', err);
+                }
+            }, 250);
+        }
+
+        // Select place from suggestion dropdown
+        async function selectPlace(lat, lon, cityName) {
+            const latNum = parseFloat(lat);
+            const lonNum = parseFloat(lon);
+            
+            if (map) {
+                map.setView([latNum, lonNum], 12);
+                await updateMapMarker(latNum, lonNum, cityName);
+            }
+            if (typeof runQuantumPrediction === "function") {
+                runQuantumPrediction();
+            }
+        }
+
+        // Close suggestions dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const suggestionsList = document.getElementById('suggestions-list');
+            const searchInput = document.getElementById('location-search-input');
+            if (suggestionsList && !searchInput.contains(e.target)) {
+                suggestionsList.style.display = 'none';
+            }
+        });
 
         // Search Function (India First, Direct Map Update, No Dropdown Recommendations)
         async function searchLocation() {
