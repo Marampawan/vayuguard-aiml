@@ -8,237 +8,236 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg: #0b0f19;
-            --surface: rgba(255, 255, 255, 0.03);
-            --surface-hover: rgba(255, 255, 255, 0.06);
-            --border: rgba(255, 255, 255, 0.08);
-            --text-main: #f3f4f6;
-            --text-sub: #9ca3af;
-            --accent: #a855f7;
+            --bg-dark: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
         }
 
-        body { 
-            background-color: var(--bg);
-            color: var(--text-main); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
         }
 
-        .forecast-card { 
-            background: var(--surface); 
-            border: 1px solid var(--border); 
+        .forecast-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 16px;
+            backdrop-filter: blur(12px);
             padding: 1.5rem;
-            transition: background 0.2s ease, border-color 0.2s ease;
+            transition: all 0.2s ease-in-out;
         }
 
         .forecast-card:hover {
-            background: var(--surface-hover);
-            border-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
         }
 
-        .metric-card {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+        .param-box {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
-            padding: 0.75rem;
+            padding: 0.75rem 0.5rem;
         }
 
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-sub);
+        .param-label {
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            color: var(--text-muted);
             margin-bottom: 0.25rem;
         }
 
         .badge-aqi {
-            font-weight: 600;
-            font-size: 0.825rem;
             padding: 0.35rem 0.85rem;
             border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.8rem;
         }
 
         .badge-good { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-mod { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .badge-moderate { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
 
         .btn-back {
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
             border-radius: 9999px;
             padding: 0.5rem 1.25rem;
             font-size: 0.875rem;
-            font-weight: 500;
             transition: all 0.2s ease;
         }
 
         .btn-back:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            border-color: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 <body class="py-4 py-md-5">
 
-    <div class="container" style="max-width: 900px;">
+    <div class="container" style="max-width: 960px;">
         
         <!-- Header -->
         <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-secondary border-opacity-10">
             <div>
-                <h1 class="h3 fw-bold mb-1">7-Day Extended Forecast</h1>
-                <p class="text-secondary small m-0">Detailed weather and atmospheric parameters</p>
+                <h2 class="fw-bold m-0 text-white">7-Day Extended Forecast</h2>
+                <small class="text-secondary">Comprehensive atmospheric, astronomical, and air quality telemetry</small>
             </div>
             <a href="forecast.html" class="btn btn-back text-decoration-none">
-                ← Back
+                ← Dashboard
             </a>
         </div>
 
         <!-- 7 Days Grid -->
         <div class="d-flex flex-column gap-3">
             
-            <!-- Day 1 -->
+            <!-- Day 1 (Today) -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge bg-purple bg-opacity-25 text-purple small fw-semibold" style="color: #c084fc;">TODAY</span>
-                            <h2 class="h5 fw-bold m-0">Tuesday, Jul 28</h2>
+                            <span class="badge bg-purple bg-opacity-25 text-purple small fw-semibold" style="color: var(--accent-purple);">TODAY</span>
+                            <h5 class="fw-bold m-0">Tuesday, Jul 28</h5>
                         </div>
                         <span class="text-secondary small">Partly Cloudy</span>
                     </div>
-                    <span class="badge-aqi badge-mod">AQI 85 • Moderate</span>
+                    <span class="badge-aqi badge-moderate">AQI 85 • Moderate</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">30°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">15%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>24 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">75%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:04 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:48 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">30°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">15%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>24 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">75%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:04 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:48 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Day 2 -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h2 class="h5 fw-bold m-0 mb-1">Wednesday, Jul 29</h2>
+                        <h5 class="fw-bold m-0 mb-1">Wednesday, Jul 29</h5>
                         <span class="text-secondary small">Scattered Clouds</span>
                     </div>
                     <span class="badge-aqi badge-good">AQI 42 • Good</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">29°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">10%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>22 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">68%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:05 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:48 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">29°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">10%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>22 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">68%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:05 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:48 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Day 3 -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h2 class="h5 fw-bold m-0 mb-1">Thursday, Jul 30</h2>
+                        <h5 class="fw-bold m-0 mb-1">Thursday, Jul 30</h5>
                         <span class="text-secondary small">Humid & Breezy</span>
                     </div>
-                    <span class="badge-aqi badge-mod">AQI 78 • Moderate</span>
+                    <span class="badge-aqi badge-moderate">AQI 78 • Moderate</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">30°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">35%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>26 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">80%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:05 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:47 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">30°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">35%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>26 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">80%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:05 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:47 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Day 4 -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h2 class="h5 fw-bold m-0 mb-1">Friday, Jul 31</h2>
+                        <h5 class="fw-bold m-0 mb-1">Friday, Jul 31</h5>
                         <span class="text-secondary small">Light Rain Expected</span>
                     </div>
                     <span class="badge-aqi badge-good">AQI 35 • Good</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">27°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">80%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>18 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">92%</strong></div></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:05 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:47 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">27°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">80%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>18 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">92%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:05 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:47 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Day 5 -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h2 class="h5 fw-bold m-0 mb-1">Saturday, Aug 01</h2>
+                        <h5 class="fw-bold m-0 mb-1">Saturday, Aug 01</h5>
                         <span class="text-secondary small">Clear Skies & Pleasant</span>
                     </div>
                     <span class="badge-aqi badge-good">AQI 30 • Good</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">28°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">5%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>20 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">62%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:06 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:46 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">28°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">5%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>20 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">62%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:06 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:46 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Day 6 -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h2 class="h5 fw-bold m-0 mb-1">Sunday, Aug 02</h2>
+                        <h5 class="fw-bold m-0 mb-1">Sunday, Aug 02</h5>
                         <span class="text-secondary small">Overcast & Warm</span>
                     </div>
-                    <span class="badge-aqi badge-mod">AQI 82 • Moderate</span>
+                    <span class="badge-aqi badge-moderate">AQI 82 • Moderate</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">29°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">25%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>25 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">74%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:06 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:46 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">29°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">25%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>25 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">74%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:06 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:46 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Day 7 -->
             <div class="forecast-card">
-                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                     <div>
-                        <h2 class="h5 fw-bold m-0 mb-1">Monday, Aug 03</h2>
+                        <h5 class="fw-bold m-0 mb-1">Monday, Aug 03</h5>
                         <span class="text-secondary small">Breezy & Mostly Sunny</span>
                     </div>
                     <span class="badge-aqi badge-good">AQI 48 • Good</span>
                 </div>
                 <div class="row g-2 text-center">
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Temp</div><strong style="color: #38bdf8;">28°C</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Rain</div><strong style="color: #60a5fa;">12%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Wind</div><strong>29 km/h</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Humidity</div><strong style="color: #c084fc;">70%</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunrise</div><strong style="color: #fbbf24;">06:06 AM</strong></div></div>
-                    <div class="col-4 col-md-2"><div class="metric-card"><div class="metric-label">Sunset</div><strong style="color: #f87171;">06:45 PM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Temp</div><strong style="color: var(--accent-blue);">28°C</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Rain</div><strong class="text-info">12%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Wind</div><strong>29 km/h</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Humidity</div><strong style="color: var(--accent-purple);">70%</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunrise</div><strong class="text-warning">06:06 AM</strong></div></div>
+                    <div class="col-4 col-md-2"><div class="param-box"><div class="param-label">Sunset</div><strong class="text-danger">06:45 PM</strong></div></div>
                 </div>
             </div>
 
             <!-- Mindful Joke Panel -->
-            <div class="forecast-card text-center mt-2" style="border-style: dashed;">
-                <span class="text-secondary small text-uppercase tracking-wider d-block mb-1">Mindful Hub</span>
+            <div class="forecast-card text-center mt-2">
+                <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Mindful Hub</span>
                 <p id="joke-text" class="text-light fs-6 m-0 mb-2">"Why did the egg hide? Because it was a little chicken!"</p>
-                <button class="btn btn-sm btn-link text-decoration-none p-0" style="color: #c084fc;" onclick="nextJoke()">
+                <button class="btn btn-sm btn-link text-decoration-none p-0" style="color: var(--accent-purple);" onclick="nextJoke()">
                     Next Joke →
                 </button>
             </div>
