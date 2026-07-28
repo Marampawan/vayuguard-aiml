@@ -198,46 +198,51 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
             var activeMarker = L.marker([12.9716, 77.5946]).addTo(map).bindPopup('<b>Bengaluru</b><br>Active AQI Node').openPopup();
 
-            // Location Search Function (Prioritizes India)
+            // Direct Location Search with Strict India First Preference
             async function searchLocation() {
                 const query = document.getElementById('location-search-input').value.trim();
-                const resultsList = document.getElementById('search-results-list');
-                
                 if (!query) return;
 
-                // Search OpenStreetMap Nominatim API, biasing results to India (countrycodes=in)
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
+                // 1. Force search within India first using countrycodes=in
+                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`;
                 
                 try {
-                    const response = await fetch(url);
+                    let response = await fetch(url);
                     let data = await response.json();
 
-                    // Fallback to global search if no Indian results found
-                    if (data.length === 0) {
-                        const globalUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
-                        const globalResp = await fetch(globalUrl);
-                        data = await globalResp.json();
+                    // 2. Global fallback only if NO results were found in India
+                    if (!data || data.length === 0) {
+                        url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                        response = await fetch(url);
+                        data = await response.json();
                     }
 
-                    resultsList.innerHTML = '';
-                    if (data.length === 0) {
-                        resultsList.innerHTML = '<li class="dropdown-item text-muted">No location found</li>';
-                        resultsList.style.display = 'block';
+                    if (!data || data.length === 0) {
+                        alert("Location not found. Please try another city.");
                         return;
                     }
 
-                    data.forEach(place => {
-                        const li = document.createElement('li');
-                        li.className = 'dropdown-item text-truncate cursor-pointer';
-                        li.style.cursor = 'pointer';
-                        li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i>${place.display_name}`;
-                        li.onclick = () => selectLocation(place.lat, place.lon, place.display_name);
-                        resultsList.appendChild(li);
-                    });
+                    const place = data[0];
+                    const lat = parseFloat(place.lat);
+                    const lon = parseFloat(place.lon);
+                    const cityName = place.display_name.split(',')[0];
 
-                    resultsList.style.display = 'block';
+                    // 3. Update map center & active marker position
+                    map.setView([lat, lon], 12);
+                    if (window.activeMarker) {
+                        map.removeLayer(window.activeMarker);
+                    }
+                    window.activeMarker = L.marker([lat, lon]).addTo(map)
+                        .bindPopup(`<b>${cityName}</b><br>Active AQI Node`)
+                        .openPopup();
+
+                    // 4. Trigger quantum prediction update for the searched location
+                    if (typeof runQuantumPrediction === "function") {
+                        runQuantumPrediction();
+                    }
+
                 } catch (err) {
-                    console.error('Geocoding search failed:', err);
+                    console.error('Search failed:', err);
                 }
             }
 
