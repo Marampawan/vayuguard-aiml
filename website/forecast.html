@@ -200,175 +200,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // Declare map and marker variables globally
+        var map;
+        var activeMarker;
+
         document.addEventListener("DOMContentLoaded", function() {
-            // Initialize Map
-            var map = L.map('map').setView([12.9716, 77.5946], 11);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
-            var activeMarker = L.marker([12.9716, 77.5946]).addTo(map).bindPopup('<b>Bengaluru</b><br>Active AQI Node').openPopup();
+            // 1. Initialize Map
+            map = L.map('map').setView([12.9716, 77.5946], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                attribution: '© OpenStreetMap' 
+            }).addTo(map);
 
-            // Direct Location Search with Strict India First Preference
-            async function searchLocation() {
-                const query = document.getElementById('location-search-input').value.trim();
-                if (!query) return;
-
-                // 1. Force search within India first using countrycodes=in
-                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`;
-                
-                try {
-                    let response = await fetch(url);
-                    let data = await response.json();
-
-                    // 2. Global fallback only if NO results were found in India
-                    if (!data || data.length === 0) {
-                        url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
-                        response = await fetch(url);
-                        data = await response.json();
-                    }
-
-                    if (!data || data.length === 0) {
-                        alert("Location not found. Please try another city.");
-                        return;
-                    }
-
-                    const place = data[0];
-                    const lat = parseFloat(place.lat);
-                    const lon = parseFloat(place.lon);
-                    const cityName = place.display_name.split(',')[0];
-
-                    // 3. Update map center & active marker position
-                    map.setView([lat, lon], 12);
-                    if (window.activeMarker) {
-                        map.removeLayer(window.activeMarker);
-                    }
-                    window.activeMarker = L.marker([lat, lon]).addTo(map)
-                        .bindPopup(`<b>${cityName}</b><br>Active AQI Node`)
-                        .openPopup();
-
-                    // 4. Trigger quantum prediction update for the searched location
-                    if (typeof runQuantumPrediction === "function") {
-                        runQuantumPrediction();
-                    }
-
-                } catch (err) {
-                    console.error('Search failed:', err);
-                }
-            }
-
-            // Select Location and Update Map + Live Data
-            function selectLocation(lat, lon, name) {
-                const resultsList = document.getElementById('search-results-list');
-                resultsList.style.display = 'none';
-                document.getElementById('location-search-input').value = name;
-
-                // Update map view
-                map.setView([lat, lon], 12);
-                
-                // Remove old marker and add new one
-                if (activeMarker) {
-                    map.removeLayer(activeMarker);
-                }
-                activeMarker = L.marker([lat, lon]).addTo(map)
-                    .bindPopup(`<b>${name}</b><br>Active AQI Node`)
-                    .openPopup();
-
-                // Fetch live AQI data for new location
-                fetchLiveAQIForLocation(lat, lon, name);
-            }
-
-            // Fetch Live AQI Data for Selected Location
-            async function fetchLiveAQIForLocation(lat, lon, name) {
-                try {
-                    const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10`;
-                    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m`;
-
-                    const [aqiResp, weatherResp] = await Promise.all([
-                        fetch(aqiUrl),
-                        fetch(weatherUrl)
-                    ]);
-
-                    const aqiData = await aqiResp.json();
-                    const weatherData = await weatherResp.json();
-
-                    const liveAqi = (aqiData.current && typeof aqiData.current.us_aqi === 'number') 
-                        ? aqiData.current.us_aqi 
-                        : Math.round(aqiData.current.pm2_5 * 2.1);
-
-                    const cur = weatherData.current || {};
-                    const temp = cur.temperature_2m || 25;
-                    const humidity = cur.relative_humidity_2m || 60;
-                    const pressure = cur.surface_pressure || 1013;
-                    const wind = cur.wind_speed_10m || 10;
-
-                    // Update UI with new data
-                    updateUIAndQuantumCards(name, liveAqi, temp, humidity, pressure, wind);
-                } catch (err) {
-                    console.error('Failed to fetch AQI data for location:', err);
-                }
-            }
-
-            // Update UI Elements
-            function updateUIAndQuantumCards(cityName, liveAqi, temp, humidity, pressure, wind) {
-                // Update AQI display if elements exist
-                const aqiValue = document.getElementById('topAqiValue');
-                const aqiCity = document.getElementById('topCityName');
-                
-                if (aqiValue) {
-                    aqiValue.innerText = liveAqi;
-                    aqiValue.style.color = liveAqi <= 50 ? "#00ffcc" : (liveAqi <= 100 ? "#00d2ff" : "#ffcc00");
-                }
-                if (aqiCity) aqiCity.innerText = cityName.toUpperCase();
-
-                // Update quantum predictions
-                const qResults = runQuantumCircuit(temp, humidity, pressure, wind, liveAqi);
-                const el24 = document.getElementById("q24Val");
-                const el42 = document.getElementById("q42Val");
-                const el72 = document.getElementById("q72Val");
-
-                if (el24) el24.innerText = qResults.h24;
-                if (el42) el42.innerText = qResults.h42;
-                if (el72) el72.innerText = qResults.h72;
-            }
-
-            // Close search results when clicking outside
-            document.addEventListener('click', function(e) {
-                const searchInput = document.getElementById('location-search-input');
-                const resultsList = document.getElementById('search-results-list');
-                if (searchInput && resultsList && !searchInput.contains(e.target) && !resultsList.contains(e.target)) {
-                    resultsList.style.display = 'none';
-                }
-            });
-
-            // Function simulating Hybrid Quantum Machine Learning (QNN / VQE Circuit Execution)
-            window.runQuantumPrediction = function() {
-                const btn = document.getElementById('recalc-btn');
-                const origHTML = btn.innerHTML;
-
-                // 1. Show Quantum Processing state
-                btn.disabled = true;
-                btn.innerHTML = `<i class="fas fa-microchip fa-spin"></i> Processing via qBraid Quantum Simulator...`;
-
-                setTimeout(() => {
-                    // 2. Fetch parameter slider values
-                    const temp = parseFloat(document.getElementById('temp-input').value);
-                    const wind = parseFloat(document.getElementById('wind-input').value);
-                    const hum = parseFloat(document.getElementById('hum-input').value);
-
-                    // Hybrid Quantum Kernel Prediction Formula
-                    const quantumBias = Math.sin(temp * 0.1) * 5;
-                    const predictedAQI = Math.round((temp * 1.8) + (hum * 0.4) - (wind * 0.9) + quantumBias + 15);
-
-                    // 3. Update Status
-                    btn.disabled = false;
-                    btn.innerHTML = `<i class="fas fa-check-circle text-success"></i> Quantum State Converged! (AQI: ${predictedAQI})`;
-
-                    setTimeout(() => {
-                        btn.innerHTML = origHTML;
-                    }, 2500);
-
-                }, 1200);
-            };
-
-            // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
+            // Initial Marker
+            activeMarker = L.marker([12.9716, 77.5946]).addTo(map)
+                .bindPopup('<b>Bengaluru</b><br>Active AQI Node')
+                .openPopup();
 
             // 2. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
             const ctx1 = document.getElementById('pmChart').getContext('2d');
@@ -552,6 +398,62 @@
                 }
             });
         });
+
+        // Direct Location Search Function (India First Preference, No Suggestions)
+        async function searchLocation() {
+            const searchInput = document.getElementById('location-search-input');
+            if (!searchInput) return;
+            
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            // 1. Search India locations first using countrycodes=in
+            let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`;
+            
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+
+                // 2. Fall back to global search if not found in India
+                if (!data || data.length === 0) {
+                    url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+                    response = await fetch(url);
+                    data = await response.json();
+                }
+
+                if (!data || data.length === 0) {
+                    alert("Location not found. Please try entering a valid city name.");
+                    return;
+                }
+
+                const place = data[0];
+                const lat = parseFloat(place.lat);
+                const lon = parseFloat(place.lon);
+                const cityName = place.display_name.split(',')[0];
+
+                // 3. Move map and update marker directly
+                if (map) {
+                    map.setView([lat, lon], 12);
+                    
+                    if (activeMarker) {
+                        map.removeLayer(activeMarker);
+                    }
+                    
+                    activeMarker = L.marker([lat, lon]).addTo(map)
+                        .bindPopup(`<b>${cityName}</b><br>Active AQI Node`)
+                        .openPopup();
+                }
+
+                // 4. Trigger quantum recalculation feedback
+                if (typeof runQuantumPrediction === "function") {
+                    runQuantumPrediction();
+                }
+
+            } catch (err) {
+                console.error('Search failed:', err);
+                alert('Network error while searching location. Please try again.');
+            }
+        }
     </script>
 
 </body>
