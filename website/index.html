@@ -243,27 +243,41 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="index.html" class="nav-brand" style="text-decoration: none;">
-            <i class="fas fa-shield-virus"></i> VayuGuard
-        </a>
-        <div class="d-flex align-items-center gap-3">
-            <a href="index.html" class="nav-link text-light">Forecast</a>
+    <!-- CLEAN, MODERN NAVIGATION BAR -->
+    <nav class="navbar navbar-expand-lg py-3" style="background: rgba(9, 7, 19, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <div class="container d-flex align-items-center justify-content-between">
             
-            <!-- ADVANCED MONITOR LINK (Opens forecast.html with map, cards, and jokes) -->
-            <a href="forecast.html" class="nav-link text-light">Advanced Monitor</a>
-
-            <!-- QUANTUM TELEMETRY BUTTON (Opens telemetry page) -->
-            <a href="telemetry.html" target="_blank" 
-               class="btn btn-sm text-white fw-bold px-3 py-1 rounded-pill d-inline-flex align-items-center" 
-               style="background: linear-gradient(135deg, #8a2be2, #9d4edd); border: 1px solid #c77dff; box-shadow: 0 0 10px rgba(138, 43, 226, 0.5); text-decoration: none;">
-                <i class="fas fa-atom fa-spin me-1"></i> Quantum Execution Telemetry
+            <!-- BRAND LOGO -->
+            <a class="navbar-brand d-flex align-items-center gap-2 text-white fw-bold fs-4 text-decoration-none" href="index.html">
+                <span class="p-2 rounded-circle d-flex align-items-center justify-content-center" style="background: rgba(199, 125, 255, 0.15); width: 36px; height: 36px;">
+                    <i class="fas fa-atom text-purple" style="color: #c77dff;"></i>
+                </span>
+                VayuGuard
             </a>
 
-            <a href="helpdesk.html" class="nav-link text-light">Help Desk</a>
-            <a href="login.html" class="btn btn-primary rounded-pill px-3" id="navLoginBtn">Log In</a>
+            <!-- CLEAN ALIGNED NAVIGATION LINKS -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="index.html" class="nav-link px-3 py-2 text-white fw-semibold small rounded-pill text-decoration-none hover-glow">Forecast</a>
+                <a href="forecast.html" class="nav-link px-3 py-2 text-white-50 fw-semibold small rounded-pill text-decoration-none hover-glow">Advanced Monitor</a>
+                
+                <!-- Quantum Telemetry Badge -->
+                <a href="telemetry.html" class="nav-link px-3 py-2 fw-semibold small rounded-pill text-decoration-none d-inline-flex align-items-center gap-1" style="background: rgba(138, 43, 226, 0.2); color: #c77dff; border: 1px solid rgba(199, 125, 255, 0.3);">
+                    <i class="fas fa-microchip me-1"></i> Quantum Execution Telemetry
+                </a>
+
+                <a href="#help-desk" class="nav-link px-3 py-2 text-white-50 fw-semibold small rounded-pill text-decoration-none hover-glow">Help Desk</a>
+                <a href="#login" class="btn btn-sm text-white rounded-pill px-4 py-2 fw-bold ms-2" style="background: linear-gradient(135deg, #7209b7, #8a2be2);">Log In</a>
+            </div>
+
         </div>
     </nav>
+
+    <style>
+        .hover-glow:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.06);
+        }
+    </style>
 
     <section class="hero">
         <div class="hero-content">
