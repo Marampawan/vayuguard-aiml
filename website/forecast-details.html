@@ -14,7 +14,30 @@
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
       }
 
-      /* Sleek Glassmorphic Card */
+      /* High-Contrast Search Input Bar & Placeholder Fix */
+      .search-input-custom,
+      input[type="text"] {
+        background-color: rgba(30, 41, 59, 0.9) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        font-weight: 500 !important;
+      }
+
+      .search-input-custom::placeholder,
+      input[type="text"]::placeholder {
+        color: #cbd5e1 !important; /* Bright Silver/White for full visibility */
+        opacity: 1 !important;
+      }
+
+      .search-input-custom:focus,
+      input[type="text"]:focus {
+        background-color: rgba(30, 41, 59, 1) !important;
+        color: #ffffff !important;
+        border-color: #8b5cf6 !important;
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.5) !important;
+      }
+
+      /* Sleek Glassmorphic Card Base */
       .card-quantum-glass {
         background: rgba(15, 23, 42, 0.85);
         backdrop-filter: blur(16px);
@@ -25,9 +48,32 @@
       }
 
       .card-quantum-glass:hover {
-        border-color: rgba(139, 92, 246, 0.5);
-        box-shadow: 0 12px 30px -5px rgba(139, 92, 246, 0.25);
         transform: translateY(-2px);
+      }
+
+      /* Dynamic AQI Color-Coded Badges & Glows */
+      /* Good AQI (<= 50): Vibrant Green */
+      .badge-aqi-good {
+        background: rgba(16, 185, 129, 0.25) !important;
+        color: #34d399 !important;
+        border: 1px solid #10b981 !important;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+      }
+
+      /* Moderate AQI (51 - 100): Vibrant Yellow / Amber */
+      .badge-aqi-moderate {
+        background: rgba(245, 158, 11, 0.25) !important;
+        color: #fbbf24 !important;
+        border: 1px solid #f59e0b !important;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+      }
+
+      /* Unhealthy AQI (> 100): Bright Red / Coral */
+      .badge-aqi-unhealthy {
+        background: rgba(239, 68, 68, 0.25) !important;
+        color: #f87171 !important;
+        border: 1px solid #ef4444 !important;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
       }
 
       /* High-Contrast Tile Boxes */
@@ -39,26 +85,13 @@
         text-align: center;
       }
 
-      /* Text Contrast Color Classes */
+      /* Label Text Colors */
       .text-label-temp { color: #38bdf8 !important; }     /* Sky Blue */
       .text-label-sunrise { color: #fbbf24 !important; }  /* Bright Gold */
-      .text-label-sunset { color: #fb7185 !important; }   /* Rose/Orange */
-      .text-label-rain { color: #60a5fa !important; }     /* Soft Blue */
+      .text-label-sunset { color: #fb7185 !important; }   /* Coral / Rose */
+      .text-label-rain { color: #60a5fa !important; }     /* Rain Blue */
       .text-label-wind { color: #cbd5e1 !important; }     /* Bright Silver */
-      .text-label-humidity { color: #c084fc !important; } /* Violet/Purple */
-
-      /* AQI Status Badges */
-      .badge-aqi-good {
-        background: rgba(16, 185, 129, 0.2) !important;
-        color: #34d399 !important;
-        border: 1px solid rgba(16, 185, 129, 0.4) !important;
-      }
-
-      .badge-aqi-mod {
-        background: rgba(245, 158, 11, 0.2) !important;
-        color: #fbbf24 !important;
-        border: 1px solid rgba(245, 158, 11, 0.4) !important;
-      }
+      .text-label-humidity { color: #c084fc !important; } /* Purple */
     </style>
 </head>
 <body class="py-4 py-md-5">
@@ -90,8 +123,7 @@
                     </span>
                     <input type="text" 
                            id="details-location-input" 
-                           class="form-control" 
-                           style="background: rgba(15, 23, 42, 0.5); color: #f8fafc; border-color: rgba(255, 255, 255, 0.1);" 
+                           class="form-control search-input-custom" 
                            placeholder="Enter city to change location (e.g., Mumbai, Delhi, Hyderabad)..." 
                            autocomplete="off" 
                            oninput="onTypeDetailsSearch(this.value)"
@@ -231,7 +263,6 @@
                     d.setDate(d.getDate() + i);
                     const dateStr = `${daysOfWeek[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
 
-                    // Weather telemetry defaults
                     let tempMax = Math.round(weatherData.daily?.temperature_2m_max?.[i] ?? 28);
                     let tempMin = Math.round(weatherData.daily?.temperature_2m_min?.[i] ?? 22);
                     let rain = Math.round(weatherData.daily?.precipitation_probability_max?.[i] ?? 15);
@@ -243,8 +274,8 @@
                     let sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:05 AM';
                     let sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:45 PM';
 
-                    // Query Railway qBraid Quantum Endpoint safely
-                    let dayAqi = 35;
+                    // Query live Quantum AQI from Railway
+                    let dayAqi = 37;
                     try {
                         const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${tempMax}&humidity=${humidity}&wind=${wind}&day_index=${i}`);
                         const qData = await qRes.json();
@@ -252,14 +283,24 @@
                             dayAqi = qData.quantum_aqi;
                         }
                     } catch (qErr) {
-                        // Quantum fallback math if Railway cold-starts
                         const theta = (tempMax / 50.0) * Math.PI;
-                        dayAqi = Math.round(35 + (tempMax * 0.4) + (humidity * 0.1) + (Math.cos(theta) * 6) + (i * 2));
+                        dayAqi = Math.round(35 + (tempMax * 0.3) + (humidity * 0.08) + (Math.cos(theta) * 4) + (i * 0.5));
                     }
 
-                    // AQI status badge styling
-                    let status = dayAqi <= 50 ? "Good" : dayAqi <= 100 ? "Moderate" : "Unhealthy";
-                    let badgeClass = dayAqi <= 50 ? "badge-quantum-good" : "badge-quantum-mod";
+                    // Dynamic Color Logic based on AQI Value
+                    let status = "Good";
+                    let badgeClass = "badge-aqi-good";
+
+                    if (dayAqi <= 50) {
+                        status = "Good";
+                        badgeClass = "badge-aqi-good"; // Bright Green
+                    } else if (dayAqi <= 100) {
+                        status = "Moderate";
+                        badgeClass = "badge-aqi-moderate"; // Bright Yellow
+                    } else {
+                        status = "Unhealthy";
+                        badgeClass = "badge-aqi-unhealthy"; // Bright Red
+                    }
 
                     cardsHTML += `
                         <div class="card card-quantum-glass rounded-4 p-4 mb-3">
@@ -269,12 +310,12 @@
                                     ${i === 0 ? '<span class="badge rounded-pill px-3 py-1.5 fs-7 fw-bold" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #ffffff;">TODAY</span>' : ''}
                                     <h4 class="fw-bold m-0 text-white tracking-wide">${dateStr}</h4>
                                 </div>
-                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-semibold fs-6 d-inline-flex align-items-center gap-2">
+                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center gap-2">
                                     <span style="font-size: 8px;">●</span> AQI ${dayAqi} • ${status}
                                 </span>
                             </div>
 
-                            <!-- Telemetry Metrics Grid with High-Contrast Text Labels -->
+                            <!-- Telemetry Metrics Grid -->
                             <div class="row g-2">
                                 <div class="col-6 col-md-2">
                                     <div class="tile-metric">
@@ -321,21 +362,9 @@
                 if (wrapper) wrapper.innerHTML = cardsHTML;
 
             } catch (err) {
-                console.error("Forecast fetch error:", err);
-                if (wrapper) {
-                    wrapper.innerHTML = `<div class="alert alert-danger">Unable to load quantum forecast data. Please try refreshing.</div>`;
-                }
+                console.error("Forecast error:", err);
             }
         }
-
-        // Close suggestions menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const suggestionsList = document.getElementById('details-suggestions-list');
-            const searchInput = document.getElementById('details-location-input');
-            if (suggestionsList && searchInput && !searchInput.contains(e.target)) {
-                suggestionsList.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>
