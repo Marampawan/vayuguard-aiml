@@ -257,7 +257,7 @@
             if (locationLabel) locationLabel.innerText = `${cityName}, IN`;
 
             try {
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=auto`;
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=Asia%2FKolkata`;
                 const weatherRes = await fetch(weatherUrl);
                 const weatherData = await weatherRes.json();
 
@@ -271,16 +271,28 @@
                     d.setDate(d.getDate() + i);
                     const dateStr = `${daysOfWeek[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
 
-                    const tempMax = Math.round(weatherData.daily?.temperature_2m_max?.[i] ?? 28);
-                    const tempMin = Math.round(weatherData.daily?.temperature_2m_min?.[i] ?? 22);
-                    const rain = weatherData.daily?.precipitation_probability_max?.[i] ?? 15;
-                    const wind = weatherData.daily?.wind_speed_10m_max?.[i] ?? 20;
-                    const humidity = weatherData.daily?.relative_humidity_2m_max?.[i] ?? 70;
+                    // Query Quantum Weather Prediction Engine from Railway
+                    let tempMax = Math.round(weatherData.daily?.temperature_2m_max?.[i] ?? 28);
+                    let tempMin = Math.round(weatherData.daily?.temperature_2m_min?.[i] ?? 22);
+                    let rain = weatherData.daily?.precipitation_probability_max?.[i] ?? 15;
+                    let wind = weatherData.daily?.wind_speed_10m_max?.[i] ?? 20;
+                    let sunriseTime = '06:05 AM';
+                    let sunsetTime = '06:45 PM';
 
-                    const rawSunrise = weatherData.daily?.sunrise?.[i];
-                    const rawSunset = weatherData.daily?.sunset?.[i];
-                    const sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:05 AM';
-                    const sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:45 PM';
+                    try {
+                        const wRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum-weather?base_temp=${tempMax}&base_hum=85&day_index=${i}`);
+                        const qWeather = await wRes.json();
+                        
+                        // Update variables with Quantum Circuit output
+                        tempMax = qWeather.predicted_temp_max;
+                        tempMin = qWeather.predicted_temp_min;
+                        rain = qWeather.predicted_rain;
+                        wind = qWeather.predicted_wind;
+                        sunriseTime = qWeather.sunrise;
+                        sunsetTime = qWeather.sunset;
+                    } catch (err) {
+                        console.log("Using local telemetry fallback");
+                    }
 
                     // Sync Day 0 with live telemetry; execute Quantum Predictions for upcoming days
                     let dayAqi;

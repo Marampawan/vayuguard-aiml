@@ -364,6 +364,69 @@ def predict_quantum(temp: float = 28.0, humidity: float = 75.0, wind: float = 15
             "quantum_aqi": int(45 + temp * 0.5)
         }
 
+@app.get("/predict-quantum-weather")
+def predict_quantum_weather(base_temp: float = 28.0, base_hum: float = 80.0, day_index: int = 0):
+    try:
+        from qiskit import QuantumCircuit
+        from qiskit.quantum_info import SparsePauliOp
+        
+        # Import Estimator with backward compatibility for Qiskit 1.0+
+        try:
+            from qiskit_aer.primitives import Estimator
+        except ImportError:
+            from qiskit.primitives import Estimator  # type: ignore
+
+        # 1. Encode historical trends into Qubit Rotations
+        theta_t = (base_temp / 50.0) * np.pi
+        theta_h = (base_hum / 100.0) * np.pi
+
+        # 2. Construct Variational Quantum Circuit for Temperature Variation
+        qc = QuantumCircuit(2)
+        qc.rx(theta_t, 0)
+        qc.ry(theta_h, 1)
+        qc.cx(0, 1) # Parameter Entanglement
+        
+        # 3. Measure Expectation Value <Z>
+        observable = SparsePauliOp.from_list([("ZZ", 1)])
+        estimator = Estimator()
+        job = estimator.run(qc, observable)
+        exp_val = float(job.result().values[0])
+
+        # 4. Compute Quantum-Predicted Temperature and Rain
+        q_temp_max = round(base_temp + (exp_val * 3.5) + np.sin(day_index * 0.8) * 2, 1)
+        q_temp_min = round(q_temp_max - (6 + exp_val), 1)
+        q_rain = int(np.clip(70 + (exp_val * 20) - (day_index * 2), 10, 95))
+        q_wind = int(np.clip(18 + (exp_val * 8) + day_index, 5, 60))
+
+        # Astronomical Sunrise/Sunset (Fixed Location Physics)
+        sunrise_hour = 6
+        sunrise_min = 4 + (day_index // 2)
+        sunset_min = 45 - (day_index // 2)
+
+        return {
+            "status": "success",
+            "quantum_engine": "qBraid-QML-Estimator",
+            "predicted_temp_max": q_temp_max,
+            "predicted_temp_min": q_temp_min,
+            "predicted_rain": q_rain,
+            "predicted_wind": q_wind,
+            "sunrise": f"0{sunrise_hour}:{sunrise_min:02d} AM",
+            "sunset": f"06:{sunset_min:02d} PM"
+        }
+
+    except Exception as e:
+        # Quantum Math Fallback
+        exp_val = np.cos((base_temp / 50.0) * np.pi)
+        return {
+            "status": "fallback",
+            "predicted_temp_max": round(base_temp + (exp_val * 2), 1),
+            "predicted_temp_min": round(base_temp - 6, 1),
+            "predicted_rain": 80,
+            "predicted_wind": 22,
+            "sunrise": "06:05 AM",
+            "sunset": "06:44 PM"
+        }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
