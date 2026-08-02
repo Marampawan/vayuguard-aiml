@@ -432,20 +432,27 @@
             }
         }
 
-        // Fetch Live AQI Telemetry & Render Marker
+        // SYNCED TELEMETRY FETCH FOR MAIN DASHBOARD
         async function updateMapMarker(lat, lon, cityName) {
             let aqiText = "AQI: Fetching...";
             
             try {
-                const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`);
+                // Query both current AQI and daily max forecast
+                const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi&daily=us_aqi_max&timezone=auto`);
                 const data = await res.json();
-                if (data && data.current && data.current.us_aqi !== undefined) {
-                    const aqi = data.current.us_aqi;
-                    let status = aqi <= 50 ? "Good" : aqi <= 100 ? "Moderate" : "Unhealthy";
-                    aqiText = `<b>AQI: ${aqi} (${status})</b>`;
-                }
+                
+                // Match priority: Current US AQI -> Daily Max US AQI -> Fallback
+                const liveAqi = data.current?.us_aqi ?? data.daily?.us_aqi_max?.[0] ?? 50;
+                let status = liveAqi <= 50 ? "Good" : liveAqi <= 100 ? "Moderate" : "Unhealthy";
+                
+                // Update main dashboard metrics
+                const aqiValueElement = document.getElementById('current-aqi-value');
+                if (aqiValueElement) aqiValueElement.innerText = liveAqi;
+                aqiText = `<b>AQI: ${liveAqi} (${status})</b>`;
+                
             } catch (e) {
-                aqiText = "<b>AQI: 85 (Moderate)</b>";
+                console.error("AQI Fetch Error:", e);
+                aqiText = "<b>AQI: 50 (Moderate)</b>";
             }
 
             if (activeMarker) {

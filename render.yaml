@@ -1,9 +1,14 @@
 services:
   - type: web
-    name: vayuguard-ml
+    name: vayuguard-quantum-api
     runtime: python
+    plan: free  # or 'starter' for paid tier
     buildCommand: pip install -r requirements.txt
-    startCommand: python src/api/main.py
+    startCommand: uvicorn src.api.quantum_predict:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: QBRAID_API_KEY
+        sync: false  # Set this manually in Render dashboard
       - key: PYTHON_VERSION
         value: 3.11.0
+    healthCheckPath: /health
+    autoDeploy: true
