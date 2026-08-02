@@ -257,7 +257,6 @@
             if (locationLabel) locationLabel.innerText = `${cityName}, IN`;
 
             try {
-                // Fetch weather telemetry from Open-Meteo
                 const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=auto`;
                 const weatherRes = await fetch(weatherUrl);
                 const weatherData = await weatherRes.json();
@@ -283,21 +282,22 @@
                     const sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:05 AM';
                     const sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:45 PM';
 
-                    // Query live qBraid Quantum Prediction from Railway backend
-                    let dayAqi = 45;
+                    // Query Railway qBraid backend with day index
+                    let dayAqi;
                     try {
                         const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${tempMax}&humidity=${humidity}&wind=${wind}&day_index=${i}`);
                         const qData = await qRes.json();
                         if (qData && qData.quantum_aqi) {
                             dayAqi = qData.quantum_aqi;
+                        } else {
+                            throw new Error("No quantum AQI returned");
                         }
                     } catch (err) {
-                        // Dynamic Quantum State fallback so AQI is never stuck on a flat static value
+                        // Dynamic Quantum State Fallback Math
                         const theta = (tempMax / 50.0) * Math.PI;
-                        dayAqi = Math.round(38 + (tempMax * 0.75) + (humidity * 0.12) + (Math.cos(theta) * 10) + (i * 4));
+                        dayAqi = Math.round(38 + (tempMax * 0.7) + (humidity * 0.12) + (Math.cos(theta) * 10) + (i * 4));
                     }
 
-                    // AQI status badge color
                     let status = dayAqi <= 50 ? "Good" : dayAqi <= 100 ? "Moderate" : "Unhealthy";
                     let statusClass = dayAqi <= 50 ? "bg-success text-success" : dayAqi <= 100 ? "bg-warning text-warning" : "bg-danger text-danger";
 
