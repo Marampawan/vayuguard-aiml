@@ -149,8 +149,14 @@
                     </div>
 
                     <!-- QUANTUM RECALCULATE BUTTON -->
-                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2 d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="runQuantumPrediction()">
+                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2 d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="runQuantumPrediction()"></button>
                         <i class="fas fa-atom fa-spin"></i>
+                        <span>Execute Quantum AQI Prediction</span>
+                    </button>
+
+                    <!-- QUANTUM EXECUTE BUTTON -->
+                    <button id="execute-quantum-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2 d-flex align-items-center justify-content-center gap-2 mt-2" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+                        <i class="fas fa-atom me-2"></i>
                         <span>Execute Quantum AQI Prediction</span>
                     </button>
                 </div>
@@ -705,6 +711,67 @@
                 }
             }
         }
+    </script>
+
+    <script>
+      // 1. Sync Slider Input Values to Display Text
+      const tempSlider = document.getElementById('temp-slider');
+      const windSlider = document.getElementById('wind-slider');
+      const humSlider = document.getElementById('humidity-slider');
+
+      tempSlider?.addEventListener('input', (e) => {
+        const valEl = document.getElementById('temp-val');
+        if (valEl) valEl.innerText = e.target.value;
+      });
+
+      windSlider?.addEventListener('input', (e) => {
+        const valEl = document.getElementById('wind-val');
+        if (valEl) valEl.innerText = e.target.value;
+      });
+
+      humSlider?.addEventListener('input', (e) => {
+        const valEl = document.getElementById('hum-val');
+        if (valEl) valEl.innerText = e.target.value;
+      });
+
+      // 2. Execute Quantum Prediction Button
+      const executeBtn = document.getElementById('execute-quantum-btn');
+
+      executeBtn?.addEventListener('click', async () => {
+        const temp = tempSlider ? tempSlider.value : 28.4;
+        const wind = windSlider ? windSlider.value : 23.0;
+        const humidity = humSlider ? humSlider.value : 75.0;
+
+        executeBtn.disabled = true;
+        executeBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Executing qBraid Quantum Circuit...`;
+
+        try {
+          // Call Railway Quantum Backend
+          const response = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (data && data.quantum_aqi !== undefined) {
+            // Update Map Marker Popup and Page Telemetry
+            const markerAQI = document.querySelector('.leaflet-popup-content');
+            if (markerAQI) {
+              markerAQI.innerHTML = `<strong>Bengaluru (Custom Telemetry)</strong><br>AQI: ${data.quantum_aqi} (${data.status})<br><small>Quantum Circuit Calculated</small>`;
+            }
+            
+            alert(`Quantum Computation Complete!\n\nSimulated AQI: ${data.quantum_aqi}\nEngine: ${data.quantum_engine || 'qBraid Qiskit Estimator'}`);
+          }
+        } catch (err) {
+          console.error("Quantum execution error:", err);
+          alert("Unable to reach Railway quantum backend. Please verify backend service status.");
+        } finally {
+          executeBtn.disabled = false;
+          executeBtn.innerHTML = `<i class="fas fa-atom me-2"></i> Execute Quantum AQI Prediction`;
+        }
+      });
     </script>
 
 </body>
