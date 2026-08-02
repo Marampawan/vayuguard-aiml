@@ -7,54 +7,57 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      /* Dark Modern Tech Aesthetics */
+      /* Dark High-Tech Modern Background */
       body {
-        background: #0b0f19 !important;
+        background: #090d16 !important;
         color: #f8fafc !important;
         font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
       }
 
-      /* Glassmorphic Container Cards */
+      /* Sleek Glassmorphic Card */
       .card-quantum-glass {
-        background: rgba(15, 23, 42, 0.75);
+        background: rgba(15, 23, 42, 0.85);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .card-quantum-glass:hover {
-        border-color: rgba(124, 58, 237, 0.4);
-        box-shadow: 0 15px 35px -5px rgba(124, 58, 237, 0.2);
+        border-color: rgba(139, 92, 246, 0.5);
+        box-shadow: 0 12px 30px -5px rgba(139, 92, 246, 0.25);
         transform: translateY(-2px);
       }
 
-      /* Sleek Metric Tiles with Glow Icons */
+      /* High-Contrast Tile Boxes */
       .tile-metric {
-        background: rgba(30, 41, 59, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: all 0.2s ease;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
       }
 
-      .tile-metric:hover {
-        background: rgba(30, 41, 59, 0.8);
-        border-color: rgba(255, 255, 255, 0.15);
-      }
+      /* Text Contrast Color Classes */
+      .text-label-temp { color: #38bdf8 !important; }     /* Sky Blue */
+      .text-label-sunrise { color: #fbbf24 !important; }  /* Bright Gold */
+      .text-label-sunset { color: #fb7185 !important; }   /* Rose/Orange */
+      .text-label-rain { color: #60a5fa !important; }     /* Soft Blue */
+      .text-label-wind { color: #cbd5e1 !important; }     /* Bright Silver */
+      .text-label-humidity { color: #c084fc !important; } /* Violet/Purple */
 
-      /* High Contrast Quantum AQI Badges */
+      /* AQI Status Badges */
       .badge-aqi-good {
-        background: rgba(16, 185, 129, 0.15) !important;
+        background: rgba(16, 185, 129, 0.2) !important;
         color: #34d399 !important;
-        border: 1px solid rgba(16, 185, 129, 0.3) !important;
-        box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.4) !important;
       }
 
       .badge-aqi-mod {
-        background: rgba(245, 158, 11, 0.15) !important;
+        background: rgba(245, 158, 11, 0.2) !important;
         color: #fbbf24 !important;
-        border: 1px solid rgba(245, 158, 11, 0.3) !important;
-        box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+        border: 1px solid rgba(245, 158, 11, 0.4) !important;
       }
     </style>
 </head>
@@ -271,41 +274,41 @@
                                 </span>
                             </div>
 
-                            <!-- Telemetry Metrics Grid -->
+                            <!-- Telemetry Metrics Grid with High-Contrast Text Labels -->
                             <div class="row g-2">
                                 <div class="col-6 col-md-2">
-                                    <div class="tile-metric p-3 rounded-3 text-center">
-                                        <span class="d-block text-cyan-400 small fw-semibold mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
+                                    <div class="tile-metric">
+                                        <span class="d-block text-label-temp small fw-bold mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
                                         <strong class="text-white fs-6 fw-bold">${tempMin}°C / ${tempMax}°C</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="tile-metric p-3 rounded-3 text-center">
-                                        <span class="d-block text-amber-400 small fw-semibold mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
+                                    <div class="tile-metric">
+                                        <span class="d-block text-label-sunrise small fw-bold mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
                                         <strong class="text-white fs-6 fw-bold">${sunriseTime}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="tile-metric p-3 rounded-3 text-center">
-                                        <span class="d-block text-rose-400 small fw-semibold mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
+                                    <div class="tile-metric">
+                                        <span class="d-block text-label-sunset small fw-bold mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
                                         <strong class="text-white fs-6 fw-bold">${sunsetTime}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="tile-metric p-3 rounded-3 text-center">
-                                        <span class="d-block text-blue-400 small fw-semibold mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
+                                    <div class="tile-metric">
+                                        <span class="d-block text-label-rain small fw-bold mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
                                         <strong class="text-white fs-6 fw-bold">${rain}%</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="tile-metric p-3 rounded-3 text-center">
-                                        <span class="d-block text-slate-300 small fw-semibold mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
+                                    <div class="tile-metric">
+                                        <span class="d-block text-label-wind small fw-bold mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
                                         <strong class="text-white fs-6 fw-bold">${wind} km/h</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="tile-metric p-3 rounded-3 text-center">
-                                        <span class="d-block small fw-semibold mb-1" style="color: #c084fc;"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
+                                    <div class="tile-metric">
+                                        <span class="d-block text-label-humidity small fw-bold mb-1"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
                                         <strong class="text-white fs-6 fw-bold">${humidity}%</strong>
                                     </div>
                                 </div>
