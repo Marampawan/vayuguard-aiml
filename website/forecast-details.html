@@ -124,7 +124,7 @@
                 </a>
             </div>
 
-            <!-- LOCATION SEARCH INPUT BAR -->
+            <!-- LOCATION SEARCH INPUT WITH LIVE AUTO-COMPLETE -->
             <div class="position-relative">
                 <div class="input-group">
                     <span class="input-group-text bg-dark border-secondary text-white-50">
@@ -133,8 +133,9 @@
                     <input type="text" 
                            id="details-location-input" 
                            class="form-control bg-dark text-white border-secondary" 
-                           placeholder="Enter city to change location (e.g., Delhi, Mumbai, Hyderabad)..." 
+                           placeholder="Enter city to change location (e.g., Mumbai, Delhi, Hyderabad)..." 
                            autocomplete="off" 
+                           oninput="onTypeDetailsSearch(this.value)"
                            onkeypress="if(event.key==='Enter') searchDetailsLocation()">
                     <button class="btn btn-purple text-white fw-semibold px-4" 
                             style="background: linear-gradient(135deg, #7209b7, #8a2be2);" 
@@ -142,6 +143,11 @@
                         Update Forecast
                     </button>
                 </div>
+
+                <!-- Dropdown Menu for Auto-Complete Suggestions -->
+                <ul id="details-suggestions-list" 
+                    class="dropdown-menu dropdown-menu-dark w-100 shadow-lg border-secondary position-absolute" 
+                    style="display: none; top: 100%; z-index: 1000; max-height: 220px; overflow-y: auto;"></ul>
             </div>
         </div>
 
@@ -167,6 +173,57 @@
                 fetchDynamic7DayForecast(12.9716, 77.5946, "Bengaluru");
             }
         });
+
+        // Typing Auto-Complete Suggestions for Details Page (India-First Preference)
+        let detailsDebounceTimer;
+        function onTypeDetailsSearch(query) {
+            clearTimeout(detailsDebounceTimer);
+            const suggestionsList = document.getElementById('details-suggestions-list');
+
+            if (!query || query.trim().length < 2) {
+                if (suggestionsList) suggestionsList.style.display = 'none';
+                return;
+            }
+
+            detailsDebounceTimer = setTimeout(async () => {
+                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
+                
+                try {
+                    let response = await fetch(url);
+                    let data = await response.json();
+
+                    if (!data || data.length === 0) {
+                        url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
+                        response = await fetch(url);
+                        data = await response.json();
+                    }
+
+                    if (suggestionsList) {
+                        suggestionsList.innerHTML = '';
+                        if (data && data.length > 0) {
+                            data.forEach(place => {
+                                const li = document.createElement('li');
+                                li.className = 'dropdown-item text-truncate py-2 px-3 border-bottom border-secondary border-opacity-25';
+                                li.style.cursor = 'pointer';
+                                li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i><strong>${place.display_name}</strong>`;
+                                
+                                li.onclick = () => {
+                                    document.getElementById('details-location-input').value = place.display_name.split(',')[0];
+                                    suggestionsList.style.display = 'none';
+                                    fetchDynamic7DayForecast(parseFloat(place.lat), parseFloat(place.lon), place.display_name.split(',')[0]);
+                                };
+                                suggestionsList.appendChild(li);
+                            });
+                            suggestionsList.style.display = 'block';
+                        } else {
+                            suggestionsList.style.display = 'none';
+                        }
+                    }
+                } catch (err) {
+                    console.error('Suggestions error:', err);
+                }
+            }, 250);
+        }
 
         // Search Location Handler
         async function searchDetailsLocation() {
@@ -194,75 +251,101 @@
             }
         }
 
-        // Generate current dates automatically + Fetch Live Open-Meteo & qBraid Telemetry
+        // EXACT MATCH 7-DAY FORECAST WITH SUNRISE, SUNSET, AND MIN/MAX TEMP
         async function fetchDynamic7DayForecast(lat, lon, cityName) {
             const wrapper = document.getElementById('forecast-cards-wrapper');
             const locationLabel = document.getElementById('current-location-label');
             if (locationLabel) locationLabel.innerText = `${cityName}, IN`;
 
             try {
-                const aqiRes = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&daily=us_aqi_max,pm2_5_max&timezone=auto`);
-                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=auto`);
+                const aqiRes = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi&daily=us_aqi_max,pm2_5_max&timezone=auto`);
+                // Request min/max temp, sunrise, sunset, wind, rain, and humidity
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=auto`);
                 
                 const aqiData = await aqiRes.json();
                 const weatherData = await weatherRes.json();
 
+                const todayLiveAqi = aqiData.current?.us_aqi ?? aqiData.daily?.us_aqi_max?.[0] ?? 50;
                 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
                 let cardsHTML = '';
 
                 for (let i = 0; i < 7; i++) {
-                    // AUTOMATIC DATE CALCULATION STARTING TODAY
                     const d = new Date();
                     d.setDate(d.getDate() + i);
                     const dateStr = `${daysOfWeek[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
 
-                    // qBraid Quantum Expectation Adjustment
-                    const rawAqi = aqiData.daily?.us_aqi_max?.[i] || Math.round(45 + Math.random() * 20);
-                    const quantumBias = Math.round(Math.sin((i + 1) * 0.8) * 6);
-                    const liveAqi = Math.max(10, rawAqi + quantumBias);
+                    const dayAqi = (i === 0) ? todayLiveAqi : (aqiData.daily?.us_aqi_max?.[i] ?? 50);
 
-                    const temp = weatherData.daily?.temperature_2m_max?.[i] ?? 28;
+                    // Extract Min & Max Temp
+                    const tempMax = Math.round(weatherData.daily?.temperature_2m_max?.[i] ?? 30);
+                    const tempMin = Math.round(weatherData.daily?.temperature_2m_min?.[i] ?? 22);
+
+                    // Extract and format Sunrise & Sunset times (e.g., 06:05 AM)
+                    const rawSunrise = weatherData.daily?.sunrise?.[i];
+                    const rawSunset = weatherData.daily?.sunset?.[i];
+                    
+                    const sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
+                    const sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
+
                     const rain = weatherData.daily?.precipitation_probability_max?.[i] ?? 15;
                     const wind = weatherData.daily?.wind_speed_10m_max?.[i] ?? 20;
                     const humidity = weatherData.daily?.relative_humidity_2m_max?.[i] ?? 70;
 
-                    let status = liveAqi <= 50 ? "Good" : liveAqi <= 100 ? "Moderate" : "Unhealthy";
-                    let statusClass = liveAqi <= 50 ? "bg-success text-success" : liveAqi <= 100 ? "bg-warning text-warning" : "bg-danger text-danger";
+                    let status = dayAqi <= 50 ? "Good" : dayAqi <= 100 ? "Moderate" : "Unhealthy";
+                    let statusClass = dayAqi <= 50 ? "bg-success text-success" : dayAqi <= 100 ? "bg-warning text-warning" : "bg-danger text-danger";
 
                     cardsHTML += `
-                        <div class="card card-custom text-light p-4 shadow rounded-4 border border-secondary border-opacity-25" style="background: rgba(255, 255, 255, 0.03);">
+                        <div class="card card-custom text-light p-4 shadow rounded-4 border border-secondary border-opacity-25 mb-3" style="background: rgba(255, 255, 255, 0.03);">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                                 <div class="d-flex align-items-center gap-2">
                                     ${i === 0 ? '<span class="badge bg-purple text-white rounded-pill px-2.5 py-1 small fw-bold" style="background: #7209b7;">TODAY</span>' : ''}
                                     <h4 class="fw-bold m-0 text-white">${dateStr}</h4>
                                 </div>
                                 <span class="badge ${statusClass} bg-opacity-25 border border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold">
-                                    ● AQI ${liveAqi} • ${status}
+                                    ● AQI ${dayAqi} • ${status}
                                 </span>
                             </div>
 
                             <div class="row g-2 text-white-50 small">
-                                <div class="col-6 col-md-3">
+                                <!-- TEMP MIN / MAX -->
+                                <div class="col-6 col-md-2">
                                     <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
                                         <span class="d-block text-info small"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
-                                        <strong class="text-white fs-6">${Math.round(temp)}°C</strong>
+                                        <strong class="text-white fs-6">${tempMin}°C / ${tempMax}°C</strong>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <!-- SUNRISE -->
+                                <div class="col-6 col-md-2">
+                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
+                                        <span class="d-block text-warning small"><i class="fas fa-sun me-1"></i> SUNRISE</span>
+                                        <strong class="text-white fs-6">${sunriseTime}</strong>
+                                    </div>
+                                </div>
+                                <!-- SUNSET -->
+                                <div class="col-6 col-md-2">
+                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
+                                        <span class="d-block text-danger small"><i class="fas fa-moon me-1"></i> SUNSET</span>
+                                        <strong class="text-white fs-6">${sunsetTime}</strong>
+                                    </div>
+                                </div>
+                                <!-- RAIN -->
+                                <div class="col-6 col-md-2">
                                     <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
                                         <span class="d-block text-primary small"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
                                         <strong class="text-white fs-6">${Math.round(rain)}%</strong>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <!-- WIND -->
+                                <div class="col-6 col-md-2">
                                     <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-warning small"><i class="fas fa-wind me-1"></i> WIND</span>
+                                        <span class="d-block text-white-50 small"><i class="fas fa-wind me-1"></i> WIND</span>
                                         <strong class="text-white fs-6">${Math.round(wind)} km/h</strong>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
+                                <!-- HUMIDITY -->
+                                <div class="col-6 col-md-2">
                                     <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
                                         <span class="d-block text-purple small" style="color: #c77dff;"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
                                         <strong class="text-white fs-6">${Math.round(humidity)}%</strong>
@@ -276,9 +359,18 @@
                 if (wrapper) wrapper.innerHTML = cardsHTML;
 
             } catch (err) {
-                console.error("Dynamic forecast update error:", err);
+                console.error("Forecast fetch error:", err);
             }
         }
+
+        // Close suggestions menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const suggestionsList = document.getElementById('details-suggestions-list');
+            const searchInput = document.getElementById('details-location-input');
+            if (suggestionsList && searchInput && !searchInput.contains(e.target)) {
+                suggestionsList.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
