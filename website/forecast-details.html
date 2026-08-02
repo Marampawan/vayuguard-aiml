@@ -101,6 +101,43 @@
             border: 1px dashed rgba(157, 78, 221, 0.4);
             border-radius: 18px;
         }
+
+        .card-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-glass:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(114, 9, 183, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .param-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s ease;
+        }
+
+        .param-box:hover {
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .badge-quantum-good {
+            background: rgba(16, 185, 129, 0.12) !important;
+            color: #10b981 !important;
+            border: 1px solid rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .badge-quantum-mod {
+            background: rgba(245, 158, 11, 0.12) !important;
+            color: #f59e0b !important;
+            border: 1px solid rgba(245, 158, 11, 0.25) !important;
+        }
     </style>
 </head>
 <body class="py-4 py-md-5">
@@ -300,55 +337,57 @@
 
                     // AQI status badge styling
                     let status = dayAqi <= 50 ? "Good" : dayAqi <= 100 ? "Moderate" : "Unhealthy";
-                    let statusClass = dayAqi <= 50 ? "bg-success text-success" : dayAqi <= 100 ? "bg-warning text-warning" : "bg-danger text-danger";
+                    let badgeClass = dayAqi <= 50 ? "badge-quantum-good" : "badge-quantum-mod";
 
                     cardsHTML += `
-                        <div class="card card-custom text-light p-4 shadow rounded-4 border border-secondary border-opacity-25 mb-3" style="background: rgba(255, 255, 255, 0.03);">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <div class="card card-glass rounded-4 p-4 mb-3 shadow-lg">
+                            <!-- Card Header -->
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-secondary border-opacity-10">
                                 <div class="d-flex align-items-center gap-2">
-                                    ${i === 0 ? '<span class="badge bg-purple text-white rounded-pill px-2.5 py-1 small fw-bold" style="background: #7209b7;">TODAY</span>' : ''}
-                                    <h4 class="fw-bold m-0 text-white">${dateStr}</h4>
+                                    ${i === 0 ? '<span class="badge rounded-pill px-3 py-1.5 fs-7 fw-bold" style="background: linear-gradient(135deg, #7209b7, #4361ee); color: #fff;">TODAY</span>' : ''}
+                                    <h4 class="fw-bold m-0 text-white tracking-wide">${dateStr}</h4>
                                 </div>
-                                <span class="badge ${statusClass} bg-opacity-25 border border-opacity-25 px-3 py-1.5 rounded-pill fw-semibold">
-                                    ● AQI ${dayAqi} • ${status}
+                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-semibold fs-6 d-inline-flex align-items-center gap-1.5">
+                                    <span style="font-size: 8px;">●</span> AQI ${dayAqi} • ${status}
                                 </span>
                             </div>
 
-                            <div class="row g-2 text-white-50 small">
+                            <!-- Telemetry Metrics Grid -->
+                            <div class="row g-2">
                                 <div class="col-6 col-md-2">
-                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-info small"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
-                                        <strong class="text-white fs-6">${tempMin}°C / ${tempMax}°C</strong>
+                                    <div class="param-box p-3 rounded-3 text-center">
+                                        <span class="d-block text-info small fw-medium mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
+                                        <strong class="text-white fs-6 fw-semibold">${tempMin}°C / ${tempMax}°C</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-warning small"><i class="fas fa-sun me-1"></i> SUNRISE</span>
-                                        <strong class="text-white fs-6">${sunriseTime}</strong>
+                                    <div class="param-box p-3 rounded-3 text-center">
+                                        <span class="d-block text-warning small fw-medium mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
+                                        <strong class="text-white fs-6 fw-semibold">${sunriseTime}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-danger small"><i class="fas fa-moon me-1"></i> SUNSET</span>
-                                        <strong class="text-white fs-6">${sunsetTime}</strong>
+                                    <div class="param-box p-3 rounded-3 text-center">
+                                        <span class="d-block text-danger small fw-medium mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
+                                        <strong class="text-white fs-6 fw-semibold">${sunsetTime}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-primary small"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
-                                        <strong class="text-white fs-6">${rain}%</strong>
+                                    <div class="param-box p-3 rounded-3 text-center">
+                                        <span class="d-block text-primary small fw-medium mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
+                                        <strong class="text-white fs-6 fw-semibold">${rain}%</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-white-50 small"><i class="fas fa-wind me-1"></i> WIND</span>
-                                        <strong class="text-white fs-6">${wind} km/h</strong>
+                                    <div class="param-box p-3 rounded-3 text-center">
+                                        <span class="d-block text-light opacity-75 small fw-medium mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
+                                        <strong class="text-white fs-6 fw-semibold">${wind} km/h</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="p-2.5 rounded-3 bg-dark bg-opacity-50 border border-secondary border-opacity-10">
-                                        <span class="d-block text-purple small" style="color: #c77dff;"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
-                                        <strong class="text-white fs-6">${humidity}%</strong>
+                                    <div class="param-box p-3 rounded-3 text-center">
+                                        <span class="d-block small fw-medium mb-1" style="color: #c77dff;"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
+                                        <strong class="text-white fs-6 fw-semibold">${humidity}%</strong>
                                     </div>
                                 </div>
                             </div>
