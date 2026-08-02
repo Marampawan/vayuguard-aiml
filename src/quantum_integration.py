@@ -4,7 +4,7 @@ Hybrid quantum-classical circuit for AQI prediction
 """
 import os
 import numpy as np
-from typing import Optional, Dict
+from typing import Optional, Dict, Any, cast
 
 # Import qBraid and Qiskit
 try:
@@ -16,8 +16,15 @@ except ImportError:
     QBRAD_AVAILABLE = False
     print("Warning: qBraid or Qiskit not installed. Install with: pip install qbraid qiskit qiskit-aer")
 
+# Import qBraid device functions (outside try-except for proper type checking)
+if QBRAD_AVAILABLE:
+    from qbraid import get_device, get_devices  # type: ignore
+
 # Import secure config
-from config import QBRAID_API_KEY
+try:
+    from src.config import QBRAID_API_KEY
+except ImportError:
+    from config import QBRAID_API_KEY
 
 # Set qBraid API key from environment
 if QBRAD_AVAILABLE and QBRAID_API_KEY:
@@ -67,12 +74,12 @@ def run_qbraid_prediction(temp: float, humidity: float, wind: float, use_simulat
     try:
         if use_simulator:
             # Use qBraid's quantum simulator
-            device = qbraid.get_device("qbraid_qasm_simulator")
+            device = get_device("qbraid_qasm_simulator")  # type: ignore
         else:
             # Use real quantum hardware (requires credits)
-            device = qbraid.get_device("qbraid_qpu")
+            device = get_device("qbraid_qpu")  # type: ignore
         
-        job = device.run(qc, shots=1024)
+        job = device.run(qc, shots=1024)  # type: ignore
         
         # 4. Extract Measurement Results
         result = job.result()
@@ -122,7 +129,7 @@ def run_qbraid_batch_prediction(telemetry_data: list[Dict]) -> list[int]:
     return predictions
 
 
-def check_qbraid_connection() -> Dict[str, any]:
+def check_qbraid_connection() -> Dict[str, Any]:
     """
     Check qBraid connection and available devices
     
@@ -144,11 +151,11 @@ def check_qbraid_connection() -> Dict[str, any]:
         }
     
     try:
-        devices = qbraid.get_devices()
+        devices = get_devices()  # type: ignore
         return {
             "connected": True,
             "error": None,
-            "devices": [str(d) for d in devices]
+            "devices": [str(d) for d in devices]  # type: ignore
         }
     except Exception as e:
         return {
@@ -187,7 +194,12 @@ if __name__ == "__main__":
         for i, test in enumerate(test_cases, 1):
             print(f"\nTest {i}: Temp={test['temp']}°C, Humidity={test['humidity']}%, Wind={test['wind']}km/h")
             try:
-                aqi = run_qbraid_prediction(**test)
+                aqi = run_qbraid_prediction(
+                    temp=test['temp'],
+                    humidity=test['humidity'],
+                    wind=test['wind'],
+                    use_simulator=True
+                )
                 print(f"  → Quantum Predicted AQI: {aqi}")
             except Exception as e:
                 print(f"  → Error: {e}")

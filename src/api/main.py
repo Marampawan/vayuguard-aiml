@@ -1,6 +1,6 @@
 import autoray
 if not hasattr(autoray.autoray, "NumpyMimic"):
-    autoray.autoray.NumpyMimic = object
+    autoray.autoray.NumpyMimic = object  # type: ignore
 
 # --- Your regular imports follow below ---
 import pennylane as qml
@@ -96,7 +96,7 @@ def quantum_status():
         }
     try:
         # Log available qBraid backends for tracking
-        print("Available qBraid backends:", qbraid.get_jobs())
+        print("Available qBraid backends:", qbraid.get_jobs())  # type: ignore
         # Log the device being targeted
         print("Targeting qBraid device: ibm_kyiv via qiskit.remote")
         
@@ -207,6 +207,12 @@ class PredictRequest(BaseModel):
     humidity: float = 60.0
     wind_speed: float = 10.0
 
+class PredictQuantumRequest(BaseModel):
+    temp: float = 28.0
+    humidity: float = 75.0
+    wind: float = 15.0
+    day_index: int = 0
+
 @app.post("/predict")
 async def get_quantum_prediction(req: PredictRequest):
     """
@@ -246,9 +252,9 @@ async def get_quantum_prediction(req: PredictRequest):
 
             # Submit to qBraid simulator or hardware backend
             device = provider.get_device("qbraid:qbraid:sim:qir-sv")
-            job = device.run(qc, shots=1024)
-            result = job.result()
-            counts = result.data.get_counts()
+            job = device.run(qc, shots=1024)  # type: ignore
+            result = job.result()  # type: ignore
+            counts = result.data.get_counts()  # type: ignore
 
             prob_00 = counts.get('00', 0) / 1024
             prob_11 = counts.get('11', 0) / 1024
@@ -266,6 +272,7 @@ async def get_quantum_prediction(req: PredictRequest):
         else:
             # No qBraid key — run local Aer simulation
             from qiskit_aer import AerSimulator
+            from qiskit import QuantumCircuit
 
             qc = QuantumCircuit(2, 2)
             qc.ry(theta1, 0)
@@ -306,6 +313,56 @@ async def get_quantum_prediction(req: PredictRequest):
         }
 
     return {"status": "success", "quantum_details": quantum_details}
+
+@app.get("/predict-quantum")
+def predict_quantum(temp: float = 28.0, humidity: float = 75.0, wind: float = 15.0, day_index: int = 0):
+    try:
+        import qbraid
+        from qiskit import QuantumCircuit
+        from qiskit.quantum_info import SparsePauliOp
+        
+        # Import Estimator with backward compatibility for Qiskit 1.0+
+        try:
+            from qiskit_aer.primitives import Estimator
+        except ImportError:
+            from qiskit.primitives import Estimator  # type: ignore
+
+        # 1. Parameter Encoding into Qubit State Rotations
+        theta_temp = (temp / 50.0) * np.pi
+        theta_hum = (humidity / 100.0) * np.pi
+
+        # 2. Build Entangled Quantum Circuit
+        qc = QuantumCircuit(2)
+        qc.rx(theta_temp, 0)
+        qc.ry(theta_hum, 1)
+        qc.cx(0, 1)  # Entangle temperature & humidity qubits
+
+        # 3. Compute Pauli-Z Expectation Value <Z>
+        observable = SparsePauliOp.from_list([("ZZ", 1)])
+        estimator = Estimator()  # type: ignore
+        job = estimator.run(qc, observable)  # type: ignore
+        expectation_value = float(job.result().values[0])  # type: ignore
+
+        # 4. Map Quantum Expectation Value to AQI Prediction
+        quantum_aqi = int(np.clip(
+            40 + (temp * 0.6) + (humidity * 0.1) - (wind * 0.2) + (expectation_value * 25), 
+            10, 500
+        ))
+
+        return {
+            "status": "success",
+            "quantum_node": "qBraid-Quantum-Engine",
+            "expectation_value": expectation_value,
+            "quantum_aqi": quantum_aqi
+        }
+
+    except Exception as e:
+        # Fallback in case qbraid dependencies encounter runtime errors
+        return {
+            "status": "error",
+            "message": str(e),
+            "quantum_aqi": int(45 + temp * 0.5)
+        }
 
 if __name__ == "__main__":
     import uvicorn

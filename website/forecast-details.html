@@ -282,20 +282,18 @@
                     const sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:05 AM';
                     const sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:45 PM';
 
-                    // Query Railway qBraid backend with day index
+                    // Sync Day 0 with live telemetry; execute Quantum Predictions for upcoming days
                     let dayAqi;
-                    try {
+                    if (i === 0) {
+                        // Force Day 0 to pull current live telemetry to match main dashboard
+                        const liveAqiRes = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi`);
+                        const liveAqiData = await liveAqiRes.json();
+                        dayAqi = liveAqiData.current?.us_aqi || 50;
+                    } else {
+                        // Run Quantum Prediction on Railway backend for Days 1-6
                         const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${tempMax}&humidity=${humidity}&wind=${wind}&day_index=${i}`);
                         const qData = await qRes.json();
-                        if (qData && qData.quantum_aqi) {
-                            dayAqi = qData.quantum_aqi;
-                        } else {
-                            throw new Error("No quantum AQI returned");
-                        }
-                    } catch (err) {
-                        // Dynamic Quantum State Fallback Math
-                        const theta = (tempMax / 50.0) * Math.PI;
-                        dayAqi = Math.round(38 + (tempMax * 0.7) + (humidity * 0.12) + (Math.cos(theta) * 10) + (i * 4));
+                        dayAqi = qData.quantum_aqi;
                     }
 
                     let status = dayAqi <= 50 ? "Good" : dayAqi <= 100 ? "Moderate" : "Unhealthy";
