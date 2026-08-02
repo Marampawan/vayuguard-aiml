@@ -1,5 +1,24 @@
-.env
-website/quantum_data.json
-website/quantum_data.pkl
+# Python & Virtual Environment Cache
 __pycache__/
 *.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# qBraid & Qiskit Generated Cache / Renders
+.qbraid/
+.qbraid_cache/
+*.qasm
+*.png
+*.svg
+*.json
+*.html
+
+# Railway / System Files
+.DS_Store
+.env
+
+# VayuGuard Specific Files
+website/quantum_data.json
+website/quantum_data.pkl
