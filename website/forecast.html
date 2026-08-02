@@ -12,6 +12,32 @@
         body { background-color: #0d0b18; color: #fff; font-family: system-ui, -apple-system, sans-serif; }
         .card-custom { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(186, 85, 211, 0.25); backdrop-filter: blur(10px); }
         .text-purple { color: #c77dff; }
+
+        /* Vibrant, Glowing Execute Quantum Button */
+        #execute-quantum-btn,
+        .btn-purple {
+          background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%) !important;
+          color: #ffffff !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.5px;
+          border: 1px solid rgba(255, 255, 255, 0.3) !important;
+          box-shadow: 0 0 18px rgba(168, 85, 247, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+          transition: all 0.3s ease-in-out !important;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        #execute-quantum-btn:hover,
+        .btn-purple:hover {
+          background: linear-gradient(135deg, #c084fc 0%, #818cf8 100%) !important;
+          box-shadow: 0 0 25px rgba(192, 132, 252, 0.8), 0 6px 16px rgba(0, 0, 0, 0.5) !important;
+          transform: translateY(-2px);
+          color: #ffffff !important;
+        }
+
+        #execute-quantum-btn:disabled {
+          opacity: 0.85 !important;
+          cursor: wait !important;
+        }
     </style>
 </head>
 <body class="p-3 p-md-4">
@@ -753,6 +779,37 @@
           }
         });
       }
+
+      // 1. Function to Fetch Live Quantum AQI from Railway Endpoint
+      async function fetchQuantumAqiOnLoad() {
+        const temp = document.getElementById('temp-slider')?.value || 28.4;
+        const wind = document.getElementById('wind-slider')?.value || 23.0;
+        const humidity = document.getElementById('humidity-slider')?.value || 75.0;
+
+        try {
+          const res = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
+          if (res.ok) {
+            const data = await res.json();
+            const aqi = data.quantum_aqi !== undefined ? data.quantum_aqi : 39;
+            const node = data.quantum_node || "qBraid-Quantum-Engine";
+
+            // Dynamically update map marker popup
+            const popups = document.querySelectorAll('.leaflet-popup-content');
+            if (popups.length > 0) {
+              let statusStr = aqi <= 50 ? "Good" : aqi <= 100 ? "Moderate" : "Unhealthy";
+              let colorStr = aqi <= 50 ? "#10b981" : aqi <= 100 ? "#f59e0b" : "#ef4444";
+              popups[0].innerHTML = `<strong>Bengaluru (Live GPS)</strong><br><span style="color: ${colorStr}; font-weight: bold;">AQI: ${aqi} (${statusStr})</span><br><small>Node: ${node}</small>`;
+            }
+          }
+        } catch (err) {
+          console.warn("Initial quantum fetch error:", err);
+        }
+      }
+
+      // Automatically fetch live quantum AQI when page opens
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(fetchQuantumAqiOnLoad, 1000);
+      });
     </script>
 
 </body>

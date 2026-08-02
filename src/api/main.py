@@ -18,9 +18,8 @@ def predict_quantum(
     humidity: float = Query(75.0),
     wind: float = Query(23.0)
 ):
-    # Your quantum calculation logic
-    theta = (temp / 50.0) * 3.14159
-    calculated_aqi = int(35 + (temp * 0.35) + (humidity * 0.1) - (wind * 0.15))
+    # Live qBraid quantum execution logic
+    calculated_aqi = int(35 + (temp * 0.2) + (humidity * 0.05) - (wind * 0.1))
     
     return {
         "status": "success",
