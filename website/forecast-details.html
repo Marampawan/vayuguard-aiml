@@ -7,63 +7,54 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      /* Base Light Background with Soft Ambient Gradient */
+      /* Dark Modern Tech Aesthetics */
       body {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
-        color: #0f172a !important;
+        background: #0b0f19 !important;
+        color: #f8fafc !important;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
       }
 
-      /* Vibrant Card with Gradient Top Border */
-      .card-color-accent {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
-        border-top: 4px solid #7209b7; /* Purple accent bar */
-        box-shadow: 0 4px 15px rgba(15, 23, 42, 0.08);
+      /* Glassmorphic Container Cards */
+      .card-quantum-glass {
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      .card-color-accent:hover {
-        box-shadow: 0 10px 25px rgba(114, 9, 183, 0.15);
+      .card-quantum-glass:hover {
+        border-color: rgba(124, 58, 237, 0.4);
+        box-shadow: 0 15px 35px -5px rgba(124, 58, 237, 0.2);
         transform: translateY(-2px);
       }
 
-      /* Distinct Color Tints for Metric Boxes */
-      .box-temp {
-        background: #e0f2fe; /* Light Blue */
-        border: 1px solid #bae6fd;
-      }
-      .box-sunrise {
-        background: #fef3c7; /* Light Amber/Sun */
-        border: 1px solid #fde047;
-      }
-      .box-sunset {
-        background: #ffe4e6; /* Light Rose */
-        border: 1px solid #fecdd3;
-      }
-      .box-rain {
-        background: #dbeafe; /* Deep Blue Tint */
-        border: 1px solid #bfdbfe;
-      }
-      .box-wind {
-        background: #f1f5f9; /* Slate Gray */
-        border: 1px solid #cbd5e1;
-      }
-      .box-humidity {
-        background: #f3e8ff; /* Light Purple */
-        border: 1px solid #e9d5ff;
+      /* Sleek Metric Tiles with Glow Icons */
+      .tile-metric {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s ease;
       }
 
-      /* Vibrant AQI Badges */
-      .badge-quantum-good {
-        background: #10b981 !important;
-        color: #ffffff !important;
-        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+      .tile-metric:hover {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(255, 255, 255, 0.15);
       }
 
-      .badge-quantum-mod {
-        background: #f59e0b !important;
-        color: #ffffff !important;
-        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+      /* High Contrast Quantum AQI Badges */
+      .badge-aqi-good {
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #34d399 !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+      }
+
+      .badge-aqi-mod {
+        background: rgba(245, 158, 11, 0.15) !important;
+        color: #fbbf24 !important;
+        border: 1px solid rgba(245, 158, 11, 0.3) !important;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
       }
     </style>
 </head>
@@ -72,18 +63,18 @@
     <div class="container" style="max-width: 980px;">
         
         <!-- 7-DAY EXTENDED FORECAST HEADER WITH LOCATION SEARCH -->
-        <div class="card p-4 shadow rounded-4 mb-4" style="background: #ffffff; border: 1px solid #e2e8f0;">
+        <div class="card card-quantum-glass p-4 shadow rounded-4 mb-3">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                 <div>
-                    <h2 class="fw-bold m-0 d-flex align-items-center gap-2" style="color: #0f172a;">
-                        <i class="fas fa-calendar-week" style="color: #7209b7;"></i>
+                    <h2 class="fw-bold m-0 d-flex align-items-center gap-2 text-white">
+                        <i class="fas fa-calendar-week" style="color: #8b5cf6;"></i>
                         <span>7-Day Extended Forecast</span>
                     </h2>
-                    <p class="small m-0 mt-1" style="color: #64748b;">
-                        Active Location: <strong id="current-location-label" style="color: #0891b2;">Bengaluru, IN</strong>
+                    <p class="small m-0 mt-1" style="color: #94a3b8;">
+                        Active Location: <strong id="current-location-label" style="color: #22d3ee;">Bengaluru, IN</strong>
                     </p>
                 </div>
-                <a href="forecast.html" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                <a href="forecast.html" class="btn btn-outline-light btn-sm rounded-pill px-3">
                     <i class="fas fa-arrow-left me-1"></i> Dashboard
                 </a>
             </div>
@@ -91,19 +82,19 @@
             <!-- LOCATION SEARCH INPUT WITH LIVE AUTO-COMPLETE -->
             <div class="position-relative">
                 <div class="input-group">
-                    <span class="input-group-text" style="background: #f1f5f9; border-color: #e2e8f0; color: #64748b;">
-                        <i class="fas fa-map-marker-alt" style="color: #dc2626;"></i>
+                    <span class="input-group-text" style="background: rgba(30, 41, 59, 0.5); border-color: rgba(255, 255, 255, 0.1); color: #94a3b8;">
+                        <i class="fas fa-map-marker-alt" style="color: #f87171;"></i>
                     </span>
                     <input type="text" 
                            id="details-location-input" 
                            class="form-control" 
-                           style="background: #ffffff; color: #0f172a; border-color: #e2e8f0;" 
+                           style="background: rgba(15, 23, 42, 0.5); color: #f8fafc; border-color: rgba(255, 255, 255, 0.1);" 
                            placeholder="Enter city to change location (e.g., Mumbai, Delhi, Hyderabad)..." 
                            autocomplete="off" 
                            oninput="onTypeDetailsSearch(this.value)"
                            onkeypress="if(event.key==='Enter') searchDetailsLocation()">
                     <button class="btn text-white fw-semibold px-4" 
-                            style="background: linear-gradient(135deg, #7209b7, #8a2be2);" 
+                            style="background: linear-gradient(135deg, #8b5cf6, #6366f1);" 
                             onclick="searchDetailsLocation()">
                         Update Forecast
                     </button>
@@ -112,7 +103,7 @@
                 <!-- Dropdown Menu for Auto-Complete Suggestions -->
                 <ul id="details-suggestions-list" 
                     class="dropdown-menu w-100 shadow-lg border position-absolute" 
-                    style="display: none; top: 100%; z-index: 1000; max-height: 220px; overflow-y: auto; background: #ffffff; border-color: #e2e8f0;"></ul>
+                    style="display: none; top: 100%; z-index: 1000; max-height: 220px; overflow-y: auto; background: #1e293b; border-color: rgba(255, 255, 255, 0.1);"></ul>
             </div>
         </div>
 
@@ -268,54 +259,54 @@
                     let badgeClass = dayAqi <= 50 ? "badge-quantum-good" : "badge-quantum-mod";
 
                     cardsHTML += `
-                        <div class="card card-color-accent rounded-4 p-4 mb-3">
+                        <div class="card card-quantum-glass rounded-4 p-4 mb-3">
                             <!-- Header -->
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-slate-200">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-white border-opacity-10">
                                 <div class="d-flex align-items-center gap-2">
-                                    ${i === 0 ? '<span class="badge rounded-pill px-3 py-1.5 fs-7 fw-bold" style="background: linear-gradient(135deg, #7209b7, #3a0ca3); color: #ffffff;">TODAY</span>' : ''}
-                                    <h4 class="fw-bold m-0 text-slate-900 tracking-wide">${dateStr}</h4>
+                                    ${i === 0 ? '<span class="badge rounded-pill px-3 py-1.5 fs-7 fw-bold" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #ffffff;">TODAY</span>' : ''}
+                                    <h4 class="fw-bold m-0 text-white tracking-wide">${dateStr}</h4>
                                 </div>
-                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-semibold fs-6 d-inline-flex align-items-center gap-1.5">
-                                    ● AQI ${dayAqi} • ${status}
+                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-semibold fs-6 d-inline-flex align-items-center gap-2">
+                                    <span style="font-size: 8px;">●</span> AQI ${dayAqi} • ${status}
                                 </span>
                             </div>
 
-                            <!-- Telemetry Metrics Grid with Distinct Color Backgrounds -->
+                            <!-- Telemetry Metrics Grid -->
                             <div class="row g-2">
                                 <div class="col-6 col-md-2">
-                                    <div class="box-temp p-3 rounded-3 text-center">
-                                        <span class="d-block text-cyan-800 small fw-bold mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
-                                        <strong class="text-cyan-950 fs-6 fw-bold">${tempMin}°C / ${tempMax}°C</strong>
+                                    <div class="tile-metric p-3 rounded-3 text-center">
+                                        <span class="d-block text-cyan-400 small fw-semibold mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
+                                        <strong class="text-white fs-6 fw-bold">${tempMin}°C / ${tempMax}°C</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="box-sunrise p-3 rounded-3 text-center">
-                                        <span class="d-block text-amber-800 small fw-bold mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
-                                        <strong class="text-amber-950 fs-6 fw-bold">${sunriseTime}</strong>
+                                    <div class="tile-metric p-3 rounded-3 text-center">
+                                        <span class="d-block text-amber-400 small fw-semibold mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
+                                        <strong class="text-white fs-6 fw-bold">${sunriseTime}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="box-sunset p-3 rounded-3 text-center">
-                                        <span class="d-block text-rose-800 small fw-bold mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
-                                        <strong class="text-rose-950 fs-6 fw-bold">${sunsetTime}</strong>
+                                    <div class="tile-metric p-3 rounded-3 text-center">
+                                        <span class="d-block text-rose-400 small fw-semibold mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
+                                        <strong class="text-white fs-6 fw-bold">${sunsetTime}</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="box-rain p-3 rounded-3 text-center">
-                                        <span class="d-block text-blue-800 small fw-bold mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
-                                        <strong class="text-blue-950 fs-6 fw-bold">${rain}%</strong>
+                                    <div class="tile-metric p-3 rounded-3 text-center">
+                                        <span class="d-block text-blue-400 small fw-semibold mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
+                                        <strong class="text-white fs-6 fw-bold">${rain}%</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="box-wind p-3 rounded-3 text-center">
-                                        <span class="d-block text-slate-700 small fw-bold mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
-                                        <strong class="text-slate-900 fs-6 fw-bold">${wind} km/h</strong>
+                                    <div class="tile-metric p-3 rounded-3 text-center">
+                                        <span class="d-block text-slate-300 small fw-semibold mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
+                                        <strong class="text-white fs-6 fw-bold">${wind} km/h</strong>
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-2">
-                                    <div class="box-humidity p-3 rounded-3 text-center">
-                                        <span class="d-block small fw-bold mb-1" style="color: #6b21a8;"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
-                                        <strong class="fs-6 fw-bold" style="color: #3b0764;">${humidity}%</strong>
+                                    <div class="tile-metric p-3 rounded-3 text-center">
+                                        <span class="d-block small fw-semibold mb-1" style="color: #c084fc;"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
+                                        <strong class="text-white fs-6 fw-bold">${humidity}%</strong>
                                     </div>
                                 </div>
                             </div>
