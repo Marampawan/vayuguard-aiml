@@ -152,6 +152,9 @@
     </div>
 
     <script>
+        // Disable native browser alert popups globally
+        window.alert = function(msg) { console.warn("Blocked Alert Popup:", msg); };
+
         // Dynamic Date & Telemetry Script
         document.addEventListener("DOMContentLoaded", function() {
             // Detect live position on load or fallback to coordinates
