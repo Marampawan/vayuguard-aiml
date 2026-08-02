@@ -111,53 +111,40 @@
             <!-- RIGHT COLUMN: SEPARATED PARAMETERS & HIGHLIGHTED HUB -->
             <div class="col-lg-4">
                 
-                <!-- PARAMETER ADJUSTMENTS CARD WITH QUANTUM EXECUTION BADGE -->
-                <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary border-opacity-25 pb-2">
-                        <h5 class="fw-bold m-0 text-purple"><i class="fas fa-sliders-h me-2"></i>Parameter Adjustments</h5>
-                        <span class="badge bg-purple bg-opacity-25 text-purple border border-purple border-opacity-25 px-2.5 py-1 rounded-pill small" style="color: #c77dff;">
-                            <i class="fas fa-atom me-1"></i>Quantum-Classical Hybrid
-                        </span>
+                <!-- Parameter Adjustments Card -->
+                <div class="card card-custom p-4 rounded-4 shadow-lg mb-4">
+                    <h5 class="fw-bold text-white mb-3"><i class="fas fa-sliders-h text-purple me-2"></i> Parameter Adjustments</h5>
+                    
+                    <!-- Temperature Slider -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-white-50 small mb-1">
+                            <span><i class="fas fa-thermometer-half text-info me-1"></i> Temperature (°C)</span>
+                            <strong id="temp-val" class="text-white">28.4</strong>
+                        </div>
+                        <input type="range" class="form-range" id="temp-slider" min="10" max="50" step="0.1" value="28.4">
                     </div>
 
-                    <!-- Section 1: Weather Parameters -->
-                    <div class="mb-3 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
-                        <small class="text-info fw-bold d-block mb-2"><i class="fas fa-cloud-sun me-1"></i> Thermal & Wind Dynamics</small>
-                        <div class="mb-2">
-                            <label class="form-label small text-white-50 d-flex justify-content-between">
-                                <span>Temperature (°C)</span> <span id="temp-val" class="text-white fw-bold">28.4</span>
-                            </label>
-                            <input type="range" class="form-range" id="temp-input" min="0" max="50" step="0.1" value="28.4">
+                    <!-- Wind Speed Slider -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-white-50 small mb-1">
+                            <span><i class="fas fa-wind text-light me-1"></i> Wind Speed (km/h)</span>
+                            <strong id="wind-val" class="text-white">23.0</strong>
                         </div>
-                        <div>
-                            <label class="form-label small text-white-50 d-flex justify-content-between">
-                                <span>Wind Speed (km/h)</span> <span id="wind-val" class="text-white fw-bold">23.0</span>
-                            </label>
-                            <input type="range" class="form-range" id="wind-input" min="0" max="100" step="0.5" value="23.0">
-                        </div>
+                        <input type="range" class="form-range" id="wind-slider" min="0" max="80" step="0.5" value="23.0">
                     </div>
 
-                    <!-- Section 2: Moisture & Air Density -->
-                    <div class="mb-3 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);">
-                        <small class="text-purple fw-bold d-block mb-2" style="color: #c77dff;"><i class="fas fa-tint me-1"></i> Atmospheric Moisture</small>
-                        <div>
-                            <label class="form-label small text-white-50 d-flex justify-content-between">
-                                <span>Humidity (%)</span> <span id="hum-val" class="text-white fw-bold">75.0</span>
-                            </label>
-                            <input type="range" class="form-range" id="hum-input" min="0" max="100" step="0.5" value="75.0">
+                    <!-- Humidity Slider -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between text-white-50 small mb-1">
+                            <span><i class="fas fa-tint text-purple me-1"></i> Humidity (%)</span>
+                            <strong id="hum-val" class="text-white">75.0</strong>
                         </div>
+                        <input type="range" class="form-range" id="humidity-slider" min="10" max="100" step="1" value="75.0">
                     </div>
 
-                    <!-- QUANTUM RECALCULATE BUTTON -->
-                    <button id="recalc-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2 d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(135deg, #7209b7, #8a2be2);" onclick="runQuantumPrediction()"></button>
-                        <i class="fas fa-atom fa-spin"></i>
-                        <span>Execute Quantum AQI Prediction</span>
-                    </button>
-
-                    <!-- QUANTUM EXECUTE BUTTON -->
-                    <button id="execute-quantum-btn" class="btn text-white w-100 rounded-pill fw-bold shadow-sm py-2 d-flex align-items-center justify-content-center gap-2 mt-2" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
-                        <i class="fas fa-atom me-2"></i>
-                        <span>Execute Quantum AQI Prediction</span>
+                    <!-- SINGLE Action Button -->
+                    <button id="execute-quantum-btn" class="btn btn-purple w-100 py-2.5 rounded-3 fw-bold text-white shadow">
+                        <i class="fas fa-atom me-2"></i> Execute Quantum AQI Prediction
                     </button>
                 </div>
 
@@ -714,64 +701,44 @@
     </script>
 
     <script>
-      // 1. Sync Slider Input Values to Display Text
-      const tempSlider = document.getElementById('temp-slider');
-      const windSlider = document.getElementById('wind-slider');
-      const humSlider = document.getElementById('humidity-slider');
-
-      tempSlider?.addEventListener('input', (e) => {
-        const valEl = document.getElementById('temp-val');
-        if (valEl) valEl.innerText = e.target.value;
+      // Sync Slider Display Values
+      document.getElementById('temp-slider')?.addEventListener('input', (e) => {
+          document.getElementById('temp-val').innerText = e.target.value;
+      });
+      document.getElementById('wind-slider')?.addEventListener('input', (e) => {
+          document.getElementById('wind-val').innerText = e.target.value;
+      });
+      document.getElementById('humidity-slider')?.addEventListener('input', (e) => {
+          document.getElementById('hum-val').innerText = e.target.value;
       });
 
-      windSlider?.addEventListener('input', (e) => {
-        const valEl = document.getElementById('wind-val');
-        if (valEl) valEl.innerText = e.target.value;
-      });
+      // Execute Quantum Circuit Event Listener
+      const execBtn = document.getElementById('execute-quantum-btn');
+      if (execBtn) {
+          execBtn.onclick = async function () {
+              const temp = document.getElementById('temp-slider').value;
+              const wind = document.getElementById('wind-slider').value;
+              const humidity = document.getElementById('humidity-slider').value;
 
-      humSlider?.addEventListener('input', (e) => {
-        const valEl = document.getElementById('hum-val');
-        if (valEl) valEl.innerText = e.target.value;
-      });
+              execBtn.disabled = true;
+              execBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Executing qBraid Quantum Circuit...`;
 
-      // 2. Execute Quantum Prediction Button
-      const executeBtn = document.getElementById('execute-quantum-btn');
+              try {
+                  const res = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
+                  const data = await res.json();
 
-      executeBtn?.addEventListener('click', async () => {
-        const temp = tempSlider ? tempSlider.value : 28.4;
-        const wind = windSlider ? windSlider.value : 23.0;
-        const humidity = humSlider ? humSlider.value : 75.0;
-
-        executeBtn.disabled = true;
-        executeBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Executing qBraid Quantum Circuit...`;
-
-        try {
-          // Call Railway Quantum Backend
-          const response = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
-          
-          if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-          }
-
-          const data = await response.json();
-
-          if (data && data.quantum_aqi !== undefined) {
-            // Update Map Marker Popup and Page Telemetry
-            const markerAQI = document.querySelector('.leaflet-popup-content');
-            if (markerAQI) {
-              markerAQI.innerHTML = `<strong>Bengaluru (Custom Telemetry)</strong><br>AQI: ${data.quantum_aqi} (${data.status})<br><small>Quantum Circuit Calculated</small>`;
-            }
-            
-            alert(`Quantum Computation Complete!\n\nSimulated AQI: ${data.quantum_aqi}\nEngine: ${data.quantum_engine || 'qBraid Qiskit Estimator'}`);
-          }
-        } catch (err) {
-          console.error("Quantum execution error:", err);
-          alert("Unable to reach Railway quantum backend. Please verify backend service status.");
-        } finally {
-          executeBtn.disabled = false;
-          executeBtn.innerHTML = `<i class="fas fa-atom me-2"></i> Execute Quantum AQI Prediction`;
-        }
-      });
+                  if (data && data.quantum_aqi !== undefined) {
+                      alert(`Quantum Computation Complete!\n\nPredicted AQI: ${data.quantum_aqi}\nEngine: ${data.quantum_engine || 'qBraid Qiskit Estimator'}`);
+                  }
+              } catch (err) {
+                  console.error("Execution Error:", err);
+                  alert("Backend call failed. Please verify your Railway server status.");
+              } finally {
+                  execBtn.disabled = false;
+                  execBtn.innerHTML = `<i class="fas fa-atom me-2"></i> Execute Quantum AQI Prediction`;
+              }
+          };
+      }
     </script>
 
 </body>
