@@ -245,7 +245,7 @@
             pm10Gradient.addColorStop(0, 'rgba(0, 230, 118, 0.4)');
             pm10Gradient.addColorStop(1, 'rgba(0, 230, 118, 0.0)');
 
-            new Chart(ctx1, {
+            window.pmChart = new Chart(ctx1, {
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -296,7 +296,7 @@
             // 4. Chart 2: Dual Axis Temperature & Humidity Dynamics
             const ctx2 = document.getElementById('weatherChart').getContext('2d');
             
-            new Chart(ctx2, {
+            window.tempChart = new Chart(ctx2, {
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -356,7 +356,7 @@
 
             // 5. Chart 3: Wind Speed & Gusts Graph
             const ctx3 = document.getElementById('windChart').getContext('2d');
-            new Chart(ctx3, {
+            window.windChart = new Chart(ctx3, {
                 type: 'bar',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -783,6 +783,58 @@
   });
   document.getElementById('humidity-slider')?.addEventListener('input', (e) => {
     document.getElementById('hum-val').innerText = parseFloat(e.target.value).toFixed(1);
+  });
+
+  // Function to dynamically update Chart.js datasets
+  function updateEnvironmentalGraphs(baseTemp, baseWind, baseHum) {
+    if (window.pmChart) {
+      // Dynamically scale PM values based on temperature & humidity
+      const pm25Data = [20, 28, 45, 38, 30, Math.round(25 * (baseTemp / 28))];
+      const pm10Data = [50, 62, 85, 72, 60, Math.round(52 * (baseHum / 75))];
+      window.pmChart.data.datasets[0].data = pm25Data;
+      window.pmChart.data.datasets[1].data = pm10Data;
+      window.pmChart.update();
+    }
+
+    if (window.tempChart) {
+      // Dynamically scale Temperature/Humidity trends
+      const tempTrend = [22, 21, 26, baseTemp, baseTemp - 2, 25];
+      const humTrend = [85, 88, 70, baseHum, baseHum + 5, 75];
+      window.tempChart.data.datasets[0].data = tempTrend;
+      window.tempChart.data.datasets[1].data = humTrend;
+      window.tempChart.update();
+    }
+
+    if (window.windChart) {
+      // Dynamically scale Wind Speed & Gusts
+      const windTrend = [10, 8, 18, baseWind, baseWind - 3, 15];
+      const gustTrend = [18, 15, 28, Math.round(baseWind * 1.5), Math.round(baseWind * 1.3), 22];
+      window.windChart.data.datasets[0].data = windTrend;
+      window.windChart.data.datasets[1].data = gustTrend;
+      window.windChart.update();
+    }
+  }
+
+  // Attach graph updates to slider events
+  document.getElementById('temp-slider')?.addEventListener('input', (e) => {
+    const temp = parseFloat(e.target.value);
+    const wind = parseFloat(document.getElementById('wind-slider')?.value || 23.0);
+    const hum = parseFloat(document.getElementById('humidity-slider')?.value || 75.0);
+    updateEnvironmentalGraphs(temp, wind, hum);
+  });
+
+  document.getElementById('wind-slider')?.addEventListener('input', (e) => {
+    const temp = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
+    const wind = parseFloat(e.target.value);
+    const hum = parseFloat(document.getElementById('humidity-slider')?.value || 75.0);
+    updateEnvironmentalGraphs(temp, wind, hum);
+  });
+
+  document.getElementById('humidity-slider')?.addEventListener('input', (e) => {
+    const temp = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
+    const wind = parseFloat(document.getElementById('wind-slider')?.value || 23.0);
+    const hum = parseFloat(e.target.value);
+    updateEnvironmentalGraphs(temp, wind, hum);
   });
 
   // Execute Quantum AQI Prediction Button Handler
