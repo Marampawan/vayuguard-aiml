@@ -207,19 +207,31 @@
             </div>
         </div>
 
-        <!-- Mindful Hub & Daily Eco-Jokes Panel -->
-        <div class="card bg-dark text-light border border-secondary border-opacity-25 rounded-4 p-4 mt-4 shadow-sm">
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <i class="fas fa-smile-beam text-warning fs-4"></i>
-            <h5 class="fw-bold mb-0 text-light">Mindful Hub & Air Quality Humour</h5>
+        <!-- Enhanced Mindful Hub & Daily Eco-Jokes Panel -->
+        <div class="card bg-dark text-light border border-purple rounded-4 p-5 mt-5 shadow-lg position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(20, 26, 40, 0.95), rgba(35, 18, 55, 0.95)) !important; border: 1.5px solid rgba(168, 85, 247, 0.4) !important;">
+          
+          <!-- Glowing Background Accent -->
+          <div style="position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: rgba(168, 85, 247, 0.15); filter: blur(50px); border-radius: 50%; pointer-events: none;"></div>
+
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="bg-warning bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
+              <i class="fas fa-smile-beam text-warning fs-3"></i>
+            </div>
+            <div>
+              <h4 class="fw-bold mb-1 text-light">Mindful Hub & Air Quality Humour</h4>
+              <small class="text-secondary">Daily Eco Insights & Quantum Wellness Tips</small>
+            </div>
           </div>
           
-          <div class="bg-secondary bg-opacity-10 rounded-3 p-3 border border-secondary border-opacity-10 text-center">
-            <p id="eco-joke-text" class="fs-6 text-light mb-2">
-              "Why did the tree go to the dentist? To get a root canal before the AQI spiked!"
+          <div class="bg-dark bg-opacity-60 rounded-4 p-4 border border-secondary border-opacity-25 text-center shadow-inner my-2">
+            <p id="eco-joke-text" class="fs-4 fw-medium text-light mb-0 py-3" style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #f1f5f9 !important;">
+              "AQI Tip: Keep windows closed during peak traffic hours (7-10 AM, 5-8 PM)!"
             </p>
-            <button id="next-joke-btn" class="btn btn-outline-purple btn-sm rounded-pill mt-2">
-              <i class="fas fa-sync-alt me-1"></i> New Eco Tip / Joke
+          </div>
+
+          <div class="text-center mt-3">
+            <button id="next-joke-btn" class="btn btn-purple btn-lg rounded-pill px-4 py-2 shadow">
+              <i class="fas fa-sync-alt me-2"></i> New Eco Tip / Joke
             </button>
           </div>
         </div>
