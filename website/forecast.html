@@ -588,14 +588,14 @@
             }
         }
 
-        // Complete Working Search & Popup Update Script
+        // Complete Working Search & Quantum AQI Update Function
         async function runLiveCitySearch() {
           const inputEl = document.querySelector('input[placeholder="Ongole"], input[type="text"]');
           const cityName = inputEl ? inputEl.value.trim() : 'Ongole';
           if (!cityName) return;
 
           try {
-            // 1. Geocode location via OpenStreetMap
+            // 1. Geocode location via OpenStreetMap Nominatim
             const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`);
             const geoData = await geoRes.json();
 
@@ -605,7 +605,7 @@
             const lon = parseFloat(geoData[0].lon);
             const displayName = geoData[0].display_name.split(',')[0];
 
-            // 2. Fetch live local weather telemetry
+            // 2. Fetch live weather telemetry for target location
             const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true`);
             const weatherData = await weatherRes.json();
 
@@ -613,7 +613,7 @@
             const wind = weatherData.current_weather?.windspeed ?? 15.0;
             const humidity = weatherData.hourly?.relative_humidity_2m?.[0] ?? 70.0;
 
-            // Synchronize UI parameter sliders
+            // Update Slider UI Controls
             if (document.getElementById('temp-slider')) document.getElementById('temp-slider').value = temp;
             if (document.getElementById('temp-val')) document.getElementById('temp-val').innerText = temp.toFixed(1);
             if (document.getElementById('wind-slider')) document.getElementById('wind-slider').value = wind;
@@ -621,7 +621,7 @@
             if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = humidity;
             if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = humidity.toFixed(1);
 
-            // Update environmental graphs
+            // Update Graphs
             if (typeof refreshEnvironmentalGraphs === 'function') {
               refreshEnvironmentalGraphs(temp, wind, humidity);
             }
@@ -640,42 +640,35 @@
             let statusStr = computedAqi <= 50 ? "Good" : computedAqi <= 100 ? "Moderate" : "Unhealthy";
             let colorStr = computedAqi <= 50 ? "#10b981" : computedAqi <= 100 ? "#f59e0b" : "#ef4444";
 
+            // 4. Clean Popup HTML String
             const popupHtml = `
-              <div style="font-family: sans-serif; text-align: left;">
-                <strong style="font-size: 1rem;">${displayName} (Live Telemetry)</strong><br>
-                <span style="color: ${colorStr}; font-weight: bold; font-size: 1.1rem;">AQI: ${computedAqi} (${statusStr})</span><br>
+              <div style="font-family: sans-serif; text-align: left; padding: 2px;">
+                <strong style="font-size: 1.05rem;">${displayName} (Live Sync)</strong><br>
+                <span style="color: ${colorStr}; font-weight: bold; font-size: 1.15rem;">AQI: ${computedAqi} (${statusStr})</span><br>
                 <small style="color: #6b7280;">Node: ${nodeName}</small>
               </div>
             `;
 
-            // 4. Force Leaflet Map to View Location & Bind New Popup Directly
+            // 5. Direct Leaflet Object Override (Destroys hardcoded "AQI: 50" marker)
             if (window.map) {
               window.map.setView([lat, lon], 12);
 
-              // Remove existing markers if any
-              if (window.currentMarker) {
-                window.map.removeLayer(window.currentMarker);
+              // Remove existing marker instance
+              if (window.activeMarker) {
+                window.map.removeLayer(window.activeMarker);
               }
 
-              // Create new Leaflet marker with calculated AQI popup content
-              window.currentMarker = L.marker([lat, lon]).addTo(window.map);
-              window.currentMarker.bindPopup(popupHtml).openPopup();
-            } else {
-              // Fallback DOM update
-              setTimeout(() => {
-                const popupContentEls = document.querySelectorAll('.leaflet-popup-content');
-                if (popupContentEls.length > 0) {
-                  popupContentEls[0].innerHTML = popupHtml;
-                }
-              }, 100);
+              // Create new Leaflet marker, bind new popup, and open it
+              window.activeMarker = L.marker([lat, lon]).addTo(window.map);
+              window.activeMarker.bindPopup(popupHtml).openPopup();
             }
 
           } catch (err) {
-            console.error("Error executing quantum search prediction:", err);
+            console.error("Quantum search calculation error:", err);
           }
         }
 
-        // Attach event listener to search button
+        // Ensure event listener binds cleanly
         document.addEventListener('DOMContentLoaded', () => {
           const searchBtn = document.querySelector('.btn-purple, button:has(.fa-search), #search-btn');
           if (searchBtn) {
