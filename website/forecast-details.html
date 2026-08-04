@@ -147,7 +147,7 @@
           </a>
         </div>
 
-        <!-- Top Active Location Header with Integrated Search -->
+        <!-- Location Header & Integrated Search Bar -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-dark border border-secondary border-opacity-25 rounded-4 p-3 mb-4 shadow-sm">
           
           <!-- Active Location Title & Badge -->
@@ -157,8 +157,8 @@
             <h5 id="active-location-name" class="fw-bold text-light mb-0">Bengaluru, IN</h5>
           </div>
 
-          <!-- Integrated Search Bar (Same Style as Map Search) -->
-          <div class="position-relative" style="min-width: 280px; max-width: 420px; flex-grow: 1;">
+          <!-- Search Group with Button -->
+          <div class="position-relative" style="min-width: 300px; max-width: 440px; flex-grow: 1;">
             <div class="input-group">
               <span class="input-group-text bg-secondary bg-opacity-25 border-secondary text-secondary">
                 <i class="fas fa-search"></i>
@@ -167,7 +167,7 @@
                 type="text" 
                 id="forecast-search-input" 
                 class="form-control bg-dark text-light border-secondary shadow-none" 
-                placeholder="Search city (e.g., Delhi, Ongole)..." 
+                placeholder="Type city (e.g., Delhi, Ongole)..." 
                 autocomplete="off"
               >
               <button id="update-forecast-btn" class="btn btn-purple px-3">
@@ -175,10 +175,9 @@
               </button>
             </div>
 
-            <!-- Autocomplete Suggestions Dropdown -->
+            <!-- Autocomplete Dropdown List -->
             <div id="forecast-autocomplete-list" class="autocomplete-suggestions-box"></div>
           </div>
-
         </div>
 
         <!-- DYNAMIC 7-DAY EXTENDED FORECAST CONTAINER -->
@@ -282,6 +281,11 @@
             } catch (err) {
                 console.error("Search error:", err);
             }
+        }
+
+        // Wrapper function for autocomplete compatibility
+        async function load7DayForecast(cityName, lat, lon) {
+            fetchDynamic7DayForecast(parseFloat(lat), parseFloat(lon), cityName);
         }
 
         async function fetchDynamic7DayForecast(lat, lon, cityName) {
@@ -400,7 +404,7 @@
                     `;
                 }
 
-                // Render HTML and clear the loading spinner
+                // Render forecast cards from Railway API and clear the loading spinner
                 if (wrapper) wrapper.innerHTML = cardsHTML;
 
             } catch (err) {
@@ -411,31 +415,20 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const searchInput = document.querySelector('input[placeholder*="Del"], input[type="text"]');
-      if (!searchInput) return;
-
-      // Attach relative container
-      const parentContainer = searchInput.parentElement.parentElement;
-      parentContainer.classList.add('position-relative');
-
-      // Create dropdown dynamically
-      let dropdown = document.getElementById('forecast-autocomplete-list');
-      if (!dropdown) {
-        dropdown = document.createElement('div');
-        dropdown.id = 'forecast-autocomplete-list';
-        dropdown.className = 'autocomplete-suggestions-box';
-        parentContainer.appendChild(dropdown);
-      }
-
+      const searchInput = document.getElementById('forecast-search-input');
+      const searchBtn = document.getElementById('update-forecast-btn');
+      const dropdown = document.getElementById('forecast-autocomplete-list');
       let debounceTimer;
 
-      // Listen for typing ("Del" -> Shows "Delhi")
+      if (!searchInput) return;
+
+      // 1. Fetch Nominatim Suggestions on Input ("del" -> Delhi)
       searchInput.addEventListener('input', (e) => {
         const query = e.target.value.trim();
         clearTimeout(debounceTimer);
 
         if (query.length < 2) {
-          dropdown.style.display = 'none';
+          if (dropdown) dropdown.style.display = 'none';
           return;
         }
 
@@ -445,47 +438,84 @@
             const results = await res.json();
 
             if (!results || results.length === 0) {
-              dropdown.style.display = 'none';
+              if (dropdown) dropdown.style.display = 'none';
               return;
             }
 
-            // Render suggestion list
-            dropdown.innerHTML = results.map(city => {
-              const cityName = city.display_name.split(',')[0];
-              const country = city.address?.country || '';
-              return `
-                <div class="autocomplete-item" data-name="${cityName}">
-                  <i class="fas fa-map-marker-alt text-purple me-2"></i>
-                  <strong>${cityName}</strong> <small style="color: #94a3b8; margin-left: 6px;">${country}</small>
-                </div>
-              `;
-            }).join('');
+            if (dropdown) {
+              dropdown.innerHTML = results.map(city => {
+                const cityName = city.display_name.split(',')[0];
+                const country = city.address?.country || '';
+                return `
+                  <div class="autocomplete-item" data-lat="${city.lat}" data-lon="${city.lon}" data-name="${cityName}">
+                    <i class="fas fa-map-marker-alt text-purple me-2"></i>
+                    <strong>${cityName}</strong> <small style="color: #94a3b8; margin-left:6px;">${country}</small>
+                  </div>
+                `;
+              }).join('');
 
-            dropdown.style.display = 'block';
+              dropdown.style.display = 'block';
 
-            // Select recommendation on click
-            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-              item.addEventListener('click', () => {
-                const selectedCity = item.getAttribute('data-name');
-                searchInput.value = selectedCity;
-                dropdown.style.display = 'none';
-                
-                // Trigger click on existing search button if available
-                const searchBtn = document.querySelector('button');
-                if (searchBtn) searchBtn.click();
+              // Select item click
+              dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                  const cityName = item.getAttribute('data-name');
+                  const lat = item.getAttribute('data-lat');
+                  const lon = item.getAttribute('data-lon');
+
+                  searchInput.value = cityName;
+                  dropdown.style.display = 'none';
+
+                  // Call forecast updater
+                  if (typeof load7DayForecast === 'function') {
+                    load7DayForecast(cityName, lat, lon);
+                  }
+                });
               });
-            });
-
+            }
           } catch (err) {
             console.error("Autocomplete fetch error:", err);
           }
         }, 200);
       });
 
-      // Close on click outside
+      // 2. Execute Search on Button Click or Enter
+      const runSearch = async () => {
+        const cityQuery = searchInput.value.trim();
+        if (!cityQuery) return;
+
+        if (dropdown) dropdown.style.display = 'hide';
+
+        try {
+          const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityQuery)}`);
+          const geoData = await geoRes.json();
+
+          if (geoData && geoData.length > 0) {
+            const cityName = geoData[0].display_name.split(',')[0];
+            const lat = geoData[0].lat;
+            const lon = geoData[0].lon;
+
+            if (typeof load7DayForecast === 'function') {
+              load7DayForecast(cityName, lat, lon);
+            }
+          } else {
+            alert("City not found. Please try another location.");
+          }
+        } catch (err) {
+          console.error("Geocoding search execution error:", err);
+        }
+      };
+
+      if (searchBtn) searchBtn.addEventListener('click', runSearch);
+
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') runSearch();
+      });
+
+      // Close dropdown on click outside
       document.addEventListener('click', (e) => {
-        if (!parentContainer.contains(e.target)) {
-          dropdown.style.display = 'none';
+        if (!searchInput.contains(e.target) && !dropdown?.contains(e.target)) {
+          if (dropdown) dropdown.style.display = 'none';
         }
       });
     });
