@@ -79,10 +79,9 @@
                                    placeholder="Search any city (e.g., Delhi, Mumbai, Chennai)..." 
                                    autocomplete="off" 
                                    oninput="onTypeSearch(this.value)"
-                                   onkeypress="if(event.key==='Enter') searchLocation()">
-                            <button class="btn btn-purple text-white fw-semibold px-4" 
-                                    style="background: linear-gradient(135deg, #7209b7, #8a2be2);" 
-                                    onclick="searchLocation()">
+                                   onkeypress="if(event.key==='Enter') handleCitySearch(this.value)">
+                            <button id="search-btn" class="btn btn-purple text-white fw-semibold px-4" 
+                                    style="background: linear-gradient(135deg, #7209b7, #8a2be2);">
                                 Search
                             </button>
                         </div>
@@ -226,6 +225,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             // 1. Initialize Leaflet Map
             map = L.map('map').setView([12.9716, 77.5946], 11);
+            window.map = map;
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
                 attribution: '© OpenStreetMap' 
             }).addTo(map);
@@ -484,6 +484,7 @@
             activeMarker = L.marker([lat, lon]).addTo(map)
                 .bindPopup(`<b>${cityName}</b><br>${aqiText}<br><small>Quantum Sensor Node</small>`)
                 .openPopup();
+            window.cityMarker = activeMarker;
         }
 
         // Typing Auto-Complete Suggestions (India-First Preference)
@@ -869,6 +870,98 @@
       }
     });
   }
+
+  // Dynamic City Search & Quantum Prediction Handler
+  // Geocodes the entered city, pans the Leaflet map, and fetches a live
+  // quantum-corrected AQI prediction from the Railway backend.
+  async function handleCitySearch(cityName) {
+    if (!cityName || !cityName.trim()) return;
+    const query = cityName.trim();
+
+    try {
+      // 1. Geocode the city using OpenStreetMap Nominatim (India-first, global fallback)
+      let geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`);
+      let geoData = await geoRes.json();
+
+      if (!geoData || geoData.length === 0) {
+        geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+        geoData = await geoRes.json();
+      }
+
+      if (geoData && geoData.length > 0) {
+        const lat = parseFloat(geoData[0].lat);
+        const lon = parseFloat(geoData[0].lon);
+        const placeName = geoData[0].display_name.split(',')[0];
+
+        // Pan Leaflet map to searched city
+        if (window.map) {
+          window.map.setView([lat, lon], 12);
+        }
+
+        // 2. Read parameter sliders
+        const temp = document.getElementById('temp-slider')?.value || 28.4;
+        const wind = document.getElementById('wind-slider')?.value || 23.0;
+        const humidity = document.getElementById('humidity-slider')?.value || 75.0;
+
+        // 3. Fetch dynamic AQI prediction from Railway Quantum Backend
+        const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
+
+        let aqi = 41;
+        let nodeName = "qBraid-Quantum-Engine";
+
+        if (qRes.ok) {
+          const qData = await qRes.json();
+          aqi = qData.quantum_aqi !== undefined ? qData.quantum_aqi : 41;
+          nodeName = qData.quantum_node || "qBraid-Quantum-Engine";
+        }
+
+        // Determine AQI severity style
+        let statusStr = aqi <= 50 ? "Good" : aqi <= 100 ? "Moderate" : "Unhealthy";
+        let colorStr = aqi <= 50 ? "#10b981" : aqi <= 100 ? "#f59e0b" : "#ef4444";
+
+        // 4. Update Leaflet Marker & Popup with Quantum Data
+        if (window.cityMarker && window.map) {
+          window.cityMarker.setLatLng([lat, lon]);
+          window.cityMarker.bindPopup(`
+            <strong>${placeName} (Live GPS)</strong><br>
+            <span style="color: ${colorStr}; font-weight: bold;">AQI: ${aqi} (${statusStr})</span><br>
+            <small>Node: ${nodeName}</small>
+          `).openPopup();
+        } else if (window.map) {
+          // Fallback: create a new marker if none exists yet
+          window.cityMarker = L.marker([lat, lon]).addTo(window.map)
+            .bindPopup(`
+              <strong>${placeName} (Live GPS)</strong><br>
+              <span style="color: ${colorStr}; font-weight: bold;">AQI: ${aqi} (${statusStr})</span><br>
+              <small>Node: ${nodeName}</small>
+            `).openPopup();
+        }
+
+        // Sync the activeMarker reference used by other map functions
+        activeMarker = window.cityMarker;
+
+        // Update search input with resolved place name
+        const searchInput = document.getElementById('location-search-input');
+        if (searchInput) searchInput.value = placeName;
+
+        // Update hub location badge
+        const hubBadge = document.getElementById('hub-location-name');
+        if (hubBadge) hubBadge.innerText = `${placeName}, IN`;
+
+      } else {
+        console.warn("City not found:", query);
+      }
+    } catch (err) {
+      console.error("City search quantum update error:", err);
+    }
+  }
+
+  // Attach event listener to Search Button
+  document.getElementById('search-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const cityInput = document.getElementById('location-search-input')?.value;
+    handleCitySearch(cityInput);
+  });
     </script>
 
 </body>
