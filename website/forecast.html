@@ -252,384 +252,53 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Disable native browser alert popups globally
-        window.alert = function(msg) { console.warn("Blocked Alert Popup:", msg); };
+  // Global Map and Marker Handles
+  window.map = window.map || null;
+  window.currentQuantumMarker = null;
 
-        var map;
-        var activeMarker;
-        let debounceTimer;
-
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. Initialize Leaflet Map
-            map = L.map('map').setView([12.9716, 77.5946], 11);
-            window.map = map;
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                attribution: '© OpenStreetMap' 
-            }).addTo(map);
-
-            // 2. Auto-detect user's GPS position on page enter
-            detectLiveLocation();
-
-            // 3. Chart 1: PM2.5, PM10 & Overall AQI Multi-Axis Graph
-            const ctx1 = document.getElementById('pmChart').getContext('2d');
-            
-            // Gradient Fills
-            const pm25Gradient = ctx1.createLinearGradient(0, 0, 0, 200);
-            pm25Gradient.addColorStop(0, 'rgba(199, 125, 255, 0.4)');
-            pm25Gradient.addColorStop(1, 'rgba(199, 125, 255, 0.0)');
-
-            const pm10Gradient = ctx1.createLinearGradient(0, 0, 0, 200);
-            pm10Gradient.addColorStop(0, 'rgba(0, 230, 118, 0.4)');
-            pm10Gradient.addColorStop(1, 'rgba(0, 230, 118, 0.0)');
-
-            window.pmChart = new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-                    datasets: [
-                        {
-                            label: 'PM2.5 (µg/m³)',
-                            data: [22, 28, 45, 38, 30, 25],
-                            borderColor: '#c77dff',
-                            backgroundColor: pm25Gradient,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#c77dff',
-                            pointHoverRadius: 7
-                        },
-                        {
-                            label: 'PM10 (µg/m³)',
-                            data: [50, 62, 85, 70, 60, 52],
-                            borderColor: '#00e676',
-                            backgroundColor: pm10Gradient,
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#00e676',
-                            pointHoverRadius: 7
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { labels: { color: '#ffffff', font: { family: 'system-ui', weight: '600' } } },
-                        tooltip: {
-                            backgroundColor: 'rgba(13, 11, 24, 0.9)',
-                            titleColor: '#c77dff',
-                            borderColor: 'rgba(199, 125, 255, 0.3)',
-                            borderWidth: 1,
-                            padding: 12
-                        }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                        y: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' }, title: { display: true, text: 'Concentration (µg/m³)', color: '#a0a0a0' } }
-                    }
-                }
-            });
-
-            // 4. Chart 2: Dual Axis Temperature & Humidity Dynamics
-            const ctx2 = document.getElementById('tempChart').getContext('2d');
-            
-            window.tempChart = new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-                    datasets: [
-                        {
-                            label: 'Temperature (°C)',
-                            data: [22, 21, 26, 30, 29, 25],
-                            borderColor: '#ffb703',
-                            backgroundColor: '#ffb703',
-                            borderWidth: 3,
-                            tension: 0.4,
-                            yAxisID: 'yTemp'
-                        },
-                        {
-                            label: 'Humidity (%)',
-                            data: [85, 88, 70, 55, 60, 75],
-                            borderColor: '#00b4d8',
-                            backgroundColor: '#00b4d8',
-                            borderWidth: 3,
-                            borderDash: [5, 5],
-                            tension: 0.4,
-                            yAxisID: 'yHum'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { labels: { color: '#ffffff', font: { family: 'system-ui', weight: '600' } } },
-                        tooltip: {
-                            backgroundColor: 'rgba(13, 11, 24, 0.9)',
-                            titleColor: '#00b4d8',
-                            borderColor: 'rgba(0, 180, 216, 0.3)',
-                            borderWidth: 1,
-                            padding: 12
-                        }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                        yTemp: {
-                            type: 'linear',
-                            position: 'left',
-                            ticks: { color: '#ffb703' },
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            title: { display: true, text: 'Temp (°C)', color: '#ffb703' }
-                        },
-                        yHum: {
-                            type: 'linear',
-                            position: 'right',
-                            ticks: { color: '#00b4d8' },
-                            grid: { drawOnChartArea: false },
-                            title: { display: true, text: 'Humidity (%)', color: '#00b4d8' }
-                        }
-                    }
-                }
-            });
-
-            // 5. Chart 3: Wind Speed & Gusts Graph
-            const ctx3 = document.getElementById('windChart').getContext('2d');
-            window.windChart = new Chart(ctx3, {
-                type: 'bar',
-                data: {
-                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-                    datasets: [
-                        {
-                            label: 'Avg Wind Speed (km/h)',
-                            data: [12, 10, 18, 23, 20, 15],
-                            backgroundColor: 'rgba(0, 180, 216, 0.6)',
-                            borderColor: '#00b4d8',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Peak Gusts (km/h)',
-                            data: [18, 15, 28, 35, 30, 22],
-                            backgroundColor: 'rgba(247, 37, 133, 0.6)',
-                            borderColor: '#f72585',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#ffffff' } } },
-                    scales: {
-                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                        y: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
-                    }
-                }
-            });
-
-            // 6. Chart 4: Barometric Pressure & Air Density
-            const ctx4 = document.getElementById('pressureChart').getContext('2d');
-            window.pressureChart = new Chart(ctx4, {
-                type: 'line',
-                data: {
-                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
-                    datasets: [{
-                        label: 'Pressure (hPa)',
-                        data: [1013, 1012, 1015, 1011, 1009, 1012],
-                        borderColor: '#7209b7',
-                        backgroundColor: 'rgba(114, 9, 183, 0.25)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#7209b7'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#ffffff' } } },
-                    scales: {
-                        x: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                        y: { ticks: { color: '#a0a0a0' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
-                    }
-                }
-            });
-        });
-
-        // Auto-detect User's GPS Location
-        function detectLiveLocation() {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-
-                        try {
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                            const data = await res.json();
-                            const cityName = data.address.city || data.address.town || data.address.village || "Your Location";
-
-                            if (map) {
-                                map.setView([lat, lon], 12);
-                                await updateMapMarker(lat, lon, `${cityName} (Live GPS)`);
-                            }
-
-                            const searchInput = document.getElementById('location-search-input');
-                            if (searchInput) searchInput.value = cityName;
-
-                            if (typeof runQuantumPrediction === "function") {
-                                runQuantumPrediction();
-                            }
-                        } catch (err) {
-                            updateMapMarker(lat, lon, "Your Location");
-                        }
-                    },
-                    (error) => {
-                        updateMapMarker(12.9716, 77.5946, "Bengaluru (Default)");
-                    },
-                    { enableHighAccuracy: true, timeout: 10000 }
-                );
-            } else {
-                updateMapMarker(12.9716, 77.5946, "Bengaluru (Default)");
-            }
-        }
-
-        // SYNCED TELEMETRY FETCH FOR MAIN DASHBOARD
-        async function updateMapMarker(lat, lon, cityName) {
-            let aqiText = "AQI: Fetching...";
-            
-            try {
-                // Query both current AQI and daily max forecast
-                const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi&daily=us_aqi_max&timezone=auto`);
-                const data = await res.json();
-                
-                // Match priority: Current US AQI -> Daily Max US AQI -> Fallback
-                const liveAqi = data.current?.us_aqi ?? data.daily?.us_aqi_max?.[0] ?? 50;
-                let status = liveAqi <= 50 ? "Good" : liveAqi <= 100 ? "Moderate" : "Unhealthy";
-                
-                // Update main dashboard metrics
-                const aqiValueElement = document.getElementById('current-aqi-value');
-                if (aqiValueElement) aqiValueElement.innerText = liveAqi;
-                aqiText = `<b>AQI: ${liveAqi} (${status})</b>`;
-                
-            } catch (e) {
-                console.error("AQI Fetch Error:", e);
-                aqiText = "<b>AQI: 50 (Moderate)</b>";
-            }
-
-            if (activeMarker) {
-                map.removeLayer(activeMarker);
-            }
-
-            activeMarker = L.marker([lat, lon]).addTo(map)
-                .bindPopup(`<b>${cityName}</b><br>${aqiText}<br><small>Quantum Sensor Node</small>`)
-                .openPopup();
-            window.cityMarker = activeMarker;
-        }
-
-        // Typing Auto-Complete Suggestions (India-First Preference)
-        function onTypeSearch(query) {
-            clearTimeout(debounceTimer);
-            const suggestionsList = document.getElementById('suggestions-list');
-
-            if (!query || query.trim().length < 2) {
-                if (suggestionsList) suggestionsList.style.display = 'none';
-                return;
-            }
-
-            debounceTimer = setTimeout(async () => {
-                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
-                
-                try {
-                    let response = await fetch(url);
-                    let data = await response.json();
-
-                    if (!data || data.length === 0) {
-                        url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
-                        response = await fetch(url);
-                        data = await response.json();
-                    }
-
-                    if (suggestionsList) {
-                        suggestionsList.innerHTML = '';
-                        if (data && data.length > 0) {
-                            data.forEach(place => {
-                                const li = document.createElement('li');
-                                li.className = 'dropdown-item text-truncate py-2 px-3 border-bottom border-secondary border-opacity-25';
-                                li.style.cursor = 'pointer';
-                                li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i><strong>${place.display_name}</strong>`;
-                                
-                                li.onclick = () => {
-                                    document.getElementById('location-search-input').value = place.display_name.split(',')[0];
-                                    suggestionsList.style.display = 'none';
-                                    selectPlace(place.lat, place.lon, place.display_name.split(',')[0]);
-                                };
-                                suggestionsList.appendChild(li);
-                            });
-                            suggestionsList.style.display = 'block';
-                        } else {
-                            suggestionsList.style.display = 'none';
-                        }
-                    }
-                } catch (err) {
-                    console.error('Suggestions error:', err);
-                }
-            }, 250);
-        }
-
-        // Select location from suggestion or click
-        async function selectPlace(lat, lon, cityName) {
-            const latNum = parseFloat(lat);
-            const lonNum = parseFloat(lon);
-            
-            if (map) {
-                map.setView([latNum, lonNum], 12);
-                await updateMapMarker(latNum, lonNum, cityName);
-            }
-            if (typeof runQuantumPrediction === "function") {
-                runQuantumPrediction();
-            }
-        }
-
-  // Global reference to track map and marker instances
-  let leafletMap = null;
-  let activeQuantumMarker = null;
-
-  // Initialize or capture existing Leaflet Map instance
   document.addEventListener('DOMContentLoaded', () => {
-    // Grab global map object if already initialized by Leaflet inline script
-    leafletMap = window.map || null;
+    // 1. Initialize Leaflet Map centered default (if not already initialized)
+    if (!window.map && document.getElementById('map')) {
+      window.map = L.map('map').setView([15.5057, 80.0499], 10); // Ongole default
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(window.map);
+    }
 
-    // Attach search event listener
-    const searchBtn = document.querySelector('#search-btn, .btn-purple, button:has(.fa-search)');
+    // 2. Bind Search Button and Enter Key
+    const searchBtn = document.querySelector('.btn-purple, #search-btn, button:has(.fa-search)');
+    const searchInput = document.querySelector('input[type="text"]');
+
     if (searchBtn) {
       searchBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        executeCityQuantumPrediction();
+        executeDynamicCityPrediction();
       });
     }
 
-    const searchInput = document.querySelector('input[type="text"]');
     if (searchInput) {
       searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          executeCityQuantumPrediction();
+          executeDynamicCityPrediction();
         }
       });
     }
   });
 
-  // Main Execution Function for City Search & Dynamic AQI Popup
-  async function executeCityQuantumPrediction() {
+  // 3. Dynamic City Prediction Function (Destroys hardcoded "AQI 50")
+  async function executeDynamicCityPrediction() {
     const searchInput = document.querySelector('input[type="text"]');
-    const cityName = searchInput ? searchInput.value.trim() : '';
+    const cityName = searchInput ? searchInput.value.trim() : 'Chemma';
     if (!cityName) return;
 
     try {
-      // 1. Geocode location coordinates
+      // A. Geocode target location via OpenStreetMap Nominatim
       const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`);
       const geoData = await geoRes.json();
 
       if (!geoData || geoData.length === 0) {
-        alert("City not found. Please try another location.");
+        alert("Location not found. Please enter a valid city.");
         return;
       }
 
@@ -637,7 +306,7 @@
       const lon = parseFloat(geoData[0].lon);
       const displayName = geoData[0].display_name.split(',')[0];
 
-      // 2. Fetch live local weather telemetry for searched city
+      // B. Fetch live weather telemetry for searched coordinates
       const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true`);
       const weatherData = await weatherRes.json();
 
@@ -645,7 +314,7 @@
       const wind = weatherData.current_weather?.windspeed ?? 15.0;
       const humidity = weatherData.hourly?.relative_humidity_2m?.[0] ?? 70.0;
 
-      // Synchronize Slider UI Controls with live telemetry
+      // Update Slider UI controls to reflect real telemetry
       if (document.getElementById('temp-slider')) document.getElementById('temp-slider').value = temp;
       if (document.getElementById('temp-val')) document.getElementById('temp-val').innerText = temp.toFixed(1);
       if (document.getElementById('wind-slider')) document.getElementById('wind-slider').value = wind;
@@ -653,14 +322,13 @@
       if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = humidity;
       if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = humidity.toFixed(1);
 
-      // Refresh Graphs if function exists
+      // Update Graphs
       if (typeof refreshEnvironmentalGraphs === 'function') {
         refreshEnvironmentalGraphs(temp, wind, humidity);
       }
 
-      // 3. Query Railway Quantum Backend
+      // C. Fetch Quantum AQI from Railway Backend
       const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}&lat=${lat}&lon=${lon}`);
-      
       let computedAqi = 42;
       let nodeName = "qBraid-Quantum-Engine";
 
@@ -673,8 +341,8 @@
       let statusStr = computedAqi <= 50 ? "Good" : computedAqi <= 100 ? "Moderate" : "Unhealthy";
       let colorStr = computedAqi <= 50 ? "#10b981" : computedAqi <= 100 ? "#f59e0b" : "#ef4444";
 
-      // 4. Construct Dynamic Popup Content
-      const dynamicPopupHtml = `
+      // D. Build Fresh Dynamic HTML Content
+      const freshPopupHtml = `
         <div style="font-family: sans-serif; text-align: left; padding: 2px;">
           <strong style="font-size: 1.05rem;">${displayName} (Live Telemetry)</strong><br>
           <span style="color: ${colorStr}; font-weight: bold; font-size: 1.15rem;">AQI: ${computedAqi} (${statusStr})</span><br>
@@ -682,26 +350,24 @@
         </div>
       `;
 
-      // 5. PURGE HARDCODED "AQI: 50" MARKERS FROM MAP INSTANCE
-      const targetMap = window.map || leafletMap;
+      // E. WIPE ALL EXISTING MARKERS & ATTACH FRESH MARKER TO MAP
+      if (window.map) {
+        window.map.setView([lat, lon], 11);
 
-      if (targetMap) {
-        targetMap.setView([lat, lon], 12);
-
-        // Remove all previous markers from map
-        targetMap.eachLayer((layer) => {
+        // Remove all previous markers/layers from map
+        window.map.eachLayer((layer) => {
           if (layer instanceof L.Marker) {
-            targetMap.removeLayer(layer);
+            window.map.removeLayer(layer);
           }
         });
 
-        // Add fresh marker with real dynamic AQI prediction
-        activeQuantumMarker = L.marker([lat, lon]).addTo(targetMap);
-        activeQuantumMarker.bindPopup(dynamicPopupHtml).openPopup();
+        // Bind new marker & popup directly
+        window.currentQuantumMarker = L.marker([lat, lon]).addTo(window.map);
+        window.currentQuantumMarker.bindPopup(freshPopupHtml).openPopup();
       }
 
     } catch (err) {
-      console.error("Quantum search prediction execution error:", err);
+      console.error("Dynamic prediction calculation error:", err);
     }
   }
 
