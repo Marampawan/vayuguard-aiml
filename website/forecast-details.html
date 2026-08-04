@@ -198,11 +198,11 @@
             // Detect live position on load or fallback to coordinates
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
-                    (pos) => fetchDynamic7DayForecast(pos.coords.latitude, pos.coords.longitude, "Your Location"),
-                    () => fetchDynamic7DayForecast(12.9716, 77.5946, "Bengaluru")
+                    (pos) => load7DayForecast("Your Location", pos.coords.latitude, pos.coords.longitude),
+                    () => load7DayForecast("Bengaluru", 12.9716, 77.5946)
                 );
             } else {
-                fetchDynamic7DayForecast(12.9716, 77.5946, "Bengaluru");
+                load7DayForecast("Bengaluru", 12.9716, 77.5946);
             }
         });
 
@@ -242,7 +242,7 @@
                                 li.onclick = () => {
                                     document.getElementById('details-location-input').value = place.display_name.split(',')[0];
                                     suggestionsList.style.display = 'none';
-                                    fetchDynamic7DayForecast(parseFloat(place.lat), parseFloat(place.lon), place.display_name.split(',')[0]);
+                                    load7DayForecast(place.display_name.split(',')[0], parseFloat(place.lat), parseFloat(place.lon));
                                 };
                                 suggestionsList.appendChild(li);
                             });
@@ -274,7 +274,7 @@
 
                 if (data && data.length > 0) {
                     const cityName = data[0].display_name.split(',')[0];
-                    fetchDynamic7DayForecast(parseFloat(data[0].lat), parseFloat(data[0].lon), cityName);
+                    load7DayForecast(cityName, parseFloat(data[0].lat), parseFloat(data[0].lon));
                 } else {
                     alert("Location not found.");
                 }
@@ -283,133 +283,113 @@
             }
         }
 
-        // Wrapper function for autocomplete compatibility
-        async function load7DayForecast(cityName, lat, lon) {
-            fetchDynamic7DayForecast(parseFloat(lat), parseFloat(lon), cityName);
-        }
+        // Complete Working 7-Day Forecast Script (Configured for Railway Backend)
+        async function load7DayForecast(cityName = "Bengaluru", lat = 12.9716, lon = 77.5946) {
+          const activeLocHeader = document.getElementById('active-location-name');
+          if (activeLocHeader) {
+            activeLocHeader.innerText = cityName;
+          }
 
-        async function fetchDynamic7DayForecast(lat, lon, cityName) {
-            const wrapper = document.getElementById('forecast-cards-container');
-            const locationLabel = document.getElementById('active-location-name');
-            if (locationLabel) locationLabel.innerText = `${cityName}, IN`;
+          const cardsContainer = document.querySelector('.container .row.g-4') || document.getElementById('forecast-cards-container');
+          if (!cardsContainer) return;
 
-            try {
-                // 1. Fetch real weather telemetry from Open-Meteo as base parameters
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=Asia%2FKolkata`;
-                const weatherRes = await fetch(weatherUrl);
-                const weatherData = await weatherRes.json();
+          try {
+            // 1. Fetch Weather Telemetry from Open-Meteo
+            const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,relative_humidity_2m_max,precipitation_probability_max,sunrise,sunset&timezone=auto`;
+            const res = await fetch(apiUrl);
+            if (!res.ok) throw new Error("Weather API fetch failed");
+            const data = await res.json();
 
-                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const daily = data.daily;
+            if (!daily || !daily.time) return;
 
-                let cardsHTML = '';
+            cardsContainer.innerHTML = ''; // Clear old forecast cards
 
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date();
-                    d.setDate(d.getDate() + i);
-                    const dateStr = `${daysOfWeek[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
+            // 2. Loop & Render Fixed Daily Cards
+            for (let idx = 0; idx < daily.time.length; idx++) {
+              const dateStr = daily.time[idx];
+              const maxTemp = Math.round(daily.temperature_2m_max[idx] ?? 28);
+              const minTemp = Math.round(daily.temperature_2m_min[idx] ?? 20);
+              const wind = Math.round(daily.windspeed_10m_max[idx] ?? 14);
+              const hum = Math.round(daily.relative_humidity_2m_max[idx] ?? 65);
+              const rain = Math.round(daily.precipitation_probability_max?.[idx] ?? 0);
 
-                    let tempMax = Math.round(weatherData.daily?.temperature_2m_max?.[i] ?? 28);
-                    let tempMin = Math.round(weatherData.daily?.temperature_2m_min?.[i] ?? 22);
-                    let rain = Math.round(weatherData.daily?.precipitation_probability_max?.[i] ?? 15);
-                    let wind = Math.round(weatherData.daily?.wind_speed_10m_max?.[i] ?? 20);
-                    let humidity = Math.round(weatherData.daily?.relative_humidity_2m_max?.[i] ?? 70);
+              // Parse Sunrise / Sunset Times in Local Timezone
+              const formatTime = (isoStr) => {
+                if (!isoStr) return '--:--';
+                const d = new Date(isoStr);
+                return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+              };
 
-                    const rawSunrise = weatherData.daily?.sunrise?.[i];
-                    const rawSunset = weatherData.daily?.sunset?.[i];
-                    let sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:05 AM';
-                    let sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:45 PM';
+              const sunriseTime = formatTime(daily.sunrise?.[idx]);
+              const sunsetTime = formatTime(daily.sunset?.[idx]);
 
-                    // Query live Quantum AQI from Railway
-                    let dayAqi = 37;
-                    try {
-                        const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${tempMax}&humidity=${humidity}&wind=${wind}&day_index=${i}`);
-                        const qData = await qRes.json();
-                        if (qData && qData.quantum_aqi) {
-                            dayAqi = qData.quantum_aqi;
-                        }
-                    } catch (qErr) {
-                        const theta = (tempMax / 50.0) * Math.PI;
-                        dayAqi = Math.round(35 + (tempMax * 0.3) + (humidity * 0.08) + (Math.cos(theta) * 4) + (i * 0.5));
-                    }
-
-                    // Dynamic Color Logic based on AQI Value
-                    let status = "Good";
-                    let badgeClass = "badge-aqi-good";
-
-                    if (dayAqi <= 50) {
-                        status = "Good";
-                        badgeClass = "badge-aqi-good"; // Bright Green
-                    } else if (dayAqi <= 100) {
-                        status = "Moderate";
-                        badgeClass = "badge-aqi-moderate"; // Bright Yellow
-                    } else {
-                        status = "Unhealthy";
-                        badgeClass = "badge-aqi-unhealthy"; // Bright Red
-                    }
-
-                    cardsHTML += `
-                        <div class="card card-quantum-glass rounded-4 p-4 mb-3">
-                            <!-- Header -->
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-white border-opacity-10">
-                                <div class="d-flex align-items-center gap-2">
-                                    ${i === 0 ? '<span class="badge rounded-pill px-3 py-1.5 fs-7 fw-bold" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #ffffff;">TODAY</span>' : ''}
-                                    <h4 class="fw-bold m-0 text-white tracking-wide">${dateStr}</h4>
-                                </div>
-                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center gap-2">
-                                    <span style="font-size: 8px;">●</span> AQI ${dayAqi} • ${status}
-                                </span>
-                            </div>
-
-                            <!-- Telemetry Metrics Grid -->
-                            <div class="row g-2">
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-temp small fw-bold mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
-                                        <strong class="text-white fs-6 fw-bold">${tempMin}°C / ${tempMax}°C</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-sunrise small fw-bold mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
-                                        <strong class="text-white fs-6 fw-bold">${sunriseTime}</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-sunset small fw-bold mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
-                                        <strong class="text-white fs-6 fw-bold">${sunsetTime}</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-rain small fw-bold mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
-                                        <strong class="text-white fs-6 fw-bold">${rain}%</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-wind small fw-bold mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
-                                        <strong class="text-white fs-6 fw-bold">${wind} km/h</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-humidity small fw-bold mb-1"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
-                                        <strong class="text-white fs-6 fw-bold">${humidity}%</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+              // 3. Optional Railway Quantum AQI Fetch (with fallback calculation)
+              let calculatedAqi = Math.round(35 + (maxTemp * 0.35) + (wind * 0.15));
+              try {
+                const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${maxTemp}&humidity=${hum}&wind=${wind}&lat=${lat}&lon=${lon}`);
+                if (qRes.ok) {
+                  const qData = await qRes.json();
+                  if (qData.quantum_aqi !== undefined) {
+                    calculatedAqi = Math.round(qData.quantum_aqi);
+                  }
                 }
+              } catch (qErr) {
+                // Fallback to local calculation if Railway request times out
+              }
 
-                // Render forecast cards from Railway API and clear the loading spinner
-                if (wrapper) wrapper.innerHTML = cardsHTML;
+              let statusStr = calculatedAqi <= 50 ? "Good" : calculatedAqi <= 100 ? "Moderate" : "Unhealthy";
+              let badgeBg = calculatedAqi <= 50 ? "bg-success" : calculatedAqi <= 100 ? "bg-warning text-dark" : "bg-danger";
 
-            } catch (err) {
-                console.error("Forecast error:", err);
+              const cardDate = new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: '2-digit' });
+              const isToday = idx === 0;
+
+              const cardHtml = `
+                <div class="col-12 mb-3">
+                  <div class="card bg-dark text-light border border-secondary border-opacity-25 rounded-4 p-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <div class="d-flex align-items-center gap-2">
+                        ${isToday ? '<span class="badge bg-purple text-white px-2 py-1">TODAY</span>' : ''}
+                        <h5 class="fw-bold mb-0 text-light">${cardDate}</h5>
+                      </div>
+                      <span class="badge ${badgeBg} fs-6 px-3 py-2">• AQI ${calculatedAqi} • ${statusStr}</span>
+                    </div>
+
+                    <div class="row g-2 text-center align-items-center">
+                      <div class="col-6 col-md-2 bg-secondary bg-opacity-10 p-2 rounded-3">
+                        <small class="text-info d-block fw-semibold"><i class="fas fa-thermometer-half me-1"></i> TEMP</small>
+                        <strong class="fs-6">${minTemp}°C / ${maxTemp}°C</strong>
+                      </div>
+                      <div class="col-6 col-md-2 bg-secondary bg-opacity-10 p-2 rounded-3">
+                        <small class="text-warning d-block fw-semibold"><i class="fas fa-sun me-1"></i> SUNRISE</small>
+                        <strong class="fs-6">${sunriseTime}</strong>
+                      </div>
+                      <div class="col-6 col-md-2 bg-secondary bg-opacity-10 p-2 rounded-3">
+                        <small class="text-danger d-block fw-semibold"><i class="fas fa-moon me-1"></i> SUNSET</small>
+                        <strong class="fs-6">${sunsetTime}</strong>
+                      </div>
+                      <div class="col-6 col-md-2 bg-secondary bg-opacity-10 p-2 rounded-3">
+                        <small class="text-primary d-block fw-semibold"><i class="fas fa-cloud-rain me-1"></i> RAIN</small>
+                        <strong class="fs-6">${rain}%</strong>
+                      </div>
+                      <div class="col-6 col-md-2 bg-secondary bg-opacity-10 p-2 rounded-3">
+                        <small class="text-cyan d-block fw-semibold"><i class="fas fa-wind me-1"></i> WIND</small>
+                        <strong class="fs-6">${wind} km/h</strong>
+                      </div>
+                      <div class="col-6 col-md-2 bg-secondary bg-opacity-10 p-2 rounded-3">
+                        <small class="text-purple d-block fw-semibold"><i class="fas fa-tint me-1"></i> HUMIDITY</small>
+                        <strong class="fs-6">${hum}%</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+              cardsContainer.insertAdjacentHTML('beforeend', cardHtml);
             }
+
+          } catch (err) {
+            console.error("Error updating 7-day forecast cards:", err);
+          }
         }
     </script>
 
