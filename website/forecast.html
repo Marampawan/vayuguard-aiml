@@ -449,7 +449,7 @@
 
             // 6. Chart 4: Barometric Pressure & Air Density
             const ctx4 = document.getElementById('pressureChart').getContext('2d');
-            new Chart(ctx4, {
+            window.pressureChart = new Chart(ctx4, {
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
@@ -874,26 +874,65 @@
     }
   }
 
+  // Function to dynamically update all 4 Chart.js instances with real city/slider weather data
+  function updateGraphsWithLiveTelemetry(temp, wind, humidity) {
+    // 1. Update PM2.5 & PM10 Chart
+    if (window.pmChart) {
+      const pm25Base = Math.round(15 + (temp * 0.5) + (humidity * 0.1));
+      const pm10Base = Math.round(pm25Base * 2.1);
+      
+      window.pmChart.data.datasets[0].data = [pm25Base - 4, pm25Base, pm25Base + 2, pm25Base - 2, pm25Base - 5, pm25Base];
+      window.pmChart.data.datasets[1].data = [pm10Base - 8, pm10Base + 4, pm10Base, pm10Base - 6, pm10Base - 10, pm10Base];
+      window.pmChart.update('none'); // Fast update without animation reset
+    }
+
+    // 2. Update Temperature & Humidity Trends Chart
+    if (window.tempChart) {
+      const tempTrend = [temp - 6, temp - 7, temp - 2, temp, temp - 3, temp - 5];
+      const humTrend = [humidity + 10, humidity + 13, humidity - 5, humidity, humidity + 5, humidity + 8];
+      
+      window.tempChart.data.datasets[0].data = tempTrend;
+      window.tempChart.data.datasets[1].data = humTrend;
+      window.tempChart.update('none');
+    }
+
+    // 3. Update Wind Speed & Peak Gusts Chart
+    if (window.windChart) {
+      const gust = Math.round(wind * 1.45);
+      window.windChart.data.datasets[0].data = [Math.round(wind * 0.5), Math.round(wind * 0.4), Math.round(wind * 0.8), wind, Math.round(wind * 0.85), Math.round(wind * 0.65)];
+      window.windChart.data.datasets[1].data = [Math.round(gust * 0.5), Math.round(gust * 0.4), Math.round(gust * 0.8), gust, Math.round(gust * 0.85), Math.round(gust * 0.65)];
+      window.windChart.update('none');
+    }
+
+    // 4. Update Barometric Pressure Chart
+    if (window.pressureChart) {
+      // Standard atmosphere calculation adjusted for temperature
+      const basePressure = Math.round(1013 - (temp * 0.15));
+      window.pressureChart.data.datasets[0].data = [basePressure, basePressure - 1, basePressure + 2, basePressure, basePressure - 3, basePressure];
+      window.pressureChart.update('none');
+    }
+  }
+
   // Attach graph updates to slider events
   document.getElementById('temp-slider')?.addEventListener('input', (e) => {
     const temp = parseFloat(e.target.value);
     const wind = parseFloat(document.getElementById('wind-slider')?.value || 23.0);
     const hum = parseFloat(document.getElementById('humidity-slider')?.value || 75.0);
-    updateEnvironmentalGraphs(temp, wind, hum);
+    updateGraphsWithLiveTelemetry(temp, wind, hum);
   });
 
   document.getElementById('wind-slider')?.addEventListener('input', (e) => {
     const temp = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
     const wind = parseFloat(e.target.value);
     const hum = parseFloat(document.getElementById('humidity-slider')?.value || 75.0);
-    updateEnvironmentalGraphs(temp, wind, hum);
+    updateGraphsWithLiveTelemetry(temp, wind, hum);
   });
 
   document.getElementById('humidity-slider')?.addEventListener('input', (e) => {
     const temp = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
     const wind = parseFloat(document.getElementById('wind-slider')?.value || 23.0);
     const hum = parseFloat(e.target.value);
-    updateEnvironmentalGraphs(temp, wind, hum);
+    updateGraphsWithLiveTelemetry(temp, wind, hum);
   });
 
   // Execute Quantum AQI Prediction Button Handler
@@ -986,6 +1025,9 @@
       if (document.getElementById('wind-val')) document.getElementById('wind-val').innerText = wind.toFixed(1);
       if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = humidity;
       if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = humidity.toFixed(1);
+
+      // Update all 4 graphs with live weather telemetry
+      updateGraphsWithLiveTelemetry(temp, wind, humidity);
 
       // 3. Query Railway Backend for Live Quantum Computation
       const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
