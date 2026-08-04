@@ -588,14 +588,14 @@
             }
         }
 
-        // Function to fetch weather, call quantum API, and OVERWRITE Leaflet popup text
+        // Complete Working Search & Popup Update Script
         async function runLiveCitySearch() {
-          const inputEl = document.querySelector('input[type="text"]');
+          const inputEl = document.querySelector('input[placeholder="Ongole"], input[type="text"]');
           const cityName = inputEl ? inputEl.value.trim() : 'Ongole';
           if (!cityName) return;
 
           try {
-            // 1. Geocode search query via OpenStreetMap Nominatim
+            // 1. Geocode location via OpenStreetMap
             const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`);
             const geoData = await geoRes.json();
 
@@ -605,12 +605,7 @@
             const lon = parseFloat(geoData[0].lon);
             const displayName = geoData[0].display_name.split(',')[0];
 
-            // Re-center map
-            if (window.map) {
-              window.map.setView([lat, lon], 12);
-            }
-
-            // 2. Fetch live weather telemetry for the city coordinates
+            // 2. Fetch live local weather telemetry
             const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true`);
             const weatherData = await weatherRes.json();
 
@@ -618,7 +613,7 @@
             const wind = weatherData.current_weather?.windspeed ?? 15.0;
             const humidity = weatherData.hourly?.relative_humidity_2m?.[0] ?? 70.0;
 
-            // Update Slider UI controls
+            // Synchronize UI parameter sliders
             if (document.getElementById('temp-slider')) document.getElementById('temp-slider').value = temp;
             if (document.getElementById('temp-val')) document.getElementById('temp-val').innerText = temp.toFixed(1);
             if (document.getElementById('wind-slider')) document.getElementById('wind-slider').value = wind;
@@ -626,12 +621,12 @@
             if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = humidity;
             if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = humidity.toFixed(1);
 
-            // Update Graphs if function exists
+            // Update environmental graphs
             if (typeof refreshEnvironmentalGraphs === 'function') {
               refreshEnvironmentalGraphs(temp, wind, humidity);
             }
 
-            // 3. Request calculation from Railway Quantum Backend
+            // 3. Request Live Quantum AQI Calculation from Railway Backend
             const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}&lat=${lat}&lon=${lon}`);
             let computedAqi = 42;
             let nodeName = "qBraid-Quantum-Engine";
@@ -645,19 +640,34 @@
             let statusStr = computedAqi <= 50 ? "Good" : computedAqi <= 100 ? "Moderate" : "Unhealthy";
             let colorStr = computedAqi <= 50 ? "#10b981" : computedAqi <= 100 ? "#f59e0b" : "#ef4444";
 
-            // 4. DESTROY STATIC POPUP & OVERWRITE DOM WITH COMPUTED VALUES
-            const newPopupHtml = `
-              <div style="font-family: sans-serif;">
-                <strong>${displayName} (Live Telemetry)</strong><br>
+            const popupHtml = `
+              <div style="font-family: sans-serif; text-align: left;">
+                <strong style="font-size: 1rem;">${displayName} (Live Telemetry)</strong><br>
                 <span style="color: ${colorStr}; font-weight: bold; font-size: 1.1rem;">AQI: ${computedAqi} (${statusStr})</span><br>
                 <small style="color: #6b7280;">Node: ${nodeName}</small>
               </div>
             `;
 
-            // Overwrite existing popup text inside Leaflet container
-            const popupContentEls = document.querySelectorAll('.leaflet-popup-content');
-            if (popupContentEls.length > 0) {
-              popupContentEls[0].innerHTML = newPopupHtml;
+            // 4. Force Leaflet Map to View Location & Bind New Popup Directly
+            if (window.map) {
+              window.map.setView([lat, lon], 12);
+
+              // Remove existing markers if any
+              if (window.currentMarker) {
+                window.map.removeLayer(window.currentMarker);
+              }
+
+              // Create new Leaflet marker with calculated AQI popup content
+              window.currentMarker = L.marker([lat, lon]).addTo(window.map);
+              window.currentMarker.bindPopup(popupHtml).openPopup();
+            } else {
+              // Fallback DOM update
+              setTimeout(() => {
+                const popupContentEls = document.querySelectorAll('.leaflet-popup-content');
+                if (popupContentEls.length > 0) {
+                  popupContentEls[0].innerHTML = popupHtml;
+                }
+              }, 100);
             }
 
           } catch (err) {
@@ -665,14 +675,14 @@
           }
         }
 
-        // Bind listeners once DOM loads
+        // Attach event listener to search button
         document.addEventListener('DOMContentLoaded', () => {
-          const searchBtn = document.querySelector('.btn-purple, button:has(.fa-search)');
+          const searchBtn = document.querySelector('.btn-purple, button:has(.fa-search), #search-btn');
           if (searchBtn) {
-            searchBtn.onclick = function(e) {
+            searchBtn.addEventListener('click', (e) => {
               e.preventDefault();
               runLiveCitySearch();
-            };
+            });
           }
         });
 
