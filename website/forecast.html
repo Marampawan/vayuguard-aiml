@@ -136,8 +136,7 @@
                                    class="form-control bg-dark text-white border-secondary" 
                                    placeholder="Search any city (e.g., Delhi, Mumbai, Chennai)..." 
                                    autocomplete="off" 
-                                   oninput="onTypeSearch(this.value)"
-                                   onkeypress="if(event.key==='Enter') executeCitySearch(this.value)">
+                                   oninput="onTypeSearch(this.value)">
                             <button id="search-btn" class="btn btn-purple text-white fw-semibold px-4" 
                                     style="background: linear-gradient(135deg, #7209b7, #8a2be2);">
                                 Search
@@ -657,6 +656,110 @@
             }
         }
 
+        // Dynamic City Search & Live Quantum AQI Calculation
+        async function searchAndExecuteQuantumAQI() {
+          const cityInput = document.querySelector('input[placeholder="Chennai"], #city-input, input[type="text"]')?.value || 'Chennai';
+          if (!cityInput) return;
+
+          try {
+            // 1. Geocode location coordinates using OpenStreetMap Nominatim
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityInput)}`);
+            const geoData = await geoRes.json();
+
+            if (!geoData || geoData.length === 0) {
+              console.warn("Location not found");
+              return;
+            }
+
+            const lat = parseFloat(geoData[0].lat);
+            const lon = parseFloat(geoData[0].lon);
+            const cityName = geoData[0].display_name.split(',')[0];
+
+            // Pan Leaflet map to the searched city
+            if (window.map) {
+              window.map.setView([lat, lon], 12);
+            }
+
+            // 2. Fetch live weather telemetry for the city coordinates
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true`);
+            const weatherData = await weatherRes.json();
+
+            const liveTemp = weatherData.current_weather?.temperature ?? 28.4;
+            const liveWind = weatherData.current_weather?.windspeed ?? 15.0;
+            const liveHumidity = weatherData.hourly?.relative_humidity_2m?.[0] ?? 70.0;
+
+            // Synchronize parameter slider UI controls with live weather
+            if (document.getElementById('temp-slider')) document.getElementById('temp-slider').value = liveTemp;
+            if (document.getElementById('temp-val')) document.getElementById('temp-val').innerText = liveTemp.toFixed(1);
+            if (document.getElementById('wind-slider')) document.getElementById('wind-slider').value = liveWind;
+            if (document.getElementById('wind-val')) document.getElementById('wind-val').innerText = liveWind.toFixed(1);
+            if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = liveHumidity;
+            if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = liveHumidity.toFixed(1);
+
+            // Update all 4 graphs with live weather telemetry
+            refreshEnvironmentalGraphs(liveTemp, liveWind, liveHumidity);
+
+            // 3. Query Railway Backend with live city coordinates & weather parameters
+            const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${liveTemp}&humidity=${liveHumidity}&wind=${liveWind}&lat=${lat}&lon=${lon}`);
+            
+            let computedAqi = 42;
+            let nodeName = "qBraid-Quantum-Engine";
+
+            if (qRes.ok) {
+              const qData = await qRes.json();
+              computedAqi = qData.quantum_aqi !== undefined ? qData.quantum_aqi : 42;
+              nodeName = qData.quantum_node || "qBraid-Quantum-Engine";
+            }
+
+            // Determine dynamic badge styling
+            let statusStr = computedAqi <= 50 ? "Good" : computedAqi <= 100 ? "Moderate" : "Unhealthy";
+            let colorStr = computedAqi <= 50 ? "#10b981" : computedAqi <= 100 ? "#f59e0b" : "#ef4444";
+
+            // 4. OVERWRITE LEAFLET POPUP DOM DIRECTLY (Replaces static "AQI: 50")
+            const popupHtml = `
+              <div style="font-family: sans-serif; text-align: left;">
+                <strong style="font-size: 1.05rem;">${cityName} (Live GPS Sync)</strong><br>
+                <span style="color: ${colorStr}; font-weight: bold; font-size: 1.1rem;">AQI: ${computedAqi} (${statusStr})</span><br>
+                <small style="color: #6b7280;">Node: ${nodeName}</small>
+              </div>
+            `;
+
+            // Update active marker popup or fallback selector
+            if (window.cityMarker) {
+              window.cityMarker.setLatLng([lat, lon]);
+              window.cityMarker.unbindPopup();
+              window.cityMarker.bindPopup(popupHtml).openPopup();
+            } else {
+              const popups = document.querySelectorAll('.leaflet-popup-content');
+              if (popups.length > 0) popups[0].innerHTML = popupHtml;
+            }
+
+          } catch (err) {
+            console.error("City search quantum calculation failed:", err);
+          }
+        }
+
+        // Bind Search Button and Enter key events on load
+        document.addEventListener('DOMContentLoaded', () => {
+          const searchBtn = document.querySelector('#search-btn, .btn-purple');
+          if (searchBtn) {
+            searchBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              searchAndExecuteQuantumAQI();
+            });
+          }
+
+          const searchInput = document.querySelector('input[type="text"]');
+          if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                searchAndExecuteQuantumAQI();
+              }
+            });
+          }
+        });
+
         // Function to prompt/select new location for 7-Day Forecast
         async function change7DayLocation() {
             const newLocation = prompt("Enter a city or location for 7-Day Forecast (e.g., Delhi, Mumbai, Chennai):");
@@ -874,29 +977,26 @@
     }
   }
 
-  // Function to dynamically update all 4 Chart.js instances with real city/slider weather data
-  function updateGraphsWithLiveTelemetry(temp, wind, humidity) {
+  // Function to update all 4 Chart.js datasets dynamically
+  function refreshEnvironmentalGraphs(temp, wind, humidity) {
     // 1. Update PM2.5 & PM10 Chart
     if (window.pmChart) {
-      const pm25Base = Math.round(15 + (temp * 0.5) + (humidity * 0.1));
-      const pm10Base = Math.round(pm25Base * 2.1);
-      
-      window.pmChart.data.datasets[0].data = [pm25Base - 4, pm25Base, pm25Base + 2, pm25Base - 2, pm25Base - 5, pm25Base];
-      window.pmChart.data.datasets[1].data = [pm10Base - 8, pm10Base + 4, pm10Base, pm10Base - 6, pm10Base - 10, pm10Base];
-      window.pmChart.update('none'); // Fast update without animation reset
+      const basePM25 = Math.round(12 + (temp * 0.4) + (humidity * 0.1));
+      const basePM10 = Math.round(basePM25 * 2.2);
+
+      window.pmChart.data.datasets[0].data = [basePM25 - 3, basePM25, basePM25 + 4, basePM25 - 1, basePM25 - 4, basePM25];
+      window.pmChart.data.datasets[1].data = [basePM10 - 6, basePM10 + 5, basePM10, basePM10 - 5, basePM10 - 8, basePM10];
+      window.pmChart.update('none'); // Update without full animation reset
     }
 
-    // 2. Update Temperature & Humidity Trends Chart
+    // 2. Update Temperature & Humidity Trends
     if (window.tempChart) {
-      const tempTrend = [temp - 6, temp - 7, temp - 2, temp, temp - 3, temp - 5];
-      const humTrend = [humidity + 10, humidity + 13, humidity - 5, humidity, humidity + 5, humidity + 8];
-      
-      window.tempChart.data.datasets[0].data = tempTrend;
-      window.tempChart.data.datasets[1].data = humTrend;
+      window.tempChart.data.datasets[0].data = [temp - 6, temp - 8, temp - 2, temp, temp - 3, temp - 5];
+      window.tempChart.data.datasets[1].data = [humidity + 10, humidity + 12, humidity - 5, humidity, humidity + 4, humidity + 8];
       window.tempChart.update('none');
     }
 
-    // 3. Update Wind Speed & Peak Gusts Chart
+    // 3. Update Wind Speed & Peak Gusts
     if (window.windChart) {
       const gust = Math.round(wind * 1.45);
       window.windChart.data.datasets[0].data = [Math.round(wind * 0.5), Math.round(wind * 0.4), Math.round(wind * 0.8), wind, Math.round(wind * 0.85), Math.round(wind * 0.65)];
@@ -904,35 +1004,22 @@
       window.windChart.update('none');
     }
 
-    // 4. Update Barometric Pressure Chart
+    // 4. Update Barometric Pressure
     if (window.pressureChart) {
-      // Standard atmosphere calculation adjusted for temperature
-      const basePressure = Math.round(1013 - (temp * 0.15));
-      window.pressureChart.data.datasets[0].data = [basePressure, basePressure - 1, basePressure + 2, basePressure, basePressure - 3, basePressure];
+      const basePressure = Math.round(1013 - (temp * 0.12));
+      window.pressureChart.data.datasets[0].data = [basePressure, basePressure - 1, basePressure + 2, basePressure, basePressure - 2, basePressure];
       window.pressureChart.update('none');
     }
   }
 
-  // Attach graph updates to slider events
-  document.getElementById('temp-slider')?.addEventListener('input', (e) => {
-    const temp = parseFloat(e.target.value);
-    const wind = parseFloat(document.getElementById('wind-slider')?.value || 23.0);
-    const hum = parseFloat(document.getElementById('humidity-slider')?.value || 75.0);
-    updateGraphsWithLiveTelemetry(temp, wind, hum);
-  });
-
-  document.getElementById('wind-slider')?.addEventListener('input', (e) => {
-    const temp = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
-    const wind = parseFloat(e.target.value);
-    const hum = parseFloat(document.getElementById('humidity-slider')?.value || 75.0);
-    updateGraphsWithLiveTelemetry(temp, wind, hum);
-  });
-
-  document.getElementById('humidity-slider')?.addEventListener('input', (e) => {
-    const temp = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
-    const wind = parseFloat(document.getElementById('wind-slider')?.value || 23.0);
-    const hum = parseFloat(e.target.value);
-    updateGraphsWithLiveTelemetry(temp, wind, hum);
+  // Attach to slider controls
+  ['temp-slider', 'wind-slider', 'humidity-slider'].forEach(sliderId => {
+    document.getElementById(sliderId)?.addEventListener('input', () => {
+      const t = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
+      const w = parseFloat(document.getElementById('wind-slider')?.value || 15.0);
+      const h = parseFloat(document.getElementById('humidity-slider')?.value || 70.0);
+      refreshEnvironmentalGraphs(t, w, h);
+    });
   });
 
   // Execute Quantum AQI Prediction Button Handler
@@ -991,69 +1078,6 @@
     }
   }
 
-  // Complete Search Handler
-  async function executeCitySearch(cityQuery) {
-    if (!cityQuery) return;
-
-    try {
-      // 1. Geocode location via Nominatim API
-      const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityQuery)}`);
-      const geoData = await geoRes.json();
-
-      if (!geoData || geoData.length === 0) return;
-
-      const lat = parseFloat(geoData[0].lat);
-      const lon = parseFloat(geoData[0].lon);
-      const cityName = geoData[0].display_name.split(',')[0];
-
-      if (window.map) {
-        window.map.setView([lat, lon], 12);
-      }
-
-      // 2. Fetch live real-time weather for searched city coordinates
-      const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relative_humidity_2m=true`);
-      const wData = await wRes.json();
-
-      const temp = wData.current_weather?.temperature || 28.4;
-      const wind = wData.current_weather?.windspeed || 18.0;
-      const humidity = wData.hourly?.relative_humidity_2m?.[0] || 70.0;
-
-      // Update Slider UI controls to reflect searched city's live weather
-      if (document.getElementById('temp-slider')) document.getElementById('temp-slider').value = temp;
-      if (document.getElementById('temp-val')) document.getElementById('temp-val').innerText = temp.toFixed(1);
-      if (document.getElementById('wind-slider')) document.getElementById('wind-slider').value = wind;
-      if (document.getElementById('wind-val')) document.getElementById('wind-val').innerText = wind.toFixed(1);
-      if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = humidity;
-      if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = humidity.toFixed(1);
-
-      // Update all 4 graphs with live weather telemetry
-      updateGraphsWithLiveTelemetry(temp, wind, humidity);
-
-      // 3. Query Railway Backend for Live Quantum Computation
-      const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
-      let liveAqi = 42;
-      let nodeName = "qBraid-Quantum-Engine";
-
-      if (qRes.ok) {
-        const qData = await qRes.json();
-        liveAqi = qData.quantum_aqi !== undefined ? qData.quantum_aqi : 42;
-        nodeName = qData.quantum_node || "qBraid-Quantum-Engine";
-      }
-
-      // 4. Force override Leaflet popup content with computed live AQI
-      setMarkerPopupContent(cityName, liveAqi, nodeName);
-
-    } catch (err) {
-      console.error("City search update error:", err);
-    }
-  }
-
-  // Attach event listeners to Search Button and Input Enter Key
-  document.querySelector('.btn-purple, #search-btn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    const cityInput = document.querySelector('input[type="text"], #city-input')?.value;
-    executeCitySearch(cityInput);
-  });
     </script>
 
 </body>
