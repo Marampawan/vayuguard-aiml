@@ -38,6 +38,64 @@
           opacity: 0.85 !important;
           cursor: wait !important;
         }
+
+        /* Modern Grid & Separated Graph Cards */
+        .graphs-grid-container {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+          margin-top: 1.5rem;
+        }
+
+        @media (max-width: 992px) {
+          .graphs-grid-container {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .graph-card {
+          background: rgba(18, 24, 38, 0.75);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 16px;
+          padding: 1.25rem 1.5rem;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+          transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .graph-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(168, 85, 247, 0.4);
+          box-shadow: 0 12px 40px rgba(168, 85, 247, 0.15);
+        }
+
+        .graph-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .graph-card-title {
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: #f1f5f9;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .graph-card-title i {
+          font-size: 1.1rem;
+        }
+
+        .graph-canvas-wrapper {
+          position: relative;
+          height: 260px;
+          width: 100%;
+        }
     </style>
 </head>
 <body class="p-3 p-md-4">
