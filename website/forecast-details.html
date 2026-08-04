@@ -92,12 +92,61 @@
       .text-label-rain { color: #60a5fa !important; }     /* Rain Blue */
       .text-label-wind { color: #cbd5e1 !important; }     /* Bright Silver */
       .text-label-humidity { color: #c084fc !important; } /* Purple */
+
+      /* Ensure search wrapper positioning */
+      .position-relative {
+        position: relative !important;
+        overflow: visible !important;
+      }
+
+      /* Floating Autocomplete Box */
+      .autocomplete-suggestions-box {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 99999 !important;
+        margin-top: 6px;
+        background: rgba(18, 24, 38, 0.98);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(168, 85, 247, 0.4);
+        border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+        max-height: 220px;
+        overflow-y: auto;
+        padding: 6px 0;
+      }
+
+      /* Autocomplete Item */
+      .autocomplete-item {
+        padding: 10px 16px;
+        color: #f1f5f9;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background 0.2s ease;
+      }
+
+      .autocomplete-item:hover {
+        background: rgba(168, 85, 247, 0.25);
+        color: #ffffff;
+      }
     </style>
 </head>
 <body class="py-4 py-md-5">
 
     <div class="container" style="max-width: 980px;">
         
+        <!-- Top Navigation Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <a href="index.html" class="btn btn-outline-secondary btn-sm rounded-pill text-light px-3">
+            <i class="fas fa-arrow-left me-2"></i>Return to Main Dashboard
+          </a>
+        </div>
+
         <!-- Top Active Location Header with Integrated Search -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-dark border border-secondary border-opacity-25 rounded-4 p-3 mb-4 shadow-sm">
           
@@ -359,5 +408,87 @@
             }
         }
     </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.querySelector('input[placeholder*="Del"], input[type="text"]');
+      if (!searchInput) return;
+
+      // Attach relative container
+      const parentContainer = searchInput.parentElement.parentElement;
+      parentContainer.classList.add('position-relative');
+
+      // Create dropdown dynamically
+      let dropdown = document.getElementById('forecast-autocomplete-list');
+      if (!dropdown) {
+        dropdown = document.createElement('div');
+        dropdown.id = 'forecast-autocomplete-list';
+        dropdown.className = 'autocomplete-suggestions-box';
+        parentContainer.appendChild(dropdown);
+      }
+
+      let debounceTimer;
+
+      // Listen for typing ("Del" -> Shows "Delhi")
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (query.length < 2) {
+          dropdown.style.display = 'none';
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`);
+            const results = await res.json();
+
+            if (!results || results.length === 0) {
+              dropdown.style.display = 'none';
+              return;
+            }
+
+            // Render suggestion list
+            dropdown.innerHTML = results.map(city => {
+              const cityName = city.display_name.split(',')[0];
+              const country = city.address?.country || '';
+              return `
+                <div class="autocomplete-item" data-name="${cityName}">
+                  <i class="fas fa-map-marker-alt text-purple me-2"></i>
+                  <strong>${cityName}</strong> <small style="color: #94a3b8; margin-left: 6px;">${country}</small>
+                </div>
+              `;
+            }).join('');
+
+            dropdown.style.display = 'block';
+
+            // Select recommendation on click
+            dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+              item.addEventListener('click', () => {
+                const selectedCity = item.getAttribute('data-name');
+                searchInput.value = selectedCity;
+                dropdown.style.display = 'none';
+                
+                // Trigger click on existing search button if available
+                const searchBtn = document.querySelector('button');
+                if (searchBtn) searchBtn.click();
+              });
+            });
+
+          } catch (err) {
+            console.error("Autocomplete fetch error:", err);
+          }
+        }, 200);
+      });
+
+      // Close on click outside
+      document.addEventListener('click', (e) => {
+        if (!parentContainer.contains(e.target)) {
+          dropdown.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
