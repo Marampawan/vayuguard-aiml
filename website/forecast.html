@@ -96,6 +96,63 @@
           height: 260px;
           width: 100%;
         }
+
+        /* Individual Separated Graph Cards Grid */
+        .graphs-separated-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem; /* Generous spacing between cards */
+          margin-top: 1.5rem;
+          margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 992px) {
+          .graphs-separated-grid {
+            grid-template-columns: 1fr; /* Stack vertically on smaller screens */
+            gap: 1.5rem;
+          }
+        }
+
+        /* Standalone Glassmorphism Card Style */
+        .single-graph-card {
+          background: rgba(18, 24, 38, 0.7);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 18px;
+          padding: 1.5rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+          transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .single-graph-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(168, 85, 247, 0.5);
+          box-shadow: 0 14px 40px rgba(168, 85, 247, 0.2);
+        }
+
+        .graph-card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1.25rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .graph-card-title {
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: #f8fafc;
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+        }
+
+        .graph-canvas-container {
+          position: relative;
+          height: 270px;
+          width: 100%;
+        }
     </style>
 </head>
 <body class="p-3 p-md-4">
@@ -151,43 +208,73 @@
                     <div id="map" style="height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);"></div>
                 </div>
 
-                <!-- PARAMETERS CHARTS BELOW MAP -->
-                <div class="card card-custom text-light p-4 shadow rounded-4 mb-4">
-                    <h5 class="fw-bold mb-3 text-purple"><i class="fas fa-chart-line me-2"></i>Environmental Parameter Graphs</h5>
-                    <div class="row g-3">
-                        <!-- Chart 1: PM2.5 & PM10 -->
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
-                                <h6 class="small text-white-50">PM2.5 & PM10 Concentration (µg/m³)</h6>
-                                <canvas id="pmChart" height="180"></canvas>
-                            </div>
-                        </div>
+                <!-- Environmental Parameter Graphs (Separated Layout) -->
+                <section class="mt-5">
+                  <div class="d-flex align-items-center gap-2 mb-4">
+                    <i class="fas fa-chart-line text-purple fs-4"></i>
+                    <h3 class="fw-bold mb-0 text-light">Environmental Telemetry Graphs</h3>
+                  </div>
 
-                        <!-- Chart 2: Temp & Humidity -->
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
-                                <h6 class="small text-white-50">Temperature & Humidity Trends</h6>
-                                <canvas id="weatherChart" height="180"></canvas>
-                            </div>
+                  <div class="graphs-separated-grid">
+                    
+                    <!-- Graph Card 1 -->
+                    <div class="single-graph-card">
+                      <div class="graph-card-header">
+                        <div class="graph-card-title">
+                          <i class="fas fa-smog text-warning"></i>
+                          <span>PM2.5 & PM10 Concentration</span>
                         </div>
-
-                        <!-- NEW Chart 3: Wind Speed & Gusts -->
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
-                                <h6 class="small text-white-50">Wind Speed & Peak Gusts (km/h)</h6>
-                                <canvas id="windChart" height="180"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- NEW Chart 4: Atmospheric Pressure & Air Density -->
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 bg-dark bg-opacity-50 border border-secondary">
-                                <h6 class="small text-white-50">Barometric Pressure (hPa) & Air Density</h6>
-                                <canvas id="pressureChart" height="180"></canvas>
-                            </div>
-                        </div>
+                        <span class="badge bg-dark border border-secondary text-light">µg/m³</span>
+                      </div>
+                      <div class="graph-canvas-container">
+                        <canvas id="pmChart"></canvas>
+                      </div>
                     </div>
-                </div>
+
+                    <!-- Graph Card 2 -->
+                    <div class="single-graph-card">
+                      <div class="graph-card-header">
+                        <div class="graph-card-title">
+                          <i class="fas fa-temperature-high text-danger"></i>
+                          <span>Temperature & Humidity Trends</span>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-light">°C / %</span>
+                      </div>
+                      <div class="graph-canvas-container">
+                        <canvas id="tempChart"></canvas>
+                      </div>
+                    </div>
+
+                    <!-- Graph Card 3 -->
+                    <div class="single-graph-card">
+                      <div class="graph-card-header">
+                        <div class="graph-card-title">
+                          <i class="fas fa-wind text-info"></i>
+                          <span>Wind Speed & Peak Gusts</span>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-light">km/h</span>
+                      </div>
+                      <div class="graph-canvas-container">
+                        <canvas id="windChart"></canvas>
+                      </div>
+                    </div>
+
+                    <!-- Graph Card 4 -->
+                    <div class="single-graph-card">
+                      <div class="graph-card-header">
+                        <div class="graph-card-title">
+                          <i class="fas fa-compress-arrows-alt text-purple"></i>
+                          <span>Barometric Pressure & Air Density</span>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-light">hPa</span>
+                      </div>
+                      <div class="graph-canvas-container">
+                        <canvas id="pressureChart"></canvas>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
             </div>
 
             <!-- RIGHT COLUMN: SEPARATED PARAMETERS & HIGHLIGHTED HUB -->
@@ -351,7 +438,7 @@
             });
 
             // 4. Chart 2: Dual Axis Temperature & Humidity Dynamics
-            const ctx2 = document.getElementById('weatherChart').getContext('2d');
+            const ctx2 = document.getElementById('tempChart').getContext('2d');
             
             window.tempChart = new Chart(ctx2, {
                 type: 'line',
