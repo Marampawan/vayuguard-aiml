@@ -134,6 +134,25 @@
         background: rgba(168, 85, 247, 0.25);
         color: #ffffff;
       }
+
+      /* Outline Purple Button */
+      .btn-outline-purple {
+        background: transparent !important;
+        border: 1px solid #8b5cf6 !important;
+        color: #a78bfa !important;
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline-purple:hover {
+        background: rgba(139, 92, 246, 0.15) !important;
+        border-color: #a78bfa !important;
+        color: #c4b5fd !important;
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+      }
+
+      .btn-outline-purple:active {
+        transform: scale(0.98);
+      }
     </style>
 </head>
 <body class="py-4 py-md-5">
@@ -186,6 +205,23 @@
                 <i class="fas fa-atom fa-spin fa-2x mb-3" style="color: #7209b7;"></i>
                 <p>Loading live quantum-corrected forecast...</p>
             </div>
+        </div>
+
+        <!-- Mindful Hub & Daily Eco-Jokes Panel -->
+        <div class="card bg-dark text-light border border-secondary border-opacity-25 rounded-4 p-4 mt-4 shadow-sm">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="fas fa-smile-beam text-warning fs-4"></i>
+            <h5 class="fw-bold mb-0 text-light">Mindful Hub & Air Quality Humour</h5>
+          </div>
+          
+          <div class="bg-secondary bg-opacity-10 rounded-3 p-3 border border-secondary border-opacity-10 text-center">
+            <p id="eco-joke-text" class="fs-6 text-light mb-2">
+              "Why did the tree go to the dentist? To get a root canal before the AQI spiked!"
+            </p>
+            <button id="next-joke-btn" class="btn btn-outline-purple btn-sm rounded-pill mt-2">
+              <i class="fas fa-sync-alt me-1"></i> New Eco Tip / Joke
+            </button>
+          </div>
         </div>
     </div>
 
@@ -394,6 +430,60 @@
     </script>
 
   <script>
+    // Eco-Jokes & Air Quality Tips Array
+    const ecoJokesAndTips = [
+      "Why did the tree go to the dentist? To get a root canal before the AQI spiked!",
+      "What do you call a fish wearing a mask? A safe-sea breather!",
+      "Why don't air particles play hide and seek? Because good ventilation always seeks them out!",
+      "Plant a tree today — it's the only filter that gives you free Wi-Fi (shade)!",
+      "Why did the cyclist bring a plant to the race? To offset the carbon!",
+      "AQI Tip: Indoor plants like Snake Plant and Peace Lily are natural air purifiers!",
+      "Why did the cloud go to school? To get a little brighter!",
+      "Fun Fact: One tree can absorb about 48 pounds of CO2 per year!",
+      "Why don't smog particles ever win arguments? They're too full of hot air!",
+      "Eco Tip: Walking 1 km instead of driving saves ~0.2 kg of CO2 emissions!",
+      "What's a pollutant's favorite song? 'I Can't Breathe' by The Rolling Smog!",
+      "Why did the solar panel go to art school? To learn how to capture light!",
+      "AQI Tip: Keep windows closed during peak traffic hours (7-10 AM, 5-8 PM)!",
+      "Why was the wind turbine always invited to parties? It was a real breeze!",
+      "Fun Fact: Indoor air can be 2-5x more polluted than outdoor air!"
+    ];
+
+    // Mindful Hub - Joke Rotation Functionality
+    function initEcoJokeRotator() {
+      const jokeText = document.getElementById('eco-joke-text');
+      const nextJokeBtn = document.getElementById('next-joke-btn');
+      
+      if (!jokeText || !nextJokeBtn) return;
+
+      let currentJokeIndex = 0;
+
+      // Function to display a random joke/tip
+      const showRandomJoke = () => {
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * ecoJokesAndTips.length);
+        } while (newIndex === currentJokeIndex && ecoJokesAndTips.length > 1);
+        
+        currentJokeIndex = newIndex;
+        
+        // Add fade effect
+        jokeText.style.opacity = '0';
+        jokeText.style.transition = 'opacity 0.3s ease';
+        
+        setTimeout(() => {
+          jokeText.textContent = `"${ecoJokesAndTips[currentJokeIndex]}"`;
+          jokeText.style.opacity = '1';
+        }, 300);
+      };
+
+      // Add click event listener to button
+      nextJokeBtn.addEventListener('click', showRandomJoke);
+
+      // Optional: Auto-rotate jokes every 30 seconds
+      setInterval(showRandomJoke, 30000);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('forecast-search-input');
       const searchBtn = document.getElementById('update-forecast-btn');
@@ -401,6 +491,9 @@
       let debounceTimer;
 
       if (!searchInput) return;
+      
+      // Initialize eco joke rotator
+      initEcoJokeRotator();
 
       // 1. Fetch Nominatim Suggestions on Input ("del" -> Delhi)
       searchInput.addEventListener('input', (e) => {
