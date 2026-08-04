@@ -232,94 +232,111 @@
     </div>
 
     <script>
-  // Global forecast fetch function with automatic fallback execution
-  async function fetch7DayForecast(cityName = "Bengaluru", lat = 12.9716, lon = 77.5946) {
-    const forecastContainer = document.getElementById('forecast-cards-container') || document.querySelector('.row.g-4');
-    const locationSpan = document.getElementById('active-location-name') || document.querySelector('.text-info');
+  // Main 7-Day Forecast Execution
+  async function load7DayForecast(cityName = "Bengaluru", lat = 12.9716, lon = 77.5946) {
+    // Target container elements
+    const forecastContainer = document.getElementById('forecast-cards-container') || document.querySelector('.container .row') || document.body;
+    const locationBadge = document.getElementById('active-location-name') || document.querySelector('.text-info');
 
-    if (locationSpan) {
-      locationSpan.innerText = `${cityName}`;
+    if (locationBadge) {
+      locationBadge.innerText = `${cityName}, IN`;
     }
 
     try {
-      // 1. Fetch 7-Day Extended Weather & AQI Telemetry from Open-Meteo
+      // 1. Fetch 7-Day Weather Telemetry from Open-Meteo
       const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,relative_humidity_2m_max&timezone=auto`;
       const res = await fetch(apiUrl);
       
-      if (!res.ok) throw new Error("Weather API request failed");
+      if (!res.ok) throw new Error(`Weather API HTTP Error: ${res.status}`);
       const data = await res.json();
 
       const daily = data.daily;
-      if (!daily || !daily.time) throw new Error("Invalid forecast payload received");
+      if (!daily || !daily.time) throw new Error("Invalid payload structure received from Open-Meteo");
 
-      // 2. Clear loading spinner & render cards
-      if (forecastContainer) {
-        forecastContainer.innerHTML = ''; // Wipe spinner
+      // 2. Wipe Loading Spinner / Hardcoded Loading Content
+      const loadingEl = document.querySelector('.fa-spin')?.parentElement?.parentElement || document.getElementById('loading-container');
+      if (loadingEl) {
+        loadingEl.style.display = 'none';
+      }
 
-        daily.time.forEach((dateStr, index) => {
-          const maxTemp = Math.round(daily.temperature_2m_max[index] ?? 28);
-          const minTemp = Math.round(daily.temperature_2m_min[index] ?? 20);
-          const wind = Math.round(daily.windspeed_10m_max[index] ?? 12);
-          const hum = Math.round(daily.relative_humidity_2m_max[index] ?? 65);
+      // Create grid container if it doesn't exist
+      let gridContainer = document.getElementById('forecast-grid-row');
+      if (!gridContainer) {
+        gridContainer = document.createElement('div');
+        gridContainer.id = 'forecast-grid-row';
+        gridContainer.className = 'row g-4 mt-2';
+        forecastContainer.appendChild(gridContainer);
+      }
+      gridContainer.innerHTML = ''; // Clear existing cards
 
-          // Simulated Quantum AQI logic per day
-          const calculatedAqi = Math.round(35 + (maxTemp * 0.4) + (wind * 0.2));
-          let statusStr = calculatedAqi <= 50 ? "Good" : calculatedAqi <= 100 ? "Moderate" : "Unhealthy";
-          let badgeBg = calculatedAqi <= 50 ? "bg-success" : calculatedAqi <= 100 ? "bg-warning text-dark" : "bg-danger";
+      // 3. Render 7-Day Cards
+      daily.time.forEach((dateStr, idx) => {
+        const maxTemp = Math.round(daily.temperature_2m_max[idx] ?? 28);
+        const minTemp = Math.round(daily.temperature_2m_min[idx] ?? 20);
+        const wind = Math.round(daily.windspeed_10m_max[idx] ?? 14);
+        const hum = Math.round(daily.relative_humidity_2m_max[idx] ?? 65);
 
-          const formattedDate = new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        // Simulated Quantum AQI Calculation
+        const calculatedAqi = Math.round(35 + (maxTemp * 0.35) + (wind * 0.15));
+        let statusStr = calculatedAqi <= 50 ? "Good" : calculatedAqi <= 100 ? "Moderate" : "Unhealthy";
+        let badgeBg = calculatedAqi <= 50 ? "bg-success" : calculatedAqi <= 100 ? "bg-warning text-dark" : "bg-danger";
 
-          const cardHtml = `
-            <div class="col-md-4 col-lg-3">
-              <div class="card bg-dark text-light border border-secondary border-opacity-25 rounded-4 p-3 shadow-sm h-100">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="fw-bold text-light">${formattedDate}</span>
-                  <span class="badge ${badgeBg}">${statusStr}</span>
+        const cardDate = new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+        const cardHtml = `
+          <div class="col-md-4 col-lg-3">
+            <div class="card bg-dark text-light border border-secondary border-opacity-25 rounded-4 p-3 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold text-light">${cardDate}</span>
+                <span class="badge ${badgeBg}">${statusStr}</span>
+              </div>
+              <div class="my-2 text-center">
+                <h2 class="fw-bold text-purple mb-0">AQI ${calculatedAqi}</h2>
+                <small class="text-secondary">Quantum Extended Mode</small>
+              </div>
+              <hr class="border-secondary border-opacity-25 my-2">
+              <div class="small text-light-50">
+                <div class="d-flex justify-content-between mb-1">
+                  <span><i class="fas fa-temperature-high text-danger me-1"></i> Temp Range</span>
+                  <strong>${minTemp}°C - ${maxTemp}°C</strong>
                 </div>
-                <div class="my-2 text-center">
-                  <h2 class="fw-bold text-purple mb-0">AQI ${calculatedAqi}</h2>
-                  <small class="text-secondary">Quantum Forecast</small>
+                <div class="d-flex justify-content-between mb-1">
+                  <span><i class="fas fa-wind text-info me-1"></i> Max Wind</span>
+                  <strong>${wind} km/h</strong>
                 </div>
-                <hr class="border-secondary border-opacity-25 my-2">
-                <div class="small text-light-50">
-                  <div class="d-flex justify-content-between mb-1">
-                    <span><i class="fas fa-temperature-high text-danger me-1"></i> Temp Range</span>
-                    <strong>${minTemp}°C - ${maxTemp}°C</strong>
-                  </div>
-                  <div class="d-flex justify-content-between mb-1">
-                    <span><i class="fas fa-wind text-info me-1"></i> Max Wind</span>
-                    <strong>${wind} km/h</strong>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span><i class="fas fa-tint text-primary me-1"></i> Max Humidity</span>
-                    <strong>${hum}%</strong>
-                  </div>
+                <div class="d-flex justify-content-between">
+                  <span><i class="fas fa-tint text-primary me-1"></i> Humidity</span>
+                  <strong>${hum}%</strong>
                 </div>
               </div>
             </div>
-          `;
-          forecastContainer.insertAdjacentHTML('beforeend', cardHtml);
-        });
-      }
-
-    } catch (err) {
-      console.error("Error loading forecast details:", err);
-      if (forecastContainer) {
-        forecastContainer.innerHTML = `
-          <div class="col-12 text-center text-danger py-4">
-            <i class="fas fa-exclamation-triangle fs-3 mb-2"></i><br>
-            Failed to load forecast data. Please check connection and try again.
           </div>
         `;
-      }
+        gridContainer.insertAdjacentHTML('beforeend', cardHtml);
+      });
+
+    } catch (err) {
+      console.error("Failed to load forecast data:", err);
+      // Remove spinner and display error banner
+      const loadingEl = document.querySelector('.fa-spin')?.parentElement?.parentElement;
+      if (loadingEl) loadingEl.style.display = 'none';
+
+      let gridContainer = document.getElementById('forecast-grid-row') || forecastContainer;
+      gridContainer.innerHTML = `
+        <div class="col-12 text-center text-danger my-5">
+          <i class="fas fa-exclamation-triangle fs-2 mb-2"></i>
+          <p class="mb-0">Failed to load live forecast data (${err.message}).</p>
+        </div>
+      `;
     }
   }
 
-  // Execute on page DOM load
+  // Bind Event Listeners on Load
   document.addEventListener('DOMContentLoaded', () => {
-    fetch7DayForecast();
+    // Initial fetch for default location
+    load7DayForecast("Bengaluru", 12.9716, 77.5946);
 
-    // Bind Update Forecast Button
+    // Search button handler
     const updateBtn = document.getElementById('update-forecast-btn') || document.querySelector('button');
     const searchInput = document.getElementById('forecast-search-input') || document.querySelector('input[type="text"]');
 
@@ -329,14 +346,21 @@
         const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`);
         const geoData = await geoRes.json();
         if (geoData && geoData.length > 0) {
-          fetch7DayForecast(geoData[0].display_name.split(',')[0], geoData[0].lat, geoData[0].lon);
+          load7DayForecast(geoData[0].display_name.split(',')[0], geoData[0].lat, geoData[0].lon);
+        } else {
+          alert("City not found.");
         }
       } catch (e) {
-        console.error("Search failed:", e);
+        console.error("Geocoding failed:", e);
       }
     };
 
     if (updateBtn) updateBtn.addEventListener('click', handleSearch);
+    if (searchInput) {
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSearch();
+      });
+    }
   });
 </script>
 
