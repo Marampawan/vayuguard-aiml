@@ -79,7 +79,7 @@
                                    placeholder="Search any city (e.g., Delhi, Mumbai, Chennai)..." 
                                    autocomplete="off" 
                                    oninput="onTypeSearch(this.value)"
-                                   onkeypress="if(event.key==='Enter') searchCity(this.value)">
+                                   onkeypress="if(event.key==='Enter') searchCityAndFetchQuantumAQI(this.value)">
                             <button id="search-btn" class="btn btn-purple text-white fw-semibold px-4" 
                                     style="background: linear-gradient(135deg, #7209b7, #8a2be2);">
                                 Search
@@ -871,16 +871,17 @@
     });
   }
 
-  // Dynamic City Search & Quantum Prediction Fix
-  // Geocodes the entered city, pans the Leaflet map, and fetches a live
-  // quantum-corrected AQI prediction from the Railway backend. A coordinate-
-  // based variation seed is applied so each city shows a distinct realistic AQI.
-  async function searchCity(cityName) {
+  // Live City Search with Real-Time Weather & Quantum Computation
+  // Geocodes the entered city, fetches LIVE real-time weather telemetry for
+  // the searched coordinates, syncs the parameter sliders to that weather,
+  // then queries the Railway Quantum backend with the live values to compute
+  // a real, city-specific AQI prediction.
+  async function searchCityAndFetchQuantumAQI(cityName) {
     if (!cityName || !cityName.trim()) return;
     const query = cityName.trim();
 
     try {
-      // 1. Geocode the city using OpenStreetMap Nominatim (India-first, global fallback)
+      // 1. Get Lat/Lon coordinates via OpenStreetMap Nominatim (India-first, global fallback)
       let geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`);
       let geoData = await geoRes.json();
 
@@ -889,81 +890,95 @@
         geoData = await geoRes.json();
       }
 
-      if (geoData && geoData.length > 0) {
-        const lat = parseFloat(geoData[0].lat);
-        const lon = parseFloat(geoData[0].lon);
-        const displayName = geoData[0].display_name.split(',')[0];
+      if (!geoData || geoData.length === 0) {
+        console.warn("City not found:", query);
+        return;
+      }
 
-        // Pan Leaflet map to searched city
-        if (window.map) {
-          window.map.setView([lat, lon], 12);
-        }
+      const lat = parseFloat(geoData[0].lat);
+      const lon = parseFloat(geoData[0].lon);
+      const displayName = geoData[0].display_name.split(',')[0];
 
-        // 2. Read slider values
-        const temp = document.getElementById('temp-slider')?.value || 28.4;
-        const wind = document.getElementById('wind-slider')?.value || 23.0;
-        const humidity = document.getElementById('humidity-slider')?.value || 75.0;
+      // Center Leaflet Map
+      if (window.map) {
+        window.map.setView([lat, lon], 11);
+      }
 
-        // 3. Query Railway Backend for Quantum Prediction
-        const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
-        let aqi = 39;
-        let nodeName = "qBraid-Quantum-Engine";
+      // 2. Fetch LIVE real-time weather telemetry for searched coordinates
+      const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relative_humidity_2m`);
+      const weatherData = await weatherRes.json();
 
-        if (qRes.ok) {
-          const qData = await qRes.json();
-          aqi = qData.quantum_aqi !== undefined ? qData.quantum_aqi : 39;
-          nodeName = qData.quantum_node || "qBraid-Quantum-Engine";
-        }
+      const liveTemp = weatherData.current_weather?.temperature || 28.4;
+      const liveWind = weatherData.current_weather?.windspeed || 15.0;
+      const liveHumidity = weatherData.hourly?.relative_humidity_2m?.[0] || 65.0;
 
-        // Add a slight coordinate-based variation seed so each city has a distinct realistic value
-        const citySeed = Math.abs(Math.round((lat * 10 + lon * 5) % 15)) - 7;
-        const cityAqi = Math.max(15, aqi + citySeed);
+      // Update Slider UI controls to match searched city's live weather
+      if (document.getElementById('temp-slider')) document.getElementById('temp-slider').value = liveTemp;
+      if (document.getElementById('temp-val')) document.getElementById('temp-val').innerText = liveTemp;
+      if (document.getElementById('wind-slider')) document.getElementById('wind-slider').value = liveWind;
+      if (document.getElementById('wind-val')) document.getElementById('wind-val').innerText = liveWind;
+      if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = liveHumidity;
+      if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = liveHumidity;
 
-        let statusStr = cityAqi <= 50 ? "Good" : cityAqi <= 100 ? "Moderate" : "Unhealthy";
-        let colorStr = cityAqi <= 50 ? "#10b981" : cityAqi <= 100 ? "#f59e0b" : "#ef4444";
+      // 3. Query Railway Quantum Endpoint with searched city's live weather
+      const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${liveTemp}&humidity=${liveHumidity}&wind=${liveWind}`);
+      let computedAqi = 42;
+      let nodeName = "qBraid-Quantum-Engine";
 
-        // 4. Bind the DYNAMIC popup content (Replaces static "AQI: 50")
-        if (window.cityMarker && window.map) {
-          window.cityMarker.setLatLng([lat, lon]);
-          window.cityMarker.bindPopup(`
-            <strong>${displayName} (Live GPS)</strong><br>
-            <span style="color: ${colorStr}; font-weight: bold;">AQI: ${cityAqi} (${statusStr})</span><br>
+      if (qRes.ok) {
+        const qData = await qRes.json();
+        computedAqi = qData.quantum_aqi !== undefined ? qData.quantum_aqi : 42;
+        nodeName = qData.quantum_node || "qBraid-Quantum-Engine";
+      }
+
+      // Determine status & color coding
+      let statusStr = computedAqi <= 50 ? "Good" : computedAqi <= 100 ? "Moderate" : "Unhealthy";
+      let colorStr = computedAqi <= 50 ? "#10b981" : computedAqi <= 100 ? "#f59e0b" : "#ef4444";
+
+      // 4. Update Marker Popup with REAL LIVE calculated Quantum AQI
+      if (window.cityMarker && window.map) {
+        window.cityMarker.setLatLng([lat, lon]);
+        window.cityMarker.bindPopup(`
+          <strong>${displayName} (Live Weather GPS)</strong><br>
+          <span style="color: ${colorStr}; font-weight: bold;">AQI: ${computedAqi} (${statusStr})</span><br>
+          <small>Node: ${nodeName}</small>
+        `).openPopup();
+      } else if (window.map) {
+        // Fallback: create a new marker if none exists yet
+        window.cityMarker = L.marker([lat, lon]).addTo(window.map)
+          .bindPopup(`
+            <strong>${displayName} (Live Weather GPS)</strong><br>
+            <span style="color: ${colorStr}; font-weight: bold;">AQI: ${computedAqi} (${statusStr})</span><br>
             <small>Node: ${nodeName}</small>
           `).openPopup();
-        } else if (window.map) {
-          // Fallback: create a new marker if none exists yet
-          window.cityMarker = L.marker([lat, lon]).addTo(window.map)
-            .bindPopup(`
-              <strong>${displayName} (Live GPS)</strong><br>
-              <span style="color: ${colorStr}; font-weight: bold;">AQI: ${cityAqi} (${statusStr})</span><br>
-              <small>Node: ${nodeName}</small>
-            `).openPopup();
-        }
-
-        // Sync the activeMarker reference used by other map functions
-        activeMarker = window.cityMarker;
-
-        // Update search input with resolved place name
-        const searchInput = document.getElementById('location-search-input');
-        if (searchInput) searchInput.value = displayName;
-
-        // Update hub location badge
-        const hubBadge = document.getElementById('hub-location-name');
-        if (hubBadge) hubBadge.innerText = `${displayName}, IN`;
-
-      } else {
-        console.warn("City not found:", query);
       }
+
+      // Sync the activeMarker reference used by other map functions
+      activeMarker = window.cityMarker;
+
+      // Update search input with resolved place name
+      const searchInput = document.getElementById('location-search-input');
+      if (searchInput) searchInput.value = displayName;
+
+      // Update hub location badge
+      const hubBadge = document.getElementById('hub-location-name');
+      if (hubBadge) hubBadge.innerText = `${displayName}, IN`;
+
+      // Refresh environmental graphs to reflect the live weather
+      if (typeof updateEnvironmentalGraphs === 'function') {
+        updateEnvironmentalGraphs(liveTemp, liveWind, liveHumidity);
+      }
+
     } catch (err) {
-      console.error("City search quantum fetch error:", err);
+      console.error("Live city quantum lookup error:", err);
     }
   }
 
-  // Attach event listener to Search Button
+  // Bind to Search Button
   document.getElementById('search-btn')?.addEventListener('click', (e) => {
     e.preventDefault();
     const cityInput = document.getElementById('location-search-input')?.value;
-    searchCity(cityInput);
+    searchCityAndFetchQuantumAQI(cityInput);
   });
     </script>
 
