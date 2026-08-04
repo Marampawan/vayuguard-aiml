@@ -676,8 +676,8 @@
             if (document.getElementById('humidity-slider')) document.getElementById('humidity-slider').value = liveHumidity;
             if (document.getElementById('hum-val')) document.getElementById('hum-val').innerText = liveHumidity.toFixed(1);
 
-            // Update all 4 graphs with live weather telemetry
-            refreshEnvironmentalGraphs(liveTemp, liveWind, liveHumidity);
+            // Force all 4 graphs to update with the searched city's live weather telemetry
+            updateGraphsForCity(liveTemp, liveWind, liveHumidity);
 
             // 3. Query Railway Backend with live city coordinates & weather parameters
             const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${liveTemp}&humidity=${liveHumidity}&wind=${liveWind}&lat=${lat}&lon=${lon}`);
@@ -993,12 +993,12 @@
   }
 
   // Attach to slider controls
-  ['temp-slider', 'wind-slider', 'humidity-slider'].forEach(sliderId => {
-    document.getElementById(sliderId)?.addEventListener('input', () => {
+  ['temp-slider', 'wind-slider', 'humidity-slider'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => {
       const t = parseFloat(document.getElementById('temp-slider')?.value || 28.4);
       const w = parseFloat(document.getElementById('wind-slider')?.value || 15.0);
       const h = parseFloat(document.getElementById('humidity-slider')?.value || 70.0);
-      refreshEnvironmentalGraphs(t, w, h);
+      updateGraphsForCity(t, w, h);
     });
   });
 
@@ -1035,8 +1035,43 @@
     });
   }
 
-  // Function to update the map marker popup dynamically
-  function setMarkerPopupContent(cityName, aqi, nodeName) {
+        // Function to re-calculate and redraw all 4 Chart.js instances dynamically
+        function updateGraphsForCity(temp, wind, humidity) {
+          // 1. PM2.5 & PM10 Concentration Chart
+          if (window.pmChart) {
+            const basePM25 = Math.round(15 + (temp * 0.4) + (humidity * 0.1));
+            const basePM10 = Math.round(basePM25 * 2.1);
+
+            window.pmChart.data.datasets[0].data = [basePM25 - 4, basePM25, basePM25 + 3, basePM25 - 1, basePM25 - 3, basePM25];
+            window.pmChart.data.datasets[1].data = [basePM10 - 8, basePM10 + 6, basePM10, basePM10 - 4, basePM10 - 7, basePM10];
+            window.pmChart.update('none'); // Update smoothly without full animation reset
+          }
+
+          // 2. Temperature & Humidity Trends Chart
+          if (window.tempChart) {
+            window.tempChart.data.datasets[0].data = [temp - 5, temp - 7, temp - 2, temp, temp - 3, temp - 4];
+            window.tempChart.data.datasets[1].data = [humidity + 8, humidity + 12, humidity - 4, humidity, humidity + 5, humidity + 7];
+            window.tempChart.update('none');
+          }
+
+          // 3. Wind Speed & Peak Gusts Chart
+          if (window.windChart) {
+            const gust = Math.round(wind * 1.45);
+            window.windChart.data.datasets[0].data = [Math.round(wind * 0.5), Math.round(wind * 0.4), Math.round(wind * 0.8), wind, Math.round(wind * 0.85), Math.round(wind * 0.65)];
+            window.windChart.data.datasets[1].data = [Math.round(gust * 0.5), Math.round(gust * 0.4), Math.round(gust * 0.8), gust, Math.round(gust * 0.85), Math.round(gust * 0.65)];
+            window.windChart.update('none');
+          }
+
+          // 4. Barometric Pressure & Air Density Chart
+          if (window.pressureChart) {
+            const basePressure = Math.round(1013 - (temp * 0.12));
+            window.pressureChart.data.datasets[0].data = [basePressure, basePressure - 1, basePressure + 2, basePressure, basePressure - 2, basePressure];
+            window.pressureChart.update('none');
+          }
+        }
+
+        // Function to update the map marker popup dynamically
+        function setMarkerPopupContent(cityName, aqi, nodeName) {
     let statusStr = aqi <= 50 ? "Good" : aqi <= 100 ? "Moderate" : "Unhealthy";
     let colorStr = aqi <= 50 ? "#10b981" : aqi <= 100 ? "#f59e0b" : "#ef4444";
 
