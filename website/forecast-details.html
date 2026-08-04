@@ -92,6 +92,53 @@
       .text-label-rain { color: #60a5fa !important; }     /* Rain Blue */
       .text-label-wind { color: #cbd5e1 !important; }     /* Bright Silver */
       .text-label-humidity { color: #c084fc !important; } /* Purple */
+
+      /* Container Z-Index & Position Fix */
+      .search-container-box {
+        position: relative;
+        z-index: 9999 !important; /* Forces dropdown above all forecast cards */
+      }
+
+      /* Clean Floating Autocomplete Suggestions Dropdown */
+      .search-suggestions-dropdown, 
+      #suggestions-list, 
+      .autocomplete-results {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0;
+        right: 0;
+        z-index: 10000 !important;
+        margin-top: 6px;
+        background: rgba(18, 24, 38, 0.95) !important;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(168, 85, 247, 0.3) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+        max-height: 250px;
+        overflow-y: auto;
+        padding: 6px 0;
+        list-style: none;
+      }
+
+      /* Suggestion Item Styling */
+      .suggestion-item, 
+      .autocomplete-item {
+        padding: 10px 16px;
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      .suggestion-item:hover, 
+      .autocomplete-item:hover {
+        background: rgba(168, 85, 247, 0.2) !important;
+        color: #ffffff;
+      }
     </style>
 </head>
 <body class="py-4 py-md-5">
@@ -115,30 +162,20 @@
                 </a>
             </div>
 
-            <!-- LOCATION SEARCH INPUT WITH LIVE AUTO-COMPLETE -->
-            <div class="position-relative">
-                <div class="input-group">
-                    <span class="input-group-text" style="background: rgba(30, 41, 59, 0.5); border-color: rgba(255, 255, 255, 0.1); color: #94a3b8;">
-                        <i class="fas fa-map-marker-alt" style="color: #f87171;"></i>
-                    </span>
-                    <input type="text" 
-                           id="details-location-input" 
-                           class="form-control search-input-custom" 
-                           placeholder="Enter city to change location (e.g., Mumbai, Delhi, Hyderabad)..." 
-                           autocomplete="off" 
-                           oninput="onTypeDetailsSearch(this.value)"
-                           onkeypress="if(event.key==='Enter') searchDetailsLocation()">
-                    <button class="btn text-white fw-semibold px-4" 
-                            style="background: linear-gradient(135deg, #8b5cf6, #6366f1);" 
-                            onclick="searchDetailsLocation()">
-                        Update Forecast
-                    </button>
-                </div>
-
-                <!-- Dropdown Menu for Auto-Complete Suggestions -->
-                <ul id="details-suggestions-list" 
-                    class="dropdown-menu w-100 shadow-lg border position-absolute" 
-                    style="display: none; top: 100%; z-index: 1000; max-height: 220px; overflow-y: auto; background: #1e293b; border-color: rgba(255, 255, 255, 0.1);"></ul>
+            <!-- Search Box Section -->
+            <div class="search-container-box" style="position: relative; z-index: 9999; overflow: visible;">
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-purple"><i class="fas fa-map-marker-alt"></i></span>
+                <input type="text" 
+                       id="forecast-search-input" 
+                       class="form-control bg-dark text-light border-secondary" 
+                       placeholder="Search city..." 
+                       autocomplete="off">
+                <button id="update-forecast-btn" class="btn btn-purple">Update Forecast</button>
+              </div>
+              
+              <!-- Suggestions container (will now float on top) -->
+              <div id="suggestions-dropdown" class="search-suggestions-dropdown" style="display: none;"></div>
             </div>
         </div>
 
