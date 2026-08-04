@@ -153,6 +153,29 @@
       .btn-outline-purple:active {
         transform: scale(0.98);
       }
+
+      /* Ensure New Eco Tip / Joke Button is Bright & Visible */
+      #next-joke-btn {
+        background: linear-gradient(135deg, #a855f7, #7e22ce) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        font-weight: 700 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        cursor: pointer;
+        transition: all 0.25s ease-in-out;
+      }
+
+      #next-joke-btn:hover {
+        background: linear-gradient(135deg, #9333ea, #6b21a8) !important;
+        color: #ffffff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5) !important;
+      }
+
+      #next-joke-btn i {
+        color: #ffffff !important;
+      }
     </style>
 </head>
 <body class="py-4 py-md-5">
@@ -230,8 +253,8 @@
           </div>
 
           <div class="text-center mt-3">
-            <button id="next-joke-btn" class="btn btn-purple btn-lg rounded-pill px-4 py-2 shadow">
-              <i class="fas fa-sync-alt me-2"></i> New Eco Tip / Joke
+            <button id="next-joke-btn" class="btn btn-purple btn-lg rounded-pill px-4 py-2 shadow-lg fw-bold text-white">
+              <i class="fas fa-sync-alt me-2 text-white"></i> New Eco Tip / Joke
             </button>
           </div>
         </div>
