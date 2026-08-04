@@ -139,6 +139,49 @@
         background: rgba(168, 85, 247, 0.2) !important;
         color: #ffffff;
       }
+
+      /* Ensure search wrapper doesn't clip the dropdown */
+      .input-group, .search-container-box {
+        position: relative !important;
+        overflow: visible !important;
+        z-index: 9999 !important;
+      }
+
+      /* Floating Autocomplete Dropdown Styling */
+      .autocomplete-suggestions-box {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 10000;
+        margin-top: 6px;
+        background: rgba(18, 24, 38, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+        border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+        max-height: 220px;
+        overflow-y: auto;
+        padding: 6px 0;
+      }
+
+      /* Individual Suggestion Items */
+      .suggestion-item {
+        padding: 10px 16px;
+        color: #f1f5f9;
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      .suggestion-item:hover {
+        background: rgba(168, 85, 247, 0.25);
+        color: #ffffff;
+      }
     </style>
 </head>
 <body class="py-4 py-md-5">
@@ -189,222 +232,84 @@
     </div>
 
     <script>
-        // Disable native browser alert popups globally
-        window.alert = function(msg) { console.warn("Blocked Alert Popup:", msg); };
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('forecast-search-input') || document.querySelector('input[placeholder*="Delhi"]');
+    const searchContainer = searchInput?.parentElement;
 
-        // Dynamic Date & Telemetry Script
-        document.addEventListener("DOMContentLoaded", function() {
-            // Detect live position on load or fallback to coordinates
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => fetchDynamic7DayForecast(pos.coords.latitude, pos.coords.longitude, "Your Location"),
-                    () => fetchDynamic7DayForecast(12.9716, 77.5946, "Bengaluru")
-                );
-            } else {
-                fetchDynamic7DayForecast(12.9716, 77.5946, "Bengaluru");
-            }
-        });
+    if (!searchInput || !searchContainer) return;
 
-        // Typing Auto-Complete Suggestions for Details Page (India-First Preference)
-        let detailsDebounceTimer;
-        function onTypeDetailsSearch(query) {
-            clearTimeout(detailsDebounceTimer);
-            const suggestionsList = document.getElementById('details-suggestions-list');
+    // Create suggestion dropdown element if it doesn't exist
+    let dropdown = document.getElementById('autocomplete-dropdown');
+    if (!dropdown) {
+      dropdown = document.createElement('div');
+      dropdown.id = 'autocomplete-dropdown';
+      dropdown.className = 'autocomplete-suggestions-box';
+      searchContainer.style.position = 'relative';
+      searchContainer.appendChild(dropdown);
+    }
 
-            if (!query || query.trim().length < 2) {
-                if (suggestionsList) suggestionsList.style.display = 'none';
-                return;
-            }
+    let debounceTimer;
 
-            detailsDebounceTimer = setTimeout(async () => {
-                let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=5`;
-                
-                try {
-                    let response = await fetch(url);
-                    let data = await response.json();
+    // Listen to real-time input typing ("del" -> "Delhi")
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+      clearTimeout(debounceTimer);
 
-                    if (!data || data.length === 0) {
-                        url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
-                        response = await fetch(url);
-                        data = await response.json();
-                    }
+      if (query.length < 2) {
+        dropdown.style.display = 'none';
+        return;
+      }
 
-                    if (suggestionsList) {
-                        suggestionsList.innerHTML = '';
-                        if (data && data.length > 0) {
-                            data.forEach(place => {
-                                const li = document.createElement('li');
-                                li.className = 'dropdown-item text-truncate py-2 px-3 border-bottom border-secondary border-opacity-25';
-                                li.style.cursor = 'pointer';
-                                li.innerHTML = `<i class="fas fa-map-marker-alt text-info me-2"></i><strong>${place.display_name}</strong>`;
-                                
-                                li.onclick = () => {
-                                    document.getElementById('details-location-input').value = place.display_name.split(',')[0];
-                                    suggestionsList.style.display = 'none';
-                                    fetchDynamic7DayForecast(parseFloat(place.lat), parseFloat(place.lon), place.display_name.split(',')[0]);
-                                };
-                                suggestionsList.appendChild(li);
-                            });
-                            suggestionsList.style.display = 'block';
-                        } else {
-                            suggestionsList.style.display = 'none';
-                        }
-                    }
-                } catch (err) {
-                    console.error('Suggestions error:', err);
-                }
-            }, 250);
+      // Debounce API calls by 250ms
+      debounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`);
+          const cities = await res.json();
+
+          if (!cities || cities.length === 0) {
+            dropdown.style.display = 'none';
+            return;
+          }
+
+          // Build clean suggestion items
+          dropdown.innerHTML = cities.map(city => {
+            const name = city.display_name.split(',')[0];
+            const country = city.address?.country || '';
+            return `<div class="suggestion-item" data-lat="${city.lat}" data-lon="${city.lon}" data-name="${name}">
+                      <i class="fas fa-map-marker-alt text-purple me-2"></i>
+                      <strong>${name}</strong> <small style="color:#94a3b8; margin-left:6px;">${country}</small>
+                    </div>`;
+          }).join('');
+
+          dropdown.style.display = 'block';
+
+          // Handle click on suggestion item
+          dropdown.querySelectorAll('.suggestion-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const selectedName = item.getAttribute('data-name');
+              searchInput.value = selectedName;
+              dropdown.style.display = 'none';
+              
+              // Trigger forecast update
+              if (typeof fetchDynamic7DayForecast === 'function') {
+                fetchDynamic7DayForecast(parseFloat(item.getAttribute('data-lat')), parseFloat(item.getAttribute('data-lon')), selectedName);
+              }
+            });
+          });
+
+        } catch (err) {
+          console.error("Autocomplete fetch error:", err);
         }
+      }, 250);
+    });
 
-        // Search Location Handler
-        async function searchDetailsLocation() {
-            const input = document.getElementById('details-location-input');
-            if (!input || !input.value.trim()) return;
-
-            const query = input.value.trim();
-            try {
-                let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`);
-                let data = await res.json();
-
-                if (!data || data.length === 0) {
-                    res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
-                    data = await res.json();
-                }
-
-                if (data && data.length > 0) {
-                    const cityName = data[0].display_name.split(',')[0];
-                    fetchDynamic7DayForecast(parseFloat(data[0].lat), parseFloat(data[0].lon), cityName);
-                } else {
-                    alert("Location not found.");
-                }
-            } catch (err) {
-                console.error("Search error:", err);
-            }
-        }
-
-        async function fetchDynamic7DayForecast(lat, lon, cityName) {
-            const wrapper = document.getElementById('forecast-cards-wrapper');
-            const locationLabel = document.getElementById('current-location-label');
-            if (locationLabel) locationLabel.innerText = `${cityName}, IN`;
-
-            try {
-                // 1. Fetch real weather telemetry from Open-Meteo as base parameters
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max&timezone=Asia%2FKolkata`;
-                const weatherRes = await fetch(weatherUrl);
-                const weatherData = await weatherRes.json();
-
-                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-                let cardsHTML = '';
-
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date();
-                    d.setDate(d.getDate() + i);
-                    const dateStr = `${daysOfWeek[d.getDay()]}, ${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}`;
-
-                    let tempMax = Math.round(weatherData.daily?.temperature_2m_max?.[i] ?? 28);
-                    let tempMin = Math.round(weatherData.daily?.temperature_2m_min?.[i] ?? 22);
-                    let rain = Math.round(weatherData.daily?.precipitation_probability_max?.[i] ?? 15);
-                    let wind = Math.round(weatherData.daily?.wind_speed_10m_max?.[i] ?? 20);
-                    let humidity = Math.round(weatherData.daily?.relative_humidity_2m_max?.[i] ?? 70);
-
-                    const rawSunrise = weatherData.daily?.sunrise?.[i];
-                    const rawSunset = weatherData.daily?.sunset?.[i];
-                    let sunriseTime = rawSunrise ? new Date(rawSunrise).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:05 AM';
-                    let sunsetTime = rawSunset ? new Date(rawSunset).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '06:45 PM';
-
-                    // Query live Quantum AQI from Railway
-                    let dayAqi = 37;
-                    try {
-                        const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${tempMax}&humidity=${humidity}&wind=${wind}&day_index=${i}`);
-                        const qData = await qRes.json();
-                        if (qData && qData.quantum_aqi) {
-                            dayAqi = qData.quantum_aqi;
-                        }
-                    } catch (qErr) {
-                        const theta = (tempMax / 50.0) * Math.PI;
-                        dayAqi = Math.round(35 + (tempMax * 0.3) + (humidity * 0.08) + (Math.cos(theta) * 4) + (i * 0.5));
-                    }
-
-                    // Dynamic Color Logic based on AQI Value
-                    let status = "Good";
-                    let badgeClass = "badge-aqi-good";
-
-                    if (dayAqi <= 50) {
-                        status = "Good";
-                        badgeClass = "badge-aqi-good"; // Bright Green
-                    } else if (dayAqi <= 100) {
-                        status = "Moderate";
-                        badgeClass = "badge-aqi-moderate"; // Bright Yellow
-                    } else {
-                        status = "Unhealthy";
-                        badgeClass = "badge-aqi-unhealthy"; // Bright Red
-                    }
-
-                    cardsHTML += `
-                        <div class="card card-quantum-glass rounded-4 p-4 mb-3">
-                            <!-- Header -->
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom border-white border-opacity-10">
-                                <div class="d-flex align-items-center gap-2">
-                                    ${i === 0 ? '<span class="badge rounded-pill px-3 py-1.5 fs-7 fw-bold" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #ffffff;">TODAY</span>' : ''}
-                                    <h4 class="fw-bold m-0 text-white tracking-wide">${dateStr}</h4>
-                                </div>
-                                <span class="badge ${badgeClass} px-3.5 py-2 rounded-pill fw-bold fs-6 d-inline-flex align-items-center gap-2">
-                                    <span style="font-size: 8px;">●</span> AQI ${dayAqi} • ${status}
-                                </span>
-                            </div>
-
-                            <!-- Telemetry Metrics Grid -->
-                            <div class="row g-2">
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-temp small fw-bold mb-1"><i class="fas fa-thermometer-half me-1"></i> TEMP</span>
-                                        <strong class="text-white fs-6 fw-bold">${tempMin}°C / ${tempMax}°C</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-sunrise small fw-bold mb-1"><i class="fas fa-sun me-1"></i> SUNRISE</span>
-                                        <strong class="text-white fs-6 fw-bold">${sunriseTime}</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-sunset small fw-bold mb-1"><i class="fas fa-moon me-1"></i> SUNSET</span>
-                                        <strong class="text-white fs-6 fw-bold">${sunsetTime}</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-rain small fw-bold mb-1"><i class="fas fa-cloud-rain me-1"></i> RAIN</span>
-                                        <strong class="text-white fs-6 fw-bold">${rain}%</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-wind small fw-bold mb-1"><i class="fas fa-wind me-1"></i> WIND</span>
-                                        <strong class="text-white fs-6 fw-bold">${wind} km/h</strong>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="tile-metric">
-                                        <span class="d-block text-label-humidity small fw-bold mb-1"><i class="fas fa-tint me-1"></i> HUMIDITY</span>
-                                        <strong class="text-white fs-6 fw-bold">${humidity}%</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                // Render HTML and clear the loading spinner
-                if (wrapper) wrapper.innerHTML = cardsHTML;
-
-            } catch (err) {
-                console.error("Forecast error:", err);
-            }
-        }
-    </script>
+    // Close dropdown on click outside
+    document.addEventListener('click', (e) => {
+      if (!searchContainer.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  });
+</script>
 </body>
 </html>
