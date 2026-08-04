@@ -98,22 +98,38 @@
 
     <div class="container" style="max-width: 980px;">
         
-        <!-- 7-DAY EXTENDED FORECAST HEADER -->
-        <div class="card card-quantum-glass p-4 shadow rounded-4 mb-3">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <div>
-                    <h2 class="fw-bold m-0 d-flex align-items-center gap-2 text-white">
-                        <i class="fas fa-calendar-week" style="color: #8b5cf6;"></i>
-                        <span>7-Day Extended Forecast</span>
-                    </h2>
-                    <p class="small m-0 mt-1" style="color: #94a3b8;">
-                        Active Location: <strong id="active-location-name" style="color: #22d3ee;">Bengaluru, IN</strong>
-                    </p>
-                </div>
-                <a href="forecast.html" class="btn btn-outline-light btn-sm rounded-pill px-3">
-                    <i class="fas fa-arrow-left me-1"></i> Dashboard
-                </a>
+        <!-- Top Active Location Header with Integrated Search -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 bg-dark border border-secondary border-opacity-25 rounded-4 p-3 mb-4 shadow-sm">
+          
+          <!-- Active Location Title & Badge -->
+          <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-map-marker-alt text-danger fs-5"></i>
+            <span class="text-secondary fw-semibold">Active Location:</span>
+            <h5 id="active-location-name" class="fw-bold text-light mb-0">Bengaluru, IN</h5>
+          </div>
+
+          <!-- Integrated Search Bar (Same Style as Map Search) -->
+          <div class="position-relative" style="min-width: 280px; max-width: 420px; flex-grow: 1;">
+            <div class="input-group">
+              <span class="input-group-text bg-secondary bg-opacity-25 border-secondary text-secondary">
+                <i class="fas fa-search"></i>
+              </span>
+              <input 
+                type="text" 
+                id="forecast-search-input" 
+                class="form-control bg-dark text-light border-secondary shadow-none" 
+                placeholder="Search city (e.g., Delhi, Ongole)..." 
+                autocomplete="off"
+              >
+              <button id="update-forecast-btn" class="btn btn-purple px-3">
+                Search
+              </button>
             </div>
+
+            <!-- Autocomplete Suggestions Dropdown -->
+            <div id="forecast-autocomplete-list" class="autocomplete-suggestions-box"></div>
+          </div>
+
         </div>
 
         <!-- DYNAMIC 7-DAY EXTENDED FORECAST CONTAINER -->
