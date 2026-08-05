@@ -501,45 +501,43 @@
         }
 
         async function loadForecast(cityName = "Bengaluru", lat = 12.9716, lon = 77.5946) {
-          try {
-            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max,sunrise,sunset&timezone=auto`);
-            const data = await res.json();
-            const daily = data.daily;
+  try {
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_max,wind_speed_10m_max,precipitation_probability_max,sunrise,sunset&timezone=auto`);
+    const data = await res.json();
+    const daily = data.daily;
 
-            const cards = document.querySelectorAll('.bg-dark.rounded-4, .card');
+    // Target forecast card elements
+    const cards = document.querySelectorAll('.card, .bg-dark, div[class*="rounded"]');
 
-            for (let i = 0; i < Math.min(cards.length, daily.time.length); i++) {
-              const tempMax = daily.temperature_2m_max[i];
-              const wind = daily.wind_speed_10m_max[i];
-              const humidity = daily.relative_humidity_2m_max[i];
+    for (let i = 0; i < Math.min(cards.length, daily.time.length); i++) {
+      const tempMax = daily.temperature_2m_max[i];
+      const wind = daily.wind_speed_10m_max[i];
+      const humidity = daily.relative_humidity_2m_max[i];
 
-              // Fetch dynamic quantum calculated prediction from Railway qBraid endpoint
-              let aqiVal = 45 + (i * 3);
-              try {
-                const qRes = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ temp: tempMax, wind: wind, humidity: humidity, pm25: 15 + (i * 4) })
-                });
-                const qData = await qRes.json();
-                if (qData.aqi) aqiVal = qData.aqi;
-              } catch (err) {
-                console.warn("qBraid Quantum API offline, fallback used:", err);
-              }
+      let aqiVal = 45 + (i * 3);
+      try {
+        const qRes = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ temp: tempMax, wind: wind, humidity: humidity, pm25: 15 + (i * 4) })
+        });
+        const qData = await qRes.json();
+        if (qData.aqi) aqiVal = qData.aqi;
+      } catch (err) {
+        console.warn("qBraid Quantum API offline, fallback used:", err);
+      }
 
-              // Update AQI badge
-              const badges = cards[i].querySelectorAll('span');
-              badges.forEach(span => {
-                if (span.innerText.includes('AQI')) {
-                  let status = aqiVal <= 50 ? "Good" : aqiVal <= 100 ? "Moderate" : "Unhealthy";
-                  span.innerText = `• AQI ${aqiVal} • ${status}`;
-                }
-              });
-            }
-          } catch (err) {
-            console.error("Forecast update error:", err);
-          }
-        }
+      // Exact selector matching your HTML structure
+      const badge = cards[i].querySelector('.badge') || Array.from(cards[i].querySelectorAll('*')).find(el => el.innerText.includes('AQI'));
+      if (badge) {
+        let status = aqiVal <= 50 ? "Good" : aqiVal <= 100 ? "Moderate" : "Unhealthy";
+        badge.innerText = `• AQI ${aqiVal} • ${status}`;
+      }
+    }
+  } catch (err) {
+    console.error("Forecast update error:", err);
+  }
+}
     </script>
 
   <script>
