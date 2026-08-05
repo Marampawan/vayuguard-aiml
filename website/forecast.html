@@ -877,23 +877,50 @@
     execBtn.addEventListener('click', async function (e) {
       if (e) e.preventDefault();
 
-      const temp = document.getElementById('temp-slider')?.value || 28.4;
-      const wind = document.getElementById('wind-slider')?.value || 23.0;
-      const humidity = document.getElementById('humidity-slider')?.value || 75.0;
+      // 1. Read slider values directly from the UI
+      const temp = parseFloat(document.getElementById('temp-slider').value);
+      const wind = parseFloat(document.getElementById('wind-slider').value);
+      const humidity = parseFloat(document.getElementById('humidity-slider').value);
+
+      // Default to map center or target location (e.g., Bengaluru: 12.9716, 77.5946)
+      const lat = window.currentLat || 12.9716;
+      const lon = window.currentLon || 77.5946;
 
       execBtn.disabled = true;
       execBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Executing qBraid Circuit...`;
 
       try {
-        const res = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${temp}&humidity=${humidity}&wind=${wind}`);
-        const data = await res.json();
-        const aqi = data.quantum_aqi !== undefined ? data.quantum_aqi : 39;
-        const node = data.quantum_node || "qBraid-Quantum-Engine";
+        // 2. Fetch live PM2.5 dynamically for the location
+        const airRes = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm2_5`);
+        const airData = await airRes.json();
+        const livePm25 = airData.current?.pm2_5 || 25.0;
 
-        updateMapUI(aqi, node);
-        execBtn.innerHTML = `<i class="fas fa-check-circle me-2 text-success"></i> AQI Predicted: ${aqi}`;
+        // 3. Send dynamic payload to Railway backend executing qBraid quantum jobs
+        const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            temp: temp,
+            wind: wind,
+            humidity: humidity,
+            pm25: livePm25
+          })
+        });
+
+        const result = await response.json();
+        
+        // 4. Render output and verify execution status
+        if (result.aqi) {
+          updateMapUI(result.aqi, "qBraid-Quantum-Engine");
+          console.log("qBraid Execution Status:", result.status);
+          console.log("qBraid Job ID:", result.job_id);
+          execBtn.innerHTML = `<i class="fas fa-check-circle me-2 text-success"></i> AQI Predicted: ${result.aqi}`;
+        } else {
+          throw new Error('Invalid response from quantum backend');
+        }
       } catch (err) {
-        console.error("Execution error:", err);
+        console.error("Quantum Prediction Error:", err);
+        execBtn.innerHTML = `<i class="fas fa-exclamation-circle me-2 text-danger"></i> Execution Failed`;
       } finally {
         setTimeout(() => {
           execBtn.disabled = false;
