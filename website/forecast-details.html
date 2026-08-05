@@ -417,17 +417,32 @@
               const sunriseTime = formatTime(daily.sunrise?.[idx]);
               const sunsetTime = formatTime(daily.sunset?.[idx]);
 
-              // 3. Optional Railway Quantum AQI Fetch (with fallback calculation)
+              // 3. Quantum AQI Prediction via qBraid Backend
               let calculatedAqi = Math.round(35 + (maxTemp * 0.35) + (wind * 0.15));
               try {
-                const qRes = await fetch(`https://vayuguard-aiml-production.up.railway.app/predict-quantum?temp=${maxTemp}&humidity=${hum}&wind=${wind}&lat=${lat}&lon=${lon}`);
+                // Estimate PM2.5 based on temperature and humidity for the quantum prediction
+                const estimatedPm25 = Math.round(15 + (maxTemp * 0.3) + (hum * 0.15));
+                
+                const qRes = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    temp: maxTemp,
+                    wind: wind,
+                    humidity: hum,
+                    pm25: estimatedPm25
+                  })
+                });
+                
                 if (qRes.ok) {
                   const qData = await qRes.json();
-                  if (qData.quantum_aqi !== undefined) {
-                    calculatedAqi = Math.round(qData.quantum_aqi);
+                  if (qData.aqi !== undefined) {
+                    calculatedAqi = Math.round(qData.aqi);
+                    console.log(`Day ${idx + 1} Quantum Prediction:`, qData.status, qData.job_id);
                   }
                 }
               } catch (qErr) {
+                console.warn(`Day ${idx + 1} quantum prediction fallback:`, qErr);
                 // Fallback to local calculation if Railway request times out
               }
 
