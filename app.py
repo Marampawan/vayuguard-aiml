@@ -9,9 +9,9 @@ CORS(app)  # Enable Cross-Origin requests for all routes
 def quantum_predict():
     try:
         data = request.json or {}
-        temp = float(data.get('temp', 28.0))
-        wind = float(data.get('wind', 21.0))
-        humidity = float(data.get('humidity', 54.0))
+        temp = float(data.get('temp', 28.4))
+        wind = float(data.get('wind', 23.0))
+        humidity = float(data.get('humidity', 75.0))
         pm25 = float(data.get('pm25', 25.0))
 
         prediction = run_quantum_aqi_job(temp, wind, humidity, pm25)
