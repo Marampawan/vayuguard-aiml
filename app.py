@@ -4,22 +4,29 @@ from quantum_engine import run_quantum_aqi_job
 
 app = Flask(__name__)
 
-# Enable CORS for all origins on /api/*
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+# Enable CORS for all origins and routes
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-@app.route('/api/quantum-predict', methods=['POST', 'OPTIONS'])
+@app.route('/api/quantum-predict', methods=['POST', 'GET', 'OPTIONS'])
+@app.route('/predict-quantum', methods=['POST', 'GET', 'OPTIONS'])
 def quantum_predict():
     if request.method == 'OPTIONS':
         return jsonify({'status': 'CORS preflight OK'}), 200
 
     try:
-        data = request.json or {}
-        temp = float(data.get('temp', 28.4))
-        wind = float(data.get('wind', 23.0))
-        humidity = float(data.get('humidity', 75.0))
-        pm25 = float(data.get('pm25', 25.0))
+        # Support both POST JSON body and GET URL query parameters
+        if request.method == 'GET':
+            temp = float(request.args.get('temp', 28.4))
+            wind = float(request.args.get('wind', 23.0))
+            humidity = float(request.args.get('humidity', 75.0))
+            pm25 = float(request.args.get('pm25', 25.0))
+        else:
+            data = request.json or {}
+            temp = float(data.get('temp', 28.4))
+            wind = float(data.get('wind', 23.0))
+            humidity = float(data.get('humidity', 75.0))
+            pm25 = float(data.get('pm25', 25.0))
 
-        # Run quantum circuit
         prediction = run_quantum_aqi_job(temp, wind, humidity, pm25)
         return jsonify(prediction), 200
     except Exception as e:

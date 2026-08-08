@@ -899,7 +899,7 @@ async function triggerQuantumPrediction() {
         if (data.aqi !== undefined) predictedAqi = data.aqi;
       }
     } catch (netErr) {
-      console.warn("qBraid API unreachable, using estimation:", netErr);
+      console.warn("Backend offline or CORS blocked, using estimation fallback:", netErr);
     }
 
     if (predictedAqi === null) {
