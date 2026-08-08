@@ -2,7 +2,7 @@
 Simple Quantum Prediction API Endpoint
 Lightweight endpoint for frontend GitHub Pages integration
 """
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -16,16 +16,13 @@ from quantum_integration import run_qbraid_prediction, check_qbraid_connection
 
 app = FastAPI(title="VayuGuard Quantum Predict API", version="1.0.0")
 
-# CORS configuration for GitHub Pages
+# This API is called by the static website from a different origin.  Do not use
+# credentials here: wildcard origins and credentialed requests are incompatible
+# in browsers and cause the CORS failure seen by the frontend.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://your-username.github.io",  # Replace with your GitHub Pages URL
-        "http://localhost:8000",
-        "http://localhost:3000",
-        "*"  # Remove this in production and specify exact origins
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -50,7 +47,7 @@ def root():
     return {
         "service": "VayuGuard Quantum Prediction API",
         "status": "running",
-        "endpoints": ["/api/qbraid-predict", "/health", "/quantum-status"]
+        "endpoints": ["/predict-quantum", "/api/quantum-predict", "/api/qbraid-predict", "/health", "/quantum-status"]
     }
 
 
@@ -71,8 +68,7 @@ def quantum_status():
     return check_qbraid_connection()
 
 
-@app.post("/api/qbraid-predict", response_model=PredictionResponse)
-def predict_aqi(request: PredictionRequest):
+def _predict_aqi(request: PredictionRequest) -> PredictionResponse:
     """
     Quantum AQI Prediction Endpoint
     
@@ -121,6 +117,39 @@ def predict_aqi(request: PredictionRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+
+@app.post("/api/qbraid-predict", response_model=PredictionResponse)
+def predict_aqi(request: PredictionRequest):
+    return _predict_aqi(request)
+
+
+@app.post("/api/quantum-predict")
+def predict_aqi_from_json(request: PredictionRequest):
+    """Compatibility route used by the forecast page's JSON client."""
+    prediction = _predict_aqi(request)
+    return {
+        "aqi": prediction.aqi,
+        "quantum_aqi": prediction.aqi,
+        "quantum_node": prediction.device,
+        "status": prediction.status,
+    }
+
+
+@app.get("/predict-quantum")
+def predict_aqi_from_query(
+    temp: float = Query(28.4, ge=0, le=60),
+    humidity: float = Query(75.0, ge=0, le=100),
+    wind: float = Query(23.0, ge=0, le=200),
+):
+    """Compatibility route used by the existing forecast page and script."""
+    prediction = _predict_aqi(PredictionRequest(temp=temp, humidity=humidity, wind=wind))
+    return {
+        "aqi": prediction.aqi,
+        "quantum_aqi": prediction.aqi,
+        "quantum_node": prediction.device,
+        "status": prediction.status,
+    }
 
 
 if __name__ == "__main__":
