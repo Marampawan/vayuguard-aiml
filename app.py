@@ -4,8 +4,8 @@ from quantum_engine import run_quantum_aqi_job
 
 app = Flask(__name__)
 
-# Allow requests specifically from your GitHub Pages domain
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+# Enable CORS for all origins on /api/*
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route('/api/quantum-predict', methods=['POST', 'OPTIONS'])
 def quantum_predict():

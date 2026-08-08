@@ -871,9 +871,11 @@
   });
 
 <script>
-// Expose trigger globally for button click
-async function triggerQuantumPrediction() {
-  const btn = document.getElementById('execute-quantum-btn') || document.querySelector('button[class*="Execute"]');
+async function handleQuantumExecution(e) {
+  if (e) e.preventDefault();
+  
+  // 1. Target button dynamically by class or tag if ID fails
+  const btn = document.getElementById('execute-quantum-btn') || document.querySelector('button[class*="btn-primary"]');
   if (!btn) return;
 
   const originalText = btn.innerText;
@@ -881,24 +883,23 @@ async function triggerQuantumPrediction() {
   btn.disabled = true;
 
   try {
-    // 1. Read values from range inputs
+    // 2. Read current range sliders in order
     const sliders = document.querySelectorAll('input[type="range"]');
     const temp = sliders[0] ? parseFloat(sliders[0].value) : 28.4;
     const wind = sliders[1] ? parseFloat(sliders[1].value) : 23.0;
     const humidity = sliders[2] ? parseFloat(sliders[2].value) : 75.0;
 
-    // 2. Fetch backend prediction
+    // 3. Post to Railway backend with complete CORS headers
     const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({ temp, wind, humidity, pm25: 25.0 })
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP Error Status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const result = await response.json();
 
@@ -906,7 +907,7 @@ async function triggerQuantumPrediction() {
       let status = result.aqi <= 50 ? "Good" : result.aqi <= 100 ? "Moderate" : "Unhealthy";
       let color = result.aqi <= 50 ? "#28a745" : result.aqi <= 100 ? "#ffc107" : "#dc3545";
 
-      // Update map popup on leafet map
+      // 4. Update the Leaflet map popup live on screen
       const popup = document.querySelector('.leaflet-popup-content');
       if (popup) {
         popup.innerHTML = `<b>Bengaluru (Live GPS)</b><br><span style="color:${color};font-weight:bold;">AQI: ${result.aqi} (${status})</span><br><small>Node: qBraid-Quantum-Engine</small>`;
@@ -915,17 +916,23 @@ async function triggerQuantumPrediction() {
       alert(`qBraid Quantum Prediction Executed!\n\nPredicted AQI: ${result.aqi}\nStatus: ${status}`);
     }
   } catch (err) {
-    console.error("Execution failure:", err);
-    alert(`Execution Failed: ${err.message}\n\nIf Railway backend is offline, ensure app.py is deployed and CORS is enabled.`);
+    console.error("Execution error:", err);
+    alert(`Quantum Execution Error: ${err.message}\nCheck browser console or Railway backend CORS headers.`);
   } finally {
     btn.innerText = originalText;
     btn.disabled = false;
   }
 }
 
+// Attach listener directly to button when page loads
 document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById('execute-quantum-btn');
-  if (btn) btn.onclick = triggerQuantumPrediction;
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(btn => {
+    if (btn.innerText.includes('Execute Quantum')) {
+      btn.id = 'execute-quantum-btn';
+      btn.onclick = handleQuantumExecution;
+    }
+  });
 });
 </script>
 
