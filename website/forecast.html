@@ -871,7 +871,6 @@
   });
 
 <script>
-// 1. Globally exposed function for onclick
 async function triggerQuantumPrediction() {
   const btn = document.getElementById('execute-quantum-btn') || document.querySelector('button[class*="Execute"]');
   if (!btn) return;
@@ -925,6 +924,12 @@ async function triggerQuantumPrediction() {
     btn.disabled = false;
   }
 }
+
+// 2. Also attach event listener dynamically on load as a fallback
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById('execute-quantum-btn');
+  if (btn) btn.onclick = triggerQuantumPrediction;
+});
 </script>
 
 </body>
