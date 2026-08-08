@@ -173,7 +173,7 @@
           </div>
 
           <!-- SINGLE Action Button -->
-          <button id="execute-quantum-btn" onclick="runQuantumPrediction()" class="btn btn-purple w-100 py-2.5 rounded-3 fw-bold text-white shadow">
+          <button id="execute-quantum-btn" onclick="triggerQuantumPrediction()" class="btn btn-purple w-100 py-2.5 rounded-3 fw-bold text-white shadow">
               <i class="fas fa-atom me-2"></i> Execute Quantum AQI Prediction
           </button>
         </div>
@@ -871,29 +871,30 @@
   });
 
 <script>
-// 1. Declare in global scope so inline onclick="runQuantumPrediction()" works
-async function runQuantumPrediction() {
+// 1. Declare globally so the button can invoke it directly
+async function triggerQuantumPrediction() {
   const btn = document.getElementById('execute-quantum-btn');
-  if (btn) {
-    btn.innerText = "Executing qBraid Job...";
-    btn.disabled = true;
-  }
+  if (!btn) return;
+
+  const originalText = btn.innerText;
+  btn.innerText = "Executing qBraid Job...";
+  btn.disabled = true;
 
   try {
-    // Read input sliders dynamically
+    // 2. Read current slider values dynamically
     const sliders = document.querySelectorAll('input[type="range"]');
     const temp = sliders[0] ? parseFloat(sliders[0].value) : 28.4;
     const wind = sliders[1] ? parseFloat(sliders[1].value) : 23.0;
     const humidity = sliders[2] ? parseFloat(sliders[2].value) : 75.0;
 
-    // Send POST payload to Railway backend
+    // 3. Post parameters directly to Railway qBraid backend
     const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ temp, wind, humidity, pm25: 25.0 })
     });
 
-    if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+    if (!response.ok) throw new Error(`Backend Error ${response.status}`);
 
     const result = await response.json();
 
@@ -901,23 +902,30 @@ async function runQuantumPrediction() {
       let status = result.aqi <= 50 ? "Good" : result.aqi <= 100 ? "Moderate" : "Unhealthy";
       let color = result.aqi <= 50 ? "#28a745" : result.aqi <= 100 ? "#ffc107" : "#dc3545";
 
-      // Dynamically update Leaflet popup
+      // 4. Update the map popup directly on screen
       const popup = document.querySelector('.leaflet-popup-content');
       if (popup) {
         popup.innerHTML = `<b>Bengaluru (Live GPS)</b><br><span style="color:${color};font-weight:bold;">AQI: ${result.aqi} (${status})</span><br><small>Node: qBraid-Quantum-Engine</small>`;
       }
-      alert(`qBraid Quantum Prediction Completed!\n\nPredicted AQI: ${result.aqi}`);
+
+      alert(`qBraid Quantum Circuit Executed!\n\nPredicted AQI: ${result.aqi}\nStatus: ${status}`);
     }
   } catch (err) {
     console.error("Execution Error:", err);
-    alert("Execution Failed: Check console for Railway backend CORS/network errors.");
+    alert("Execution Failed: Ensure Railway backend is active and CORS is enabled in app.py.");
   } finally {
-    if (btn) {
-      btn.innerText = "Execute Quantum AQI Prediction";
-      btn.disabled = false;
-    }
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 }
+
+// 2. Attach click event explicitly when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById('execute-quantum-btn');
+  if (btn) {
+    btn.onclick = triggerQuantumPrediction;
+  }
+});
 </script>
 
 </body>
