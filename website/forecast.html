@@ -881,26 +881,24 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.innerText = "Executing qBraid Job...";
     btn.disabled = true;
 
-    // 1. Safely gather slider input values
-    const ranges = document.querySelectorAll('input[type="range"]');
-    const tempVal = ranges[0] ? parseFloat(ranges[0].value) : 28.4;
-    const windVal = ranges[1] ? parseFloat(ranges[1].value) : 23.0;
-    const humVal = ranges[2] ? parseFloat(ranges[2].value) : 75.0;
-
-    console.log("Submitting Quantum Execution Payload:", { temp: tempVal, wind: windVal, humidity: humVal });
+    // 1. Safely read slider values in DOM order
+    const sliders = document.querySelectorAll('input[type="range"]');
+    const tempVal = sliders[0] ? parseFloat(sliders[0].value) : 28.4;
+    const windVal = sliders[1] ? parseFloat(sliders[1].value) : 23.0;
+    const humVal = sliders[2] ? parseFloat(sliders[2].value) : 75.0;
 
     try {
-      // 2. Fetch live telemetry baseline
+      // 2. Fetch live PM2.5 telemetry
       let livePm25 = 25.0;
       try {
         const airRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=12.9716&longitude=77.5946&current=pm2_5');
         const airData = await airRes.json();
         if (airData.current?.pm2_5) livePm25 = airData.current.pm2_5;
-      } catch (e) {
-        console.warn("Using fallback PM2.5:", e);
+      } catch (err) {
+        console.warn("Using baseline PM2.5:", err);
       }
 
-      // 3. Send POST request to Railway qBraid backend
+      // 3. Post to Railway backend qBraid endpoint
       const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
         method: 'POST',
         headers: { 
@@ -915,27 +913,25 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`Server returned HTTP status ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
 
       const result = await response.json();
-      console.log("qBraid Execution Output:", result);
 
-      // 4. Render output to screen
-      const calculatedAqi = result.aqi !== undefined ? result.aqi : Math.round(20 + (tempVal * 0.5) + (livePm25 * 0.8));
-      
-      // Update popup inside Leaflet Map
-      const popup = document.querySelector('.leaflet-popup-content');
-      if (popup) {
-        popup.innerHTML = `<b>Bengaluru (Live GPS)</b><br><span style="color:#28a745;font-weight:bold;">AQI: ${calculatedAqi} (Quantum Calculated)</span><br><small>Node: qBraid-Quantum-Engine</small><br><small>PM2.5: ${livePm25} µg/m³</small>`;
+      // 4. Update Leaflet Map Popup and alert user
+      if (result.aqi !== undefined) {
+        let status = result.aqi <= 50 ? "Good" : result.aqi <= 100 ? "Moderate" : "Unhealthy";
+        let color = result.aqi <= 50 ? "#28a745" : result.aqi <= 100 ? "#ffc107" : "#dc3545";
+
+        const popup = document.querySelector('.leaflet-popup-content');
+        if (popup) {
+          popup.innerHTML = `<b>Bengaluru (Live GPS)</b><br><span style="color:${color};font-weight:bold;">AQI: ${result.aqi} (${status})</span><br><small>Node: qBraid-Quantum-Engine</small><br><small>PM2.5: ${livePm25} µg/m³</small>`;
+        }
+
+        alert(`qBraid Quantum Prediction Completed!\n\nPredicted AQI: ${result.aqi}\nStatus: ${status}`);
       }
-
-      alert(`qBraid Quantum Circuit Executed!\n\nPredicted AQI: ${calculatedAqi}\nStatus: ${result.status || 'Success'}`);
-
     } catch (err) {
-      console.error("Quantum Execution Error:", err);
-      alert(`Execution Error: ${err.message}\n\nPlease verify Railway deployment logs and ensure CORS is enabled in app.py.`);
+      console.error("qBraid Execution Error:", err);
+      alert(`Execution Error: ${err.message}\nEnsure Railway backend is online and CORS is enabled in app.py.`);
     } finally {
       btn.innerText = originalText;
       btn.disabled = false;
