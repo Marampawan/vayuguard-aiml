@@ -173,7 +173,7 @@
           </div>
 
           <!-- SINGLE Action Button -->
-          <button id="execute-quantum-btn" class="btn btn-purple w-100 py-2.5 rounded-3 fw-bold text-white shadow">
+          <button id="execute-quantum-btn" onclick="runQuantumPrediction()" class="btn btn-purple w-100 py-2.5 rounded-3 fw-bold text-white shadow">
               <i class="fas fa-atom me-2"></i> Execute Quantum AQI Prediction
           </button>
         </div>
@@ -871,72 +871,56 @@
   });
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById('execute-quantum-btn') || document.querySelector('button[class*="Execute"]');
-  if (!btn) return;
-
-  btn.onclick = async function (e) {
-    e.preventDefault();
-    const originalText = btn.innerText;
+async function runQuantumPrediction() {
+  const btn = document.getElementById('execute-quantum-btn');
+  if (btn) {
     btn.innerText = "Executing qBraid Job...";
     btn.disabled = true;
+  }
 
-    // 1. Safely read slider values in DOM order
+  try {
+    // 1. Read input sliders dynamically
     const sliders = document.querySelectorAll('input[type="range"]');
-    const tempVal = sliders[0] ? parseFloat(sliders[0].value) : 28.4;
-    const windVal = sliders[1] ? parseFloat(sliders[1].value) : 23.0;
-    const humVal = sliders[2] ? parseFloat(sliders[2].value) : 75.0;
+    const temp = sliders[0] ? parseFloat(sliders[0].value) : 28.4;
+    const wind = sliders[1] ? parseFloat(sliders[1].value) : 23.0;
+    const humidity = sliders[2] ? parseFloat(sliders[2].value) : 75.0;
 
-    try {
-      // 2. Fetch live PM2.5 telemetry
-      let livePm25 = 25.0;
-      try {
-        const airRes = await fetch('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=12.9716&longitude=77.5946&current=pm2_5');
-        const airData = await airRes.json();
-        if (airData.current?.pm2_5) livePm25 = airData.current.pm2_5;
-      } catch (err) {
-        console.warn("Using baseline PM2.5:", err);
-      }
+    // 2. Send request to Railway backend
+    const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ temp, wind, humidity, pm25: 25.0 })
+    });
 
-      // 3. Post to Railway backend qBraid endpoint
-      const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          temp: tempVal,
-          wind: windVal,
-          humidity: humVal,
-          pm25: livePm25
-        })
-      });
+    if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
 
-      if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
+    const result = await response.json();
 
-      const result = await response.json();
-
-      // 4. Update Leaflet Map Popup and alert user
-      if (result.aqi !== undefined) {
+    if (result.aqi !== undefined) {
+      // Update map popup on screen
+      const popup = document.querySelector('.leaflet-popup-content');
+      if (popup) {
         let status = result.aqi <= 50 ? "Good" : result.aqi <= 100 ? "Moderate" : "Unhealthy";
         let color = result.aqi <= 50 ? "#28a745" : result.aqi <= 100 ? "#ffc107" : "#dc3545";
-
-        const popup = document.querySelector('.leaflet-popup-content');
-        if (popup) {
-          popup.innerHTML = `<b>Bengaluru (Live GPS)</b><br><span style="color:${color};font-weight:bold;">AQI: ${result.aqi} (${status})</span><br><small>Node: qBraid-Quantum-Engine</small><br><small>PM2.5: ${livePm25} µg/m³</small>`;
-        }
-
-        alert(`qBraid Quantum Prediction Completed!\n\nPredicted AQI: ${result.aqi}\nStatus: ${status}`);
+        popup.innerHTML = `<b>Bengaluru (Live GPS)</b><br><span style="color:${color};font-weight:bold;">AQI: ${result.aqi} (${status})</span><br><small>Node: qBraid-Quantum-Engine</small>`;
       }
-    } catch (err) {
-      console.error("qBraid Execution Error:", err);
-      alert(`Execution Error: ${err.message}\nEnsure Railway backend is online and CORS is enabled in app.py.`);
-    } finally {
-      btn.innerText = originalText;
+      alert(`qBraid Quantum Prediction Executed!\n\nPredicted AQI: ${result.aqi}`);
+    }
+  } catch (err) {
+    console.error("Quantum prediction error:", err);
+    alert("Execution Failed: Ensure Railway backend is online and CORS is enabled.");
+  } finally {
+    if (btn) {
+      btn.innerText = "Execute Quantum AQI Prediction";
       btn.disabled = false;
     }
-  };
+  }
+}
+
+// Attach event listener once DOM loads
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById('execute-quantum-btn');
+  if (btn) btn.onclick = runQuantumPrediction;
 });
 </script>
 
