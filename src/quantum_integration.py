@@ -16,15 +16,24 @@ except ImportError:
     QBRAD_AVAILABLE = False
     print("Warning: qBraid or Qiskit not installed. Install with: pip install qbraid qiskit qiskit-aer")
 
-# Import qBraid device functions (outside try-except for proper type checking)
+# qBraid changed its public provider import path.  Resolve the provider
+# defensively so an SDK mismatch cannot prevent the web API from starting.
+QbraidProvider = None
 if QBRAD_AVAILABLE:
-    import qbraid
-    from qbraid.providers import QuantumProvider
+    try:
+        from qbraid import QbraidProvider
+    except ImportError:
+        try:
+            from qbraid.runtime import QbraidProvider
+        except ImportError:
+            print("Warning: qBraid runtime provider is unavailable; using the AQI fallback.")
 
 
 def get_qbraid_device(device_id="qbraid_qasm_simulator"):
+    if QbraidProvider is None:
+        return None
     try:
-        provider = QuantumProvider()
+        provider = QbraidProvider()
         return provider.get_device(device_id)
     except Exception as e:
         print(f"Error accessing qBraid device {device_id}: {e}")
@@ -163,8 +172,15 @@ def check_qbraid_connection() -> Dict[str, Any]:
             "devices": []
         }
     
+    if QbraidProvider is None:
+        return {
+            "connected": False,
+            "error": "qBraid runtime provider is unavailable",
+            "devices": []
+        }
+
     try:
-        provider = QuantumProvider()
+        provider = QbraidProvider()
         devices = provider.get_devices()
         return {
             "connected": True,
