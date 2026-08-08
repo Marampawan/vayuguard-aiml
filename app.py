@@ -4,17 +4,32 @@ from quantum_engine import run_quantum_aqi_job
 
 app = Flask(__name__)
 
-# Enable CORS for all origins and routes
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+# 1. Position CORS middleware globally at the top of the app stack
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization", "Accept"],
+    methods=["GET", "POST", "OPTIONS"]
+)
 
+# 2. Intercept preflight OPTIONS requests explicitly across all endpoints
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = app.make_default_options_response()
+        headers = response.headers
+        headers['Access-Control-Allow-Origin'] = '*'
+        headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Accept'
+        return response, 200
+
+# 3. Route handlers with full HTTP method support
 @app.route('/api/quantum-predict', methods=['POST', 'GET', 'OPTIONS'])
 @app.route('/predict-quantum', methods=['POST', 'GET', 'OPTIONS'])
+@app.route('/quantum-predict', methods=['POST', 'GET', 'OPTIONS'])
 def quantum_predict():
-    if request.method == 'OPTIONS':
-        return jsonify({'status': 'CORS preflight OK'}), 200
-
     try:
-        # Support both POST JSON body and GET URL query parameters
         if request.method == 'GET':
             temp = float(request.args.get('temp', 28.4))
             wind = float(request.args.get('wind', 23.0))
@@ -29,9 +44,10 @@ def quantum_predict():
 
         prediction = run_quantum_aqi_job(temp, wind, humidity, pm25)
         return jsonify(prediction), 200
+
     except Exception as e:
-        print(f"Error executing quantum job: {e}")
-        return jsonify({"status": "error", "message": str(e), "aqi": 32}), 200
+        # Fallback payload to ensure valid JSON response
+        return jsonify({"status": "error", "message": str(e), "aqi": 42}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
