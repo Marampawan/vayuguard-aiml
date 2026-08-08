@@ -775,21 +775,23 @@ async function triggerQuantumPrediction() {
       console.warn("Using quantum fallback:", netErr);
     }
 
+    // Realistic Atmospheric AQI Calculation Engine
     if (predictedAqi === null) {
-      // 1. Temperature Penalty: High heat creates severe ozone/particulate spikes
-      const tempContribution = Math.pow(temp / 10, 2) * 4.0; // At 50°C = +100 AQI
+      // 1. Wind Dispersion Factor: High wind disperses pollutants; low wind traps them
+      // Low wind (e.g., 5 km/h) = High multiplier (~1.6x); High wind (e.g., 80 km/h) = Low multiplier (~0.5x)
+      const windDispersion = Math.max(0.4, 1.8 - (wind * 0.018));
 
-      // 2. Humidity Contribution: High moisture increases aerosol formation
-      const humidityContribution = (humidity / 100) * 35.0; // At 97% = +34 AQI
+      // 2. Temperature Penalty: Higher heat accelerates photochemical reactions
+      const tempContribution = Math.pow(temp / 10, 1.8) * 3.5;
 
-      // 3. Wind Dispersion Factor: High wind disperses particles, low wind traps them
-      // Low wind = 1.5x multiplier; Max wind (100 km/h) = 0.6x baseline dampening
-      const windFactor = Math.max(0.6, 1.6 - (wind * 0.010)); 
+      // 3. Humidity Factor: High moisture increases particle mass loading
+      const humidityContribution = (humidity / 100) * 25;
 
-      const basePm25 = 25.0;
+      // 4. Base Telemetry
+      const pm25Baseline = 25.0;
 
-      // Calculate final AQI score
-      predictedAqi = Math.round((basePm25 + tempContribution + humidityContribution) * windFactor);
+      // Calculated AQI Score
+      predictedAqi = Math.round((pm25Baseline + tempContribution + humidityContribution) * windDispersion);
     }
 
     let status = predictedAqi <= 50 ? "Good" : predictedAqi <= 100 ? "Moderate" : "Unhealthy";

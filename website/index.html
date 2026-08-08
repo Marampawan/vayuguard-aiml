@@ -6,7 +6,7 @@
     <title>VayuGuard — Quantum Air Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Silences missing favicon 404 -->
     
     <style>
@@ -1026,7 +1026,7 @@
     // 🌐 Fetch Quantum Prediction from qBraid Backend
     function fetchQuantumPredictionFromqBraid(temp, humidity, pressure, wind, currentAqi) {
         // Replace with your actual backend API URL
-        const API_URL = "https://your-qbraid-backend-api.com/api/quantum-predict";
+        const API_URL = "https://vayuguard-aiml-production.up.railway.app/api/quantum-predict";
 
         fetch(API_URL, {
             method: "POST",

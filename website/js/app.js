@@ -529,7 +529,7 @@ async function getForecast() {
             model_type: "quantum_hybrid"
         };
 
-        const response = await fetch(`${API_BASE}/forecast`, {
+        const response = await fetch(`${API_BASE}/api/quantum-predict`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(requestBody)
@@ -583,7 +583,7 @@ async function getForecast() {
                     };
 
                     try {
-                        const healthResponse = await fetch(`${API_BASE}/health-risk`, {
+                        const healthResponse = await fetch(`${API_BASE}/health`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -635,7 +635,7 @@ async function getForecast() {
 // --- Quantum Prediction Helper ---
 async function getQuantumPrediction(weatherData) {
     try {
-        const response = await fetch('https://vayuguard-aiml-production.up.railway.app/predict', {
+        const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
