@@ -18,7 +18,17 @@ except ImportError:
 
 # Import qBraid device functions (outside try-except for proper type checking)
 if QBRAD_AVAILABLE:
-    from qbraid import get_device, get_devices  # type: ignore
+    import qbraid
+    from qbraid.providers import QuantumProvider
+
+
+def get_qbraid_device(device_id="qbraid_qasm_simulator"):
+    try:
+        provider = QuantumProvider()
+        return provider.get_device(device_id)
+    except Exception as e:
+        print(f"Error accessing qBraid device {device_id}: {e}")
+        return None
 
 # Import secure config
 try:
@@ -74,12 +84,15 @@ def run_qbraid_prediction(temp: float, humidity: float, wind: float, use_simulat
     try:
         if use_simulator:
             # Use qBraid's quantum simulator
-            device = get_device("qbraid_qasm_simulator")  # type: ignore
+            device = get_qbraid_device("qbraid_qasm_simulator")
         else:
             # Use real quantum hardware (requires credits)
-            device = get_device("qbraid_qpu")  # type: ignore
+            device = get_qbraid_device("qbraid_qpu")
         
-        job = device.run(qc, shots=1024)  # type: ignore
+        if device is None:
+            raise RuntimeError("qBraid device unavailable")
+        
+        job = device.run(qc, shots=1024)
         
         # 4. Extract Measurement Results
         result = job.result()
@@ -151,11 +164,12 @@ def check_qbraid_connection() -> Dict[str, Any]:
         }
     
     try:
-        devices = get_devices()  # type: ignore
+        provider = QuantumProvider()
+        devices = provider.get_devices()
         return {
             "connected": True,
             "error": None,
-            "devices": [str(d) for d in devices]  # type: ignore
+            "devices": [str(d) for d in devices]
         }
     except Exception as e:
         return {
