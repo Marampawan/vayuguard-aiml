@@ -477,9 +477,6 @@
                             const searchInput = document.getElementById('location-search-input');
                             if (searchInput) searchInput.value = cityName;
 
-                            if (typeof runQuantumPrediction === "function") {
-                                runQuantumPrediction();
-                            }
                         } catch (err) {
                             updateMapMarker(lat, lon, "Your Location");
                         }
@@ -605,9 +602,6 @@
             if (map) {
                 map.setView([latNum, lonNum], 12);
                 await updateMapMarker(latNum, lonNum, cityName);
-            }
-            if (typeof runQuantumPrediction === "function") {
-                runQuantumPrediction();
             }
         }
 
@@ -770,15 +764,12 @@ async function triggerQuantumPrediction() {
     let predictedAqi = null;
 
     try {
-      const response = await fetch('https://vayuguard-aiml-production.up.railway.app/api/quantum-predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ temp, wind, humidity, pm25: 25.0 })
-      });
+      const parameters = new URLSearchParams({ temp, wind, humidity });
+      const response = await fetch(`${QUANTUM_API_URL}/predict-quantum?${parameters}`);
 
       if (response.ok) {
         const data = await response.json();
-        if (data.aqi !== undefined) predictedAqi = data.aqi;
+        predictedAqi = data.quantum_aqi ?? data.aqi ?? null;
       }
     } catch (netErr) {
       console.warn("Using quantum fallback:", netErr);

@@ -11,4 +11,4 @@ COPY models_saved/ ./models_saved/
 
 EXPOSE 8000
 
-CMD ["python", "src/api/main.py"]
+CMD ["uvicorn", "src.api.quantum_predict:app", "--host", "0.0.0.0", "--port", "8000"]
